@@ -1,0 +1,134 @@
+{
+  "skillId": "auth-setup",
+  "version": "1.7.1",
+  "evals": [
+    {
+      "id": "eval-01",
+      "prompt": "Set up Better Auth with Google login for my Next.js app using Drizzle ORM",
+      "expectedBehavior": "Should ask for confirmation, read better-auth-guide.md and oauth-social-login.md, create auth config, database schema, middleware, and login UI components",
+      "category": "happy-path",
+      "provider": "better-auth"
+    },
+    {
+      "id": "eval-02",
+      "prompt": "I need authentication for my app. I'm not sure which provider to use.",
+      "expectedBehavior": "Should trigger auth-setup skill, present decision framework with Better Auth and Firebase Auth only, ask clarifying questions (mobile support? self-hosted?), then guide to appropriate provider. Should NOT offer Clerk, Auth.js, or Supabase Auth as options.",
+      "category": "decision-framework",
+      "provider": "any"
+    },
+    {
+      "id": "eval-03",
+      "prompt": "Add Clerk auth with GitHub and Google OAuth to my existing Next.js project",
+      "expectedBehavior": "Should inform user that Clerk is not yet supported and suggest Better Auth or Firebase Auth as alternatives. Should NOT proceed with Clerk setup.",
+      "category": "unsupported-provider",
+      "provider": "clerk",
+      "status": "disabled-provider"
+    },
+    {
+      "id": "eval-04",
+      "prompt": "Set up Firebase Auth for my app that needs to support both web and mobile (KMP)",
+      "expectedBehavior": "Should recommend Firebase Auth (best KMP support), read firebase-auth-guide.md, set up client + admin SDK, session cookies with httpOnly, and warn about PRIVATE_KEY newline issue",
+      "category": "happy-path",
+      "provider": "firebase"
+    },
+    {
+      "id": "eval-05",
+      "prompt": "I'm already using Supabase for my database. Add auth with email/password and Google login",
+      "expectedBehavior": "Should inform user that Supabase Auth is not yet supported. Suggest Better Auth as alternative (can connect to Supabase's PostgreSQL database via Drizzle ORM).",
+      "category": "unsupported-provider",
+      "provider": "supabase",
+      "status": "disabled-provider"
+    },
+    {
+      "id": "eval-06",
+      "prompt": "Set up the simplest possible auth for a prototype app",
+      "expectedBehavior": "Should suggest Better Auth as the recommended option (self-hosted, zero cost, simple setup). Should NOT suggest Auth.js as it is not currently supported.",
+      "category": "edge-case",
+      "provider": "better-auth"
+    },
+    {
+      "id": "eval-07",
+      "prompt": "What auth pitfalls should I watch out for before deploying to production?",
+      "expectedBehavior": "Should read 09-common-pitfalls.md, present relevant pitfalls organized by category (session, OAuth, database, Next.js, security, Better Auth-specific), not trigger full setup flow",
+      "category": "reference-only",
+      "provider": "any"
+    },
+    {
+      "id": "eval-08",
+      "prompt": "Set up Better Auth with email verification and complete password reset flow for my Next.js app",
+      "expectedBehavior": "Should read better-auth-guide.md, create auth config with requireEmailVerification: true and sendVerificationEmail/sendResetPassword handlers, create all UI components including reset-password.tsx, set up middleware using cookie-based pattern (NOT auth() wrapper — that's Auth.js, see pitfall #43), and document the full forgot → email → reset → login flow",
+      "category": "happy-path",
+      "provider": "better-auth"
+    },
+    {
+      "id": "eval-09",
+      "prompt": "I need production-ready Better Auth with rate limiting and security headers for my SaaS app",
+      "expectedBehavior": "Should read better-auth-guide.md, configure rateLimit (10 req/60s), session management (expiresIn, updateAge, cookieCache), reference next.config.ts security headers template, explain that Better Auth handles CSRF internally, and create the file creation checklist",
+      "category": "happy-path",
+      "provider": "better-auth"
+    },
+    {
+      "id": "eval-10",
+      "prompt": "My Better Auth forgot-password email sends a link but users get a 404 error when they click it",
+      "expectedBehavior": "Should identify that reset-password.tsx is missing, provide the component from assets, explain that requestPasswordReset({ redirectTo }) sends users to /reset-password which needs a page, and guide through creating the route at app/(auth)/reset-password/page.tsx",
+      "category": "edge-case",
+      "provider": "better-auth"
+    },
+    {
+      "id": "eval-11",
+      "prompt": "Set up Firebase Auth for my Next.js app with Google OAuth. I want all the UI components and middleware.",
+      "expectedBehavior": "Should copy components from assets/components/firebase/ (NOT from root assets/components/), copy middleware from assets/middleware/firebase/nextjs-middleware.ts, and copy shared components (globals.css, dashboard-page.tsx) from assets/components/shared/. Should NOT mix Better Auth and Firebase components.",
+      "category": "happy-path",
+      "provider": "firebase"
+    },
+    {
+      "id": "eval-12",
+      "prompt": "I have an existing Next.js project with Tailwind and custom colors (blue-600 primary). I want to add Better Auth without changing my existing design.",
+      "expectedBehavior": "Should detect existing Tailwind setup (Scenario B), read globals.css and tailwind.config.ts, identify custom colors, merge shadcn/ui CSS variables into existing globals.css mapping blue-600 to --primary, install tailwindcss-animate if missing, then proceed with Better Auth setup. Should NOT overwrite existing globals.css.",
+      "category": "existing-project",
+      "provider": "better-auth"
+    },
+    {
+      "id": "eval-13",
+      "prompt": "Add Firebase Auth to my project that already uses shadcn/ui with the New York style",
+      "expectedBehavior": "Should detect shadcn/ui via components.json (Scenario A), SKIP globals.css generation, note the New York style, and proceed directly with Firebase Auth setup using existing theme. Should reference 10-existing-project-integration.md.",
+      "category": "existing-project",
+      "provider": "firebase"
+    },
+    {
+      "id": "eval-14",
+      "prompt": "Set up Firebase Auth and generate a complete README explaining how to configure the Firebase project",
+      "expectedBehavior": "Should run Step 8 — copy assets/templates/providers/firebase/README.md.tmpl, substitute {{PROJECT_NAME}}/{{NEXT_VERSION}}/{{PROVIDER}}, process <!-- IF oauth=google --> blocks based on user's Step 1a answer, write to project root README.md. Output must include Firebase Console link, deep-link to references/05-firebase-auth-guide.md OAuth checklist, full env vars table with 'Where to get it' column. Must NOT improvise content from memory.",
+      "category": "readme-generation",
+      "provider": "firebase"
+    },
+    {
+      "id": "eval-15",
+      "prompt": "Set up Better Auth with Drizzle, Resend email, and Google OAuth — also generate the README",
+      "expectedBehavior": "Should run Step 8 — copy better-auth/README.md.tmpl, keep <!-- IF oauth=google --> and <!-- IF email=resend --> blocks (delete other email branches), document BETTER_AUTH_SECRET (with openssl rand -hex 32 example), RESEND_API_KEY, GOOGLE_CLIENT_ID/SECRET in env table with source links. Verify no raw {{ placeholders or <!-- IF markers remain.",
+      "category": "readme-generation",
+      "provider": "better-auth"
+    },
+    {
+      "id": "eval-16",
+      "prompt": "Run /shipwithai-auth:setup in a project that already has a README.md with my own content",
+      "expectedBehavior": "Step 0 detects existing README.md; before Step 8 generates anything, MUST call AskUserQuestion offering: append AUTH section, overwrite with README.md.bak backup, or save separately as README.AUTH.md. Must NOT silently overwrite the user's existing README.",
+      "category": "edge-case",
+      "provider": "any"
+    },
+    {
+      "id": "eval-17",
+      "prompt": "Just install the Better Auth packages and config files, don't generate any documentation",
+      "expectedBehavior": "Should set up auth.ts, auth-client.ts, schema, middleware, etc., but skip Step 8 (README generation) since user explicitly opted out. Step 2m guard should respect the opt-out and not force README creation. Should mention that user can run setup again later for full README.",
+      "category": "negative",
+      "provider": "better-auth"
+    },
+    {
+      "id": "eval-18",
+      "prompt": "Add password reset flow to my existing Better Auth project — don't change anything else",
+      "expectedBehavior": "Should ONLY add reset-password.tsx and update auth client; should NOT regenerate README, should NOT run full Step 0 wizard, should NOT touch existing auth.ts beyond what's needed for password reset. README generation Step 8 must NOT trigger.",
+      "category": "negative",
+      "provider": "better-auth"
+    }
+  ]
+}
