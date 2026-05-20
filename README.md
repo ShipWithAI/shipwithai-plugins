@@ -20,13 +20,30 @@ Each plugin in this repo ships as a Claude Code skill set — install once, use 
 
 ## Install
 
-Point Claude Code at the plugin directory for the plugin you want:
+### Via Marketplace (recommended)
+
+Register the ShipWithAI marketplace once, then install any plugin by name:
 
 ```bash
-claude --plugin-dir ./plugins/auth
+# Register the ShipWithAI marketplace (one-time setup)
+/plugin marketplace add ShipWithAI/shipwithai-plugins
+
+# Install any plugin by name
+/plugin install shipwithai-auth@shipwithai
 ```
 
-Then trigger the skill by slash command or describe what you need in chat:
+### Via Plugin Directory (local / development)
+
+Clone this repo and point Claude Code at the plugin directory:
+
+```bash
+git clone https://github.com/ShipWithAI/shipwithai-plugins.git
+claude --plugin-dir ./shipwithai-plugins/plugins/auth
+```
+
+### Usage
+
+Once installed, trigger a skill by slash command or describe what you need in chat:
 
 ```bash
 /shipwithai-auth:setup
