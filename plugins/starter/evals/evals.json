@@ -1,0 +1,39 @@
+{
+  "evals": [
+    {
+      "skill": "cold-start-interview",
+      "prompt": "Set up Claude Code harness for this project",
+      "expect": ["writes CLAUDE.md", "writes .claude/settings.json", "asks tier", "state detection first"]
+    },
+    {
+      "skill": "cold-start-interview",
+      "prompt": "Configure claude for my team",
+      "expect": ["fork-first preamble shown", "stack auto-detected", "confirm before write"]
+    },
+    {
+      "skill": "cold-start-interview",
+      "prompt": "Onboard this project to Claude Code",
+      "expect": ["existing files respected", "overwrite prompt if file exists"]
+    },
+    {
+      "skill": "review",
+      "prompt": "Check my harness setup",
+      "expect": ["health report table", "drift detected", "one action suggested at a time"]
+    },
+    {
+      "skill": "review",
+      "prompt": "What's missing in my Claude setup?",
+      "expect": ["scored components", "upgrade path shown"]
+    },
+    {
+      "skill": "update-ssot",
+      "prompt": "My CLAUDE.md is outdated",
+      "expect": ["diff shown", "section-by-section update", "confirm each section"]
+    },
+    {
+      "skill": "update-ssot",
+      "prompt": "Sync my architecture docs",
+      "expect": ["codebase vs docs comparison", "specific differences listed"]
+    }
+  ]
+}

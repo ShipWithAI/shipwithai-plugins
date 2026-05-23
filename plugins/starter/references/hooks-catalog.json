@@ -1,0 +1,112 @@
+{
+  "catalog": [
+    {
+      "id": "prettier-on-edit",
+      "description": "Auto-format JS/TS/CSS/MD files after Claude edits them",
+      "requires": "prettier",
+      "detectBy": ["prettier.config.*", ".prettierrc*", "devDependencies.prettier"],
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "npx prettier --write $CLAUDE_TOOL_INPUT_PATH"}]
+        }]
+      }
+    },
+    {
+      "id": "eslint-fix-on-edit",
+      "description": "Auto-fix ESLint issues after Claude edits JS/TS files",
+      "requires": "eslint",
+      "detectBy": [".eslintrc*", "eslint.config.*", "devDependencies.eslint"],
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "npx eslint --fix $CLAUDE_TOOL_INPUT_PATH"}]
+        }]
+      }
+    },
+    {
+      "id": "black-on-edit",
+      "description": "Auto-format Python files with Black after edit",
+      "requires": "black",
+      "detectBy": ["pyproject.toml[tool.black]", "devDependencies.black"],
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "black $CLAUDE_TOOL_INPUT_PATH"}]
+        }]
+      }
+    },
+    {
+      "id": "ruff-on-edit",
+      "description": "Auto-lint and fix Python files with Ruff after edit",
+      "requires": "ruff",
+      "detectBy": ["ruff.toml", "pyproject.toml[tool.ruff]"],
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "ruff check --fix $CLAUDE_TOOL_INPUT_PATH"}]
+        }]
+      }
+    },
+    {
+      "id": "gofmt-on-edit",
+      "description": "Auto-format Go files after edit",
+      "requires": "gofmt",
+      "detectBy": ["go.mod"],
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "gofmt -w $CLAUDE_TOOL_INPUT_PATH"}]
+        }]
+      }
+    },
+    {
+      "id": "rustfmt-on-edit",
+      "description": "Auto-format Rust files after edit",
+      "requires": "rustfmt",
+      "detectBy": ["Cargo.toml"],
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "rustfmt $CLAUDE_TOOL_INPUT_PATH"}]
+        }]
+      }
+    },
+    {
+      "id": "jest-on-stop",
+      "description": "Run Jest test suite when Claude finishes a session",
+      "requires": "jest",
+      "detectBy": ["jest.config.*", "devDependencies.jest"],
+      "hook": {
+        "Stop": [{"hooks": [{"type": "command", "command": "npm test"}]}]
+      }
+    },
+    {
+      "id": "pytest-on-stop",
+      "description": "Run pytest when Claude finishes a session",
+      "requires": "pytest",
+      "detectBy": ["pytest.ini", "conftest.py", "pyproject.toml[tool.pytest]"],
+      "hook": {
+        "Stop": [{"hooks": [{"type": "command", "command": "pytest"}]}]
+      }
+    },
+    {
+      "id": "make-test-on-stop",
+      "description": "Run make test when Claude finishes a session",
+      "requires": "make",
+      "detectBy": ["Makefile"],
+      "hook": {
+        "Stop": [{"hooks": [{"type": "command", "command": "make test"}]}]
+      }
+    },
+    {
+      "id": "cargo-test-on-stop",
+      "description": "Run cargo test when Claude finishes a session",
+      "requires": "cargo",
+      "detectBy": ["Cargo.toml"],
+      "hook": {
+        "Stop": [{"hooks": [{"type": "command", "command": "cargo test"}]}]
+      }
+    }
+  ]
+}
