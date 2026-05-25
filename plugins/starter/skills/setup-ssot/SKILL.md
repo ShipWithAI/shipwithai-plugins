@@ -15,9 +15,9 @@ Configures SSOT documentation: `docs/architecture.md`, `docs/adr/`, `docs/CODEMA
 ## Mode Detection
 
 ```
-Có context từ cold-start-interview?
-  → Có: dùng architecture answers từ Part 2 + SSOT selections từ Part 8
-  → Không (standalone): hỏi từng selection
+Đọc .claude/starter-context.json nếu tồn tại
+  → Tồn tại: dùng fields architecture, ssot.adr, ssot.codemaps — skip hỏi
+  → Không tồn tại (standalone): hỏi từng selection
 ```
 
 ## Output 1: `docs/architecture.md`
@@ -71,7 +71,7 @@ docs/adr/
   ADR-0001-initial-architecture.md
 ```
 
-`ADR-0001` được draft từ architecture answers. Format từ `references/adr-template.md`.
+`ADR-0001` được draft từ architecture answers. Format từ `adr-template.md`.
 
 ## Output 3: `docs/CODEMAPS/`
 

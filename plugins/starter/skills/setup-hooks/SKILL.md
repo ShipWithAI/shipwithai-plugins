@@ -15,14 +15,14 @@ Configures `.claude/settings.json` → `hooks` section.
 ## Mode Detection
 
 ```
-Có context từ cold-start-interview?
-  → Có: dùng detected tools + hook selections đã có
-  → Không (standalone): detect tools → suggest từ catalog → confirm
+Đọc .claude/starter-context.json nếu tồn tại
+  → Tồn tại: dùng fields stack.detected_tools, hooks_selected — skip detect + confirm
+  → Không tồn tại (standalone): detect tools → suggest từ catalog → confirm
 ```
 
 ## Hook Suggestions
 
-Load `references/hooks-catalog.json`, match theo detected tools:
+Load `hooks-catalog.json`, match theo detected tools:
 
 ```
 Prettier detect  → PostToolUse Edit (*.js|ts|jsx|tsx|css|md) → prettier --write $FILE
@@ -53,7 +53,7 @@ Merge vào `.claude/settings.json` — không overwrite permissions section:
         "hooks": [
           {
             "type": "command",
-            "command": "npx prettier --write $CLAUDE_TOOL_INPUT_PATH"
+            "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.js|*.ts|*.jsx|*.tsx|*.css|*.md) npx prettier --write \"$CLAUDE_TOOL_INPUT_PATH\";; esac"
           }
         ]
       }

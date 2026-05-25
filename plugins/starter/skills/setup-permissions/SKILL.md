@@ -14,14 +14,14 @@ Configures `.claude/settings.json` → `allowedTools` và `disallowedTools`.
 ## Mode Detection
 
 ```
-Có context từ cold-start-interview?
-  → Có: dùng stack + user overrides đã có
-  → Không (standalone): detect stack → show preset → confirm
+Đọc .claude/starter-context.json nếu tồn tại
+  → Tồn tại: dùng fields stack, permissions.preset, permissions.disallowed_tools, permissions.readonly_paths
+  → Không tồn tại (standalone): detect stack → show preset → confirm
 ```
 
 ## Load Preset
 
-Đọc `references/settings-presets.json`, match theo detected stack:
+Đọc `settings-presets.json`, match theo detected stack:
 
 ```
 nodejs  → Read/Write/Edit/Grep/Glob + Bash(npm:*,npx:*,node:*,git:*)

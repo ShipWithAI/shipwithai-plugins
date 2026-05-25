@@ -14,14 +14,14 @@ Configures `.claude/agents/` với specialized agents cho project.
 ## Mode Detection
 
 ```
-Có context từ cold-start-interview?
-  → Có: dùng agent selections đã có
-  → Không (standalone): load catalog → suggest → confirm
+Đọc .claude/starter-context.json nếu tồn tại
+  → Tồn tại: dùng fields agents_selected, project.type, project.team_size — skip suggest
+  → Không tồn tại (standalone): load catalog → suggest theo project context → confirm
 ```
 
 ## Agent Suggestions
 
-Load `references/agents-catalog.json`, suggest theo project context:
+Load `agents-catalog.json`, suggest theo project context:
 
 ```
 Tier 3 mặc định      → drift-monitor (luôn include)

@@ -11,13 +11,13 @@ argument-hint: "[--redo] [--tier essential|standard|full]"
 
 # /cold-start-interview
 
-Entry point bắt buộc của plugin. Không chạy skill nào khác trước khi cold-start hoàn thành.
+Mandatory entry point for the plugin. Do not run any other skill before cold-start completes.
 
 ## Instructions
 
 ### Step 1 — State Detection
 
-Trước khi hỏi bất cứ điều gì, đọc project state:
+Before asking anything, read the project state:
 
 ```
 CLAUDE.md              → populated / has [PLACEHOLDER] / missing
@@ -39,180 +39,239 @@ Gemfile                → Ruby
 
 Detect existing tools:
 ```
-.eslintrc* / eslint.config.*  → ESLint
+.eslintrc* / eslint.config.*   → ESLint
 prettier.config* / .prettierrc → Prettier
-jest.config*                  → Jest
-pytest.ini / conftest.py      → pytest
-Makefile                      → make
-docker-compose.yml            → Docker Compose
+jest.config*                   → Jest
+pytest.ini / conftest.py       → pytest
+Makefile                       → make
+docker-compose.yml             → Docker Compose
 ```
 
-Nếu CLAUDE.md đã populated và không có `--redo`: "Harness đã được setup. Muốn redo không? (dùng --redo)"
+If CLAUDE.md is already populated and `--redo` is not set: "Harness is already set up. Want to redo? (use --redo)"
+
+If `--tier` argument is provided, skip the tier selection prompt in Step 2 and use the given value directly.
 
 ### Step 2 — Fork-First Preamble
 
-Hiện ngay sau state detection, trước khi hỏi bất cứ điều gì:
+Show immediately after state detection, before asking anything:
 
-> **shipwithai-starter** thiết lập Claude Code harness chuẩn cho project của bạn.
+> **shipwithai-starter** sets up a standard Claude Code harness for your project.
 >
-> **Tier 1 — Essential (5 min):** CLAUDE.md với tech stack + conventions + architecture,
-> `.claude/settings.json` với permissions phù hợp stack. Đủ dùng ngay.
+> **Tier 1 — Essential (5 min):** CLAUDE.md with tech stack + conventions + architecture,
+> `docs/architecture.md`, `.claude/settings.json` with stack-appropriate permissions. Ready to use immediately.
 >
-> **Tier 2 — Standard (15 min):** Thêm hooks tự động cho formatter/linter,
-> `.mcp.json` cho external services.
+> **Tier 2 — Standard (15 min):** Adds auto-format/lint hooks,
+> `.mcp.json` for external services.
 >
-> **Tier 3 — Full (30 min):** Thêm agents chuyên biệt, architecture docs,
-> ADR structure, CODEMAPS cho codebase navigation.
+> **Tier 3 — Full (30 min):** Adds specialized agents, ADR structure,
+> CODEMAPS for codebase navigation.
 >
-> Chọn tier? (Upgrade bất cứ lúc nào với `/shipwithai-starter:review`)
+> Which tier? (Upgrade any time with `/shipwithai-starter:review`)
 
-→ Wait for tier selection trước khi hỏi gì khác.
+→ Wait for tier selection before asking anything else.
 
 ### Step 3 — Interview Flow
 
-#### Part 0: Stack Confirmation *(tất cả tiers)*
+#### Part 0: Stack Confirmation *(all tiers)*
 
-"Tôi detect được: [list detected stack + tools]. Có gì sai không?"
+"I detected: [list detected stack + tools]. Anything wrong?"
 
-Nếu không detect được → hỏi:
-- Language chính?
-- Framework chính?
+If nothing detected → ask:
+- Primary language?
+- Primary framework?
 - Build tool?
 - Test framework?
 - Package manager?
 
-#### Part 1: Project Identity *(tất cả tiers)*
+#### Part 1: Project Identity *(all tiers)*
 
-Hỏi một lần, group lại:
+Ask once, grouped:
 - Project name + type (web app / API / CLI / lib / monorepo)?
 - Team size?
 - Stage (greenfield / active / maintenance / legacy)?
 
-#### Part 2: Architecture *(tất cả tiers)*
+#### Part 2: Architecture *(all tiers)*
 
 - Architecture style (monolith / microservices / modular monolith / event-driven)?
-- Key layers và thư mục tương ứng?
+- Key layers and their corresponding directories?
 - Entry points?
 - External dependencies (DB, queue, cache, external APIs)?
 
-"Paste `tree -L 3` hoặc tôi tự scan codebase."
-→ Đọc output, extract key directories tự động.
+"Paste `tree -L 3` or I'll scan the codebase myself."
+→ Read output, extract key directories automatically.
 
-Gotchas (high-value nhất — không bỏ qua):
-- Thư mục/file nào KHÔNG được edit thủ công? (generated code)
+Gotchas (highest value — do not skip):
+- Which directories/files must NOT be edited manually? (generated code)
 - Build order dependencies? (codegen → compile)
-- Test isolation cần gì? (Docker? env vars? seeds?)
-- Vùng code nào cần extra care? (auth, payments, migrations)
+- What does test isolation require? (Docker? env vars? seeds?)
+- Which areas of code need extra care? (auth, payments, migrations)
 
-#### Part 3: Conventions *(tất cả tiers)*
+#### Part 3: Conventions *(all tiers)*
 
-Nếu detect được eslint/prettier/black/gofmt → confirm, không hỏi lại.
-Nếu không detect → hỏi:
+If eslint/prettier/black/gofmt detected → confirm, do not re-ask.
+If not detected → ask:
 - Code style tool?
 - Branch strategy (trunk-based / gitflow)?
 - Commit format (conventional / custom / none)?
 - Test coverage target?
 
-#### Part 4: Permissions *(tất cả tiers)*
+#### Part 4: Permissions *(all tiers)*
 
-Load preset từ `references/settings-presets.json` theo detected stack.
+Load preset from `./setup-permissions/settings-presets.json` by detected stack.
 
-"Dựa trên stack của bạn, tôi suggest permission profile này:
-[show preset với giải thích từng rule]
-Muốn customize không?"
+"Based on your stack, I suggest this permission profile:
+[show preset with explanation per rule]
+Want to customize?"
 
-Hỏi thêm:
-- Tool nào Claude KHÔNG được dùng? → disallowedTools
-- Path nào chỉ đọc không được sửa? → read-only paths
+Also ask:
+- Which tools should Claude NOT use? → disallowedTools
+- Which paths are read-only? → read-only paths
 
 #### Part 5: Hooks *(Tier 2+)*
 
-Detect tools có sẵn → suggest từ `references/hooks-catalog.json`:
+Detect available tools → suggest from `./setup-hooks/hooks-catalog.json`:
 
 ```
-ESLint detect   → "Bật hook eslint --fix sau khi Claude edit .ts/.js?"
-Prettier detect → "Bật hook prettier --write sau Edit tool?"
-pytest detect   → "Bật hook pytest sau khi Claude edit *_test.py?"
-Jest detect     → "Bật hook jest sau khi Claude edit *.test.*?"
-gofmt detect    → "Bật hook gofmt -w sau Edit tool trên .go files?"
+ESLint detected   → "Enable eslint --fix hook after Claude edits .ts/.js?"
+Prettier detected → "Enable prettier --write hook after Edit tool?"
+pytest detected   → "Enable pytest hook after Claude edits *_test.py?"
+Jest detected     → "Enable jest hook after Claude edits *.test.*?"
+gofmt detected    → "Enable gofmt -w hook after Edit tool on .go files?"
 ```
 
-Từng hook một. Show preview trước khi confirm.
+One hook at a time. Show preview before confirming.
 
 #### Part 6: MCP Servers *(Tier 2+)*
 
-"Project này interact với services nào từ external?"
-→ Show danh sách từ `references/mcp-registry.json`.
+"Which external services does this project interact with?"
+→ Show list from `./setup-mcp/mcp-registry.json`.
 
-Với mỗi service chọn:
+For each selected service:
 - Show config preview.
 - Attempt test connection → report ✓ tested / ⚪ configured-not-verified / ✗ not-found.
-- Không báo ✓ nếu chưa test thực sự.
-- Confirm trước khi add.
+- Never report ✓ without actually testing.
+- Confirm before adding.
 
 #### Part 7: Agents *(Tier 3+)*
 
-Load `references/agents-catalog.json` → suggest agents theo project type/team size.
+Load `./setup-agents/agents-catalog.json` → suggest agents by project type/team size.
 
-Luôn include `drift-monitor` khi Tier 3.
-Show preview từng agent → confirm.
+Always include `drift-monitor` for Tier 3.
+Show preview per agent → confirm.
 
 #### Part 8: SSOT *(Tier 3+)*
 
-- "Tạo `docs/architecture.md`?" → Có: draft từ Part 2 answers.
-- "Setup ADR structure?" → Có: tạo `docs/adr/` + `ADR-0001-initial-architecture.md`.
-- "Tạo CODEMAPS?" → Có: tạo `docs/CODEMAPS/` structure guide.
+- "Set up ADR structure?" → Yes: create `docs/adr/` + `ADR-0001-initial-architecture.md`.
+- "Create CODEMAPS?" → Yes: create `docs/CODEMAPS/` structure guide.
 
 ### Step 4 — Preview & Confirm
 
-Sau khi interview xong, generate preview toàn bộ files sẽ write:
+After the interview, generate a preview of all files to be written:
 
 ```
-Đây là những gì tôi sẽ tạo/update:
+Here is what I will create/update:
 ┌──────────────────────────────────────┬──────────┬───────┐
 │ File                                 │ Action   │ Tier  │
 ├──────────────────────────────────────┼──────────┼───────┤
 │ CLAUDE.md                            │ CREATE   │ 1     │
+│ docs/architecture.md                 │ CREATE   │ 1     │
 │ .claude/settings.json (permissions)  │ CREATE   │ 1     │
 │ .claude/settings.json (hooks)        │ UPDATE   │ 2     │
 │ .mcp.json                            │ CREATE   │ 2     │
 │ .claude/agents/drift-monitor.md      │ CREATE   │ 3     │
-│ docs/architecture.md                 │ CREATE   │ 3     │
 └──────────────────────────────────────┴──────────┴───────┘
-Confirm không?
+Confirm?
 ```
 
-Với file đã tồn tại: "File [X] đã có. Overwrite / Merge / Skip?"
+For existing files: "File [X] already exists. Overwrite / Merge / Skip?"
+
+### Step 4.5 — Write Context File
+
+Immediately after the user confirms the preview, before invoking any pillar skill,
+write `.claude/starter-context.json` with all interview answers:
+
+```json
+{
+  "version": "1.0",
+  "tier": "essential|standard|full",
+  "stack": {
+    "language": "...",
+    "framework": "...",
+    "build_tool": "...",
+    "test_framework": "...",
+    "package_manager": "...",
+    "detected_tools": ["eslint", "prettier", "..."]
+  },
+  "project": {
+    "name": "...",
+    "type": "web-app|api|cli|lib|monorepo",
+    "team_size": 3,
+    "stage": "greenfield|active|maintenance|legacy"
+  },
+  "architecture": {
+    "style": "monolith|microservices|modular-monolith|event-driven",
+    "key_layers": [{ "name": "API", "dir": "src/routes/", "responsibility": "..." }],
+    "entry_points": ["src/index.ts"],
+    "external_deps": [{ "service": "PostgreSQL", "purpose": "...", "env_var": "DATABASE_URL" }],
+    "gotchas": ["src/generated/ — do not edit manually"],
+    "build_order": ["codegen before tsc"],
+    "test_isolation": ["requires Docker Compose"],
+    "sensitive_areas": ["auth/", "payments/"]
+  },
+  "conventions": {
+    "formatter": "prettier",
+    "branch_strategy": "trunk-based",
+    "commit_format": "conventional",
+    "coverage_target": "80%"
+  },
+  "permissions": {
+    "preset": "nodejs",
+    "disallowed_tools": [],
+    "readonly_paths": []
+  },
+  "hooks_selected": ["prettier", "eslint"],
+  "mcp_selected": ["github", "linear"],
+  "agents_selected": ["drift-monitor"],
+  "ssot": {
+    "adr": true,
+    "codemaps": false
+  },
+  "collected_at": "ISO8601 timestamp"
+}
+```
+
+This file is the source of truth for all pillar skills — both when called from cold-start and standalone.
+Commit this file alongside `.claude/` so the team shares context.
 
 ### Step 5 — Orchestrate Pillar Skills
 
-User approve → invoke từng pillar skill theo tier với context từ interview:
+User approves → invoke each pillar skill by tier, reading context from `.claude/starter-context.json`:
 
 ```
-Tier 1: /shipwithai-starter:setup-memory       (pass: project identity, stack, architecture, conventions)
-         /shipwithai-starter:setup-permissions  (pass: stack, user overrides)
+Tier 1: /shipwithai-starter:setup-memory       (reads: project, stack, architecture, conventions)
+         /shipwithai-starter:setup-permissions  (reads: stack, permissions)
+         /shipwithai-starter:setup-ssot --architecture-only  (reads: architecture)
 
-Tier 2: /shipwithai-starter:setup-hooks        (pass: detected tools, hook selections)
-         /shipwithai-starter:setup-mcp          (pass: service selections)
+Tier 2: /shipwithai-starter:setup-hooks        (reads: stack.detected_tools, hooks_selected)
+         /shipwithai-starter:setup-mcp          (reads: mcp_selected)
 
-Tier 3: /shipwithai-starter:setup-agents       (pass: agent selections)
-         /shipwithai-starter:setup-ssot         (pass: architecture answers, SSOT selections)
+Tier 3: /shipwithai-starter:setup-agents       (reads: agents_selected, project)
+         /shipwithai-starter:setup-ssot --adr --codemaps  (reads: ssot)
 ```
 
 ### Step 6 — After-Write
 
 1. Summary table: files created / updated / skipped.
-2. "Commit `.claude/` và `CLAUDE.md` vào repo để team share harness."
-3. "Muốn test harness? Tôi simulate một task nhỏ với config mới."
-4. Upgrade note: "Đang ở Tier [N]. Upgrade với `/shipwithai-starter:review`."
+2. "Commit `.claude/` and `CLAUDE.md` to the repo so the team shares the harness."
+3. Upgrade note: "Currently at Tier [N]. Upgrade with `/shipwithai-starter:review`."
 
 ## Failure Modes
 
 ```
-Don't guess stack nếu ambiguous → hỏi
-Don't write hooks cho tool không detect được trong project
-Don't add MCP server nếu chưa verify connection thực sự
-Don't overwrite existing file không hỏi
-Don't skip gotchas section — đây là high-value nhất
-Don't proceed nếu user chưa confirm preview
+Don't guess stack if ambiguous → ask
+Don't write hooks for tools not detected in the project
+Don't add MCP server without actually verifying the connection
+Don't overwrite existing files without asking
+Don't skip the gotchas section — it's the highest-value part
+Don't proceed if the user has not confirmed the preview
 ```

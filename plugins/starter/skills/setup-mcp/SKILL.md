@@ -14,14 +14,14 @@ Configures `.mcp.json` với MCP servers cho external services.
 ## Mode Detection
 
 ```
-Có context từ cold-start-interview?
-  → Có: dùng service selections đã có
-  → Không (standalone): hỏi "Project interact với services nào?"
+Đọc .claude/starter-context.json nếu tồn tại
+  → Tồn tại: dùng field mcp_selected — skip hỏi, đi thẳng vào lookup + verify
+  → Không tồn tại (standalone): hỏi "Project interact với services nào?"
 ```
 
 ## Service Lookup
 
-Load `references/mcp-registry.json` → show danh sách phổ biến:
+Load `mcp-registry.json` → show danh sách phổ biến:
 
 ```
 GitHub     → code search, PR management, issues
@@ -57,5 +57,4 @@ Với mỗi service chọn:
 ## Write Rules
 
 - Check `.mcp.json` exists → append / overwrite / skip?
-- Sau khi write: update "Installed MCP servers" table trong `CLAUDE.md`
 - Nếu service không có trong registry: "Paste MCP URL nếu bạn có, hoặc skip — add sau với `/shipwithai-starter:add-mcp`"
