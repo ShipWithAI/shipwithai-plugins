@@ -1,0 +1,28 @@
+{
+  "evals": [
+    {
+      "prompt": "Setup SSOT docs (no starter-context.json present)",
+      "expect": ["asks which outputs to create", "gathers architecture details before writing", "uses actual directory paths from codebase scan", "confirms each output separately", "no generic placeholder text in output"]
+    },
+    {
+      "prompt": "Create architecture docs",
+      "expect": ["drafts docs/architecture.md from context or standalone answers", "uses real paths not generic examples", "confirms before write"]
+    },
+    {
+      "prompt": "Setup ADR structure",
+      "expect": ["creates docs/adr/ directory", "creates README.md with index table and ADR-0001 entry", "creates ADR-0001 drafted from architecture answers not blank"]
+    },
+    {
+      "prompt": "User wants architecture.md only, skip ADR and CODEMAPS (--architecture-only)",
+      "expect": ["writes docs/architecture.md only", "does not create docs/adr/", "does not create docs/CODEMAPS/"]
+    },
+    {
+      "prompt": "docs/architecture.md already exists",
+      "expect": ["reads existing file", "asks overwrite / merge / skip", "does not silently overwrite"]
+    },
+    {
+      "prompt": "Setup SSOT with starter-context.json present (ssot.adr: true, ssot.codemaps: false)",
+      "expect": ["reads starter-context.json", "does not ask which outputs to create", "creates docs/adr/ only", "skips CODEMAPS without asking"]
+    }
+  ]
+}
