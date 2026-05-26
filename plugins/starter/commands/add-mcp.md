@@ -8,15 +8,15 @@ argument-hint: "[service-name or MCP URL]"
 
 # /add-mcp
 
-Thêm một MCP server vào `.mcp.json`. Stateless, không cần context từ cold-start.
+Add a single MCP server to `.mcp.json`. Stateless — no cold-start context required.
 
 ## Steps
 
-1. Nếu user cung cấp service name → lookup trong `references/mcp-registry.json`.
-   - Tìm thấy: show preset config, confirm.
-   - Không tìm thấy: "Paste MCP URL và description."
+1. If user provides a service name → look up in `skills/setup-mcp/mcp-registry.json`.
+   - Found: show preset config, confirm.
+   - Not found: "Paste the MCP URL and a short description."
 
-2. Show config preview trước khi write:
+2. Show config preview before writing:
    ```json
    {
      "mcpServers": {
@@ -28,11 +28,13 @@ Thêm một MCP server vào `.mcp.json`. Stateless, không cần context từ co
    }
    ```
 
-3. Attempt test connection → report ✓ / ⚪ / ✗.
-   Không báo ✓ nếu chưa test thực sự.
+3. If `authRequired` is true in the registry entry: surface auth requirement before writing.
+   Ask: "This server requires [authNote]. Do you have credentials ready?"
 
-4. Confirm → append vào `.mcp.json`.
+4. Attempt test connection → report ✓ tested / ⚪ configured-not-verified / ✗ not-found.
+   Never report ✓ without actually testing. MCP servers load at next Claude Code startup.
 
-5. Update "Installed MCP servers" table trong `CLAUDE.md` nếu file tồn tại.
+5. Confirm → append to `.mcp.json`.
+   Check for duplicate `id` before writing — skip if already present.
 
-6. "Test connection bằng cách invoke một tool từ server này."
+6. Update the "MCP servers" section in `CLAUDE.md` if the file exists.

@@ -9,28 +9,30 @@ argument-hint: "[title of the decision]"
 
 # /add-adr
 
-Tạo một ADR mới trong `docs/adr/`. Stateless.
+Create a new ADR in `docs/adr/`. Stateless.
 
 ## Steps
 
-1. Check `docs/adr/` tồn tại không.
-   - Không: "Thư mục docs/adr/ chưa có. Tạo structure không?"
-     → Có: tạo `docs/adr/README.md` + ADR này.
+1. Check if `docs/adr/` exists.
+   - Missing: "docs/adr/ does not exist yet. Create the ADR structure?"
+     → Yes: create `docs/adr/README.md` then proceed with this ADR.
 
-2. Count existing ADRs → next number = ADR-[XXXX].
+2. Count existing ADR files → next number = ADR-[XXXX] (zero-padded, e.g. ADR-0004).
 
-3. Hỏi nếu không có trong args:
-   - Title của decision?
-   - Context: tại sao cần quyết định này?
-   - Options đã consider? (list từng option với pros/cons)
-   - Decision: chọn gì và tại sao?
+3. If title not provided as argument, ask:
+   - Title of the decision?
+   - Context: why does this decision need to be made?
+   - Options considered? (list each option with pros and cons)
+   - Decision: what was chosen and why?
    - Consequences: trade-offs, risks, next steps?
 
-4. Draft ADR từ `references/adr-template.md` → show preview → confirm.
+4. Draft ADR using the template from `skills/setup-ssot/adr-template.md` → show preview → confirm.
 
 5. Write `docs/adr/ADR-[XXXX]-[kebab-slug].md`.
 
-6. Update ADR table trong `CLAUDE.md` nếu tồn tại:
+6. Update the ADR index table in `docs/adr/README.md` if it exists:
    ```
-   | ADR-[XXXX] | [title] | Accepted |
+   | [ADR-XXXX](ADR-XXXX-title.md) | [title] | Accepted | YYYY-MM-DD |
    ```
+
+7. Update the ADR count in `CLAUDE.md` if it exists.

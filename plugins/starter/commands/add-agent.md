@@ -8,20 +8,22 @@ argument-hint: "[agent-name] [--model haiku|sonnet|opus]"
 
 # /add-agent
 
-Tạo một agent mới trong `.claude/agents/`. Stateless.
+Create a new agent in `.claude/agents/`. Stateless.
 
 ## Steps
 
-1. Check `references/agents-catalog.json` nếu có match với intent.
-   - Match: show preset, confirm hoặc customize.
-   - No match: hỏi:
-     - Agent name + purpose?
-     - Model: haiku (fast/cheap) / sonnet (balanced) / opus (complex reasoning)?
-     - Tools needed: Read, Write, Bash, Glob, Grep, mcp__*?
-     - Trigger phrases người dùng nói để invoke agent?
-     - Schedule nếu là background agent?
+1. Check `skills/setup-agents/agents-catalog.json` for a match with the user's intent.
+   - Match: show preset, confirm or customize.
+   - No match: ask:
+     - Agent name and purpose?
+     - Context type: autonomous (self-orients by reading files) or task-specific (needs input from caller)?
+     - Model: haiku (fast, read-only tasks) / sonnet (analysis, code review) / opus (complex reasoning)?
+     - Tools needed: Read, Bash, Glob, Grep, WebFetch?
+     - For autonomous: which files does it read on startup?
+     - For task-specific: what parameters must the caller pass in the prompt?
+     - Trigger phrases to invoke this agent?
 
-2. Draft agent file theo format chuẩn:
+2. Draft agent file using the standard format:
    ```markdown
    ---
    name: [name]
@@ -30,12 +32,33 @@ Tạo một agent mới trong `.claude/agents/`. Stateless.
    model: [haiku|sonnet|opus]
    tools: ["Read", "Bash", "Glob", "Grep"]
    ---
+
    # [Agent Name]
+
    ## Purpose
-   ## What it does
-   ## What this agent does NOT do
+
+   [Why this agent exists. What problem it solves.]
+
+   ## Context
+
+   **Reads on startup:**
+   - [files this agent reads to orient itself]
+
+   **Expects in prompt:** *(task-specific agents only)*
+   - [PARAM_NAME]: [description and how to pass it]
+
+   ## Steps
+
+   ### Step 1 — [Action]
+   [Description]
+
+   ## Boundaries
+
+   - Does not modify files directly
+   - Does not self-schedule
    ```
 
 3. Show preview → confirm → write `.claude/agents/[name].md`.
+   If file already exists: offer skip or overwrite, do not silently replace.
 
-4. Note: "Claude Code agents không self-schedule. Set up crontab thủ công nếu cần."
+4. Note: "Claude Code agents do not self-schedule. Set up a crontab manually if needed."

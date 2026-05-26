@@ -9,23 +9,22 @@ argument-hint: "[hook type: PreToolUse|PostToolUse|Stop] [tool: Edit|Write|Bash|
 
 # /add-hook
 
-Thêm một hook vào `.claude/settings.json` hooks section. Stateless.
+Add a single hook to the `.claude/settings.json` hooks section. Stateless.
 
 ## Steps
 
-1. Check `references/hooks-catalog.json` cho common patterns.
-   Nếu match → show preset, confirm.
-   Nếu không match → hỏi:
+1. Check `skills/setup-hooks/hooks-catalog.json` for a matching common pattern.
+   - Match found: show preset, confirm or customize.
+   - No match: ask:
+     - Hook type: PreToolUse / PostToolUse / Stop?
+     - Trigger on which tool: Edit / Write / Bash / * (all)?
+     - File pattern (optional): `*.ts`, `*.py`, `*.go`?
+     - Command to run?
 
-   - Hook type: PreToolUse / PostToolUse / Stop?
-   - Trigger on which tool: Edit / Write / Bash / * (all)?
-   - File pattern (optional): `*.ts`, `*.py`, `*.go`?
-   - Command to run?
-
-2. Show preview:
+2. Show preview before confirming:
    ```
-   Hook này sẽ chạy `[command]` mỗi khi Claude dùng [tool]
-   [trên files matching [pattern]].
+   This hook will run `[command]` every time Claude uses the [tool] tool
+   [on files matching [pattern]].
 
    Preview:
    {
@@ -36,7 +35,9 @@ Thêm một hook vào `.claude/settings.json` hooks section. Stateless.
    }
    ```
 
-3. Confirm → merge vào `.claude/settings.json` hooks section.
-   Không overwrite permissions section.
+3. Check for duplicate: if an identical hook already exists in `settings.json`, skip.
 
-4. Update "Active hooks" table trong `CLAUDE.md` nếu file tồn tại.
+4. Confirm → merge into `.claude/settings.json` hooks section.
+   Do not overwrite the permissions section.
+
+5. Update the "Active hooks" section in `CLAUDE.md` if the file exists.

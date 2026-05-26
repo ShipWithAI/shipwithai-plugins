@@ -14,59 +14,68 @@ tools: ["Read", "Bash", "Glob", "Grep"]
 ## Purpose
 
 CLAUDE.md drifts. Dependencies change, directories get renamed, teams adopt new tools.
-Agent này check định kỳ xem SSOT docs còn accurate không và flag những gì cần update.
+This agent periodically checks whether SSOT docs are still accurate and flags what needs updating.
 
-**Does NOT modify files** — chỉ report. User apply changes via `/shipwithai-starter:update-ssot`.
+**Does NOT modify files** — reports only. Apply changes via `/shipwithai-starter:update-ssot`.
 
-## What it does
+## Context
+
+**Reads on startup:**
+- `CLAUDE.md` — documented project state to compare against reality
+- `package.json` / `pyproject.toml` / `go.mod` / `Cargo.toml` — actual dependencies
+- `.mcp.json` — actual MCP servers
+- `.claude/settings.json` — actual hooks
+- `docs/architecture.md` — last modified date vs git activity
+
+## Steps
 
 ### Step 1 — Read CLAUDE.md
 
-Đọc `CLAUDE.md` trong project root. Extract:
+Read `CLAUDE.md` from the project root. Extract:
 - Tech stack (languages, frameworks, dependencies)
-- Key directories và layers
+- Key directories and layers
 - Conventions (code style tools, test framework)
 - Installed MCP servers
 - Active hooks
 
-Nếu không tìm thấy `CLAUDE.md`: "CLAUDE.md chưa tồn tại. Chạy `/shipwithai-starter:cold-start-interview` để setup."
+If `CLAUDE.md` is not found: "CLAUDE.md does not exist. Run `/shipwithai-starter:cold-start-interview` to set up the harness."
 
 ### Step 2 — Scan Actual Codebase
 
 ```
-package.json / pyproject.toml / go.mod / Cargo.toml → actual dependencies
-find . -maxdepth 3 -type d (excluding node_modules, .git) → actual structure
-.eslintrc* / prettier.config* / jest.config* → actual tool configs
-.mcp.json → actual MCP servers
-.claude/settings.json hooks → actual hooks
-git log --oneline -20 → recent significant changes
+package.json / pyproject.toml / go.mod / Cargo.toml  → actual dependencies
+find . -maxdepth 3 -type d (excluding node_modules, .git)  → actual structure
+.eslintrc* / prettier.config* / jest.config*  → actual tool configs
+.mcp.json  → actual MCP servers
+.claude/settings.json hooks  → actual hooks
+git log --oneline -20  → recent significant changes
 ```
 
 ### Step 3 — Diff and Flag
 
-Với mỗi section trong CLAUDE.md:
+For each section in CLAUDE.md:
 
 ```
 Tech stack:
-  CLAUDE.md mentions X, package.json không có → stale ⚠️
-  package.json có Y, CLAUDE.md chưa mention → missing ⚠️
+  CLAUDE.md mentions X, not in package.json  → stale ⚠️
+  package.json has Y, not mentioned in CLAUDE.md  → missing ⚠️
 
 Key directories:
-  CLAUDE.md mentions path không tồn tại → stale ⚠️
-  Significant new directory chưa document → missing ⚠️
+  CLAUDE.md mentions a path that no longer exists  → stale ⚠️
+  Significant new directory not documented  → missing ⚠️
 
 Code style tools:
-  CLAUDE.md mentions ESLint, .eslintrc không tồn tại → stale ⚠️
+  CLAUDE.md mentions ESLint, .eslintrc does not exist  → stale ⚠️
 
 MCP servers:
-  CLAUDE.md list server không có trong .mcp.json → stale ⚠️
-  .mcp.json có server không có trong CLAUDE.md → undocumented ⚠️
+  CLAUDE.md lists a server not in .mcp.json  → stale ⚠️
+  .mcp.json has a server not listed in CLAUDE.md  → undocumented ⚠️
 
 Hooks:
-  CLAUDE.md list hook không có trong settings.json → stale ⚠️
+  CLAUDE.md lists a hook not in settings.json  → stale ⚠️
 
 Architecture docs:
-  docs/architecture.md last modified > 30 days + git có significant commits → outdated 🟠
+  docs/architecture.md last modified > 30 days AND git has significant commits  → outdated 🟠
 ```
 
 ### Step 4 — Report
@@ -74,28 +83,28 @@ Architecture docs:
 **No drift detected:**
 ```
 SSOT is current. No updates needed.
-Checked: [DATE] | CLAUDE.md last updated: [DATE]
+Checked: YYYY-MM-DD | CLAUDE.md last updated: YYYY-MM-DD
 ```
 
 **Drift found:**
 ```
-## SSOT Drift Report — [DATE]
+## SSOT Drift Report — YYYY-MM-DD
 
-| Section | Issue | Severity |
-|---------|-------|----------|
-| Tech stack | `@tanstack/react-query` trong package.json, chưa có trong CLAUDE.md | 🟡 Medium |
-| Directories | `src/workers/` tồn tại nhưng chưa document | 🟠 High |
-| MCP servers | Sentry trong .mcp.json nhưng không có trong CLAUDE.md | 🟡 Medium |
-| Tools | prettier config đã xóa nhưng CLAUDE.md vẫn mention | 🟡 Medium |
-| Architecture docs | docs/architecture.md chưa update 45 ngày, 23 commits gần đây | 🟠 High |
+| Section           | Issue                                                        | Severity  |
+|-------------------|--------------------------------------------------------------|-----------|
+| Tech stack        | @tanstack/react-query in package.json, not in CLAUDE.md      | 🟡 Medium |
+| Directories       | src/workers/ exists but not documented                       | 🟠 High   |
+| MCP servers       | Sentry in .mcp.json but not listed in CLAUDE.md             | 🟡 Medium |
+| Tools             | prettier config deleted but CLAUDE.md still mentions it      | 🟡 Medium |
+| Architecture docs | docs/architecture.md not updated in 45 days, 23 recent commits | 🟠 High |
 
-Run `/shipwithai-starter:update-ssot` để sync những sections này.
+Run `/shipwithai-starter:update-ssot` to sync these sections.
 ```
 
-## What this agent does NOT do
+## Boundaries
 
-- Modify CLAUDE.md hoặc bất kỳ file nào — chỉ report
-- Self-schedule — set up crontab thủ công: `0 9 * * 1 claude /shipwithai-starter:drift-monitor`
-- Report code quality hoặc correctness
-- Run outside project directory
-- Flag mọi thứ — chỉ flag những gì thực sự drift
+- Does not modify CLAUDE.md or any other file — reports only
+- Does not self-schedule — set up a crontab manually if needed: `0 9 * * 1 claude /shipwithai-starter:drift-monitor`
+- Does not report on code quality or correctness
+- Does not run outside the project directory
+- Does not flag everything — only flags what has genuinely drifted
