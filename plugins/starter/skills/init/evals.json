@@ -13,7 +13,7 @@
       "expect": ["existing files detected", "overwrite prompt if file exists", "does not overwrite without asking"]
     },
     {
-      "prompt": "CLAUDE.md already exists and is populated — user runs cold-start again without --redo",
+      "prompt": "CLAUDE.md already exists and is populated — user runs init again without --redo",
       "expect": ["detects CLAUDE.md is populated", "offers --redo option", "does not start interview without confirmation"]
     },
     {

@@ -3,7 +3,7 @@ name: setup-memory
 description: >
   Configure project memory: write CLAUDE.md with architecture context and
   optionally set up .claude/memory/ for persistent cross-session learning.
-  Called by cold-start-interview or standalone to configure the memory pillar.
+  Called by init or standalone to configure the memory pillar.
   Trigger phrases: "setup memory", "write CLAUDE.md", "configure project context".
 argument-hint: "[--memory-only] [--claude-md-only]"
 ---

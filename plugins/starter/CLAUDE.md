@@ -11,7 +11,7 @@
 
 ## File Conventions
 
-- Skill directories: lowercase with dashes (`cold-start-interview`)
+- Skill directories: lowercase with dashes (`init`)
 - SKILL.md: always uppercase filename
 - Reference files: lowercase with dashes (`settings-presets.json`)
 - Command files: lowercase with dashes (`add-mcp.md`)
@@ -31,7 +31,7 @@ See `docs/superpowers/specs/2026-05-23-shipwithai-starter-design.md` for full de
 Key decisions:
 - 7 pillars: Memory, Permissions, Hooks, MCP, Agents, SSOT, Observability (Phase 2)
 - 3 tiers: Essential → Standard → Full
-- cold-start-interview is mandatory first — orchestrates pillar skills
-- Pillar skills work both called-from-cold-start AND standalone
+- init is mandatory first — orchestrates pillar skills
+- Pillar skills work both called-from-init AND standalone
 - All config written to project-level (no user-level profile)
 - Observability and harness-optimizer deferred to Phase 2

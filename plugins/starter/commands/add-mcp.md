@@ -8,7 +8,7 @@ argument-hint: "[service-name or MCP URL]"
 
 # /add-mcp
 
-Add a single MCP server to `.mcp.json`. Stateless — no cold-start context required.
+Add a single MCP server to `.mcp.json`. Stateless — no init context required.
 
 ## Steps
 

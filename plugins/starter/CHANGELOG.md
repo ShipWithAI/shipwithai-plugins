@@ -4,7 +4,7 @@
 
 ### Added
 
-- `cold-start-interview` skill — main entry point, interview + orchestrator
+- `init` skill — main entry point, interview + orchestrator
 - `setup-memory` skill — configures CLAUDE.md and .claude/memory/
 - `setup-permissions` skill — configures .claude/settings.json allowedTools
 - `setup-hooks` skill — configures .claude/settings.json hooks section

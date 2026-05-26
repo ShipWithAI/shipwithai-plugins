@@ -38,7 +38,7 @@ Read `CLAUDE.md` from the project root. Extract:
 - Installed MCP servers
 - Active hooks
 
-If `CLAUDE.md` is not found: "CLAUDE.md does not exist. Run `/shipwithai-starter:cold-start-interview` to set up the harness."
+If `CLAUDE.md` is not found: "CLAUDE.md does not exist. Run `/shipwithai-starter:init` to set up the harness."
 
 ### Step 2 — Scan Actual Codebase
 

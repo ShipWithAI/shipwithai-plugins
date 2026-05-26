@@ -2,7 +2,7 @@
 name: setup-agents
 description: >
   Configure .claude/agents/ with specialized sub-agents for your project.
-  Called by cold-start-interview or standalone to configure the agents pillar.
+  Called by init or standalone to configure the agents pillar.
   Trigger phrases: "setup agents", "configure agents", "add claude agents".
 argument-hint: "[agent-name]"
 ---

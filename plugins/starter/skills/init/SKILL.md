@@ -1,5 +1,5 @@
 ---
-name: cold-start-interview
+name: init
 description: >
   Set up the Claude Code harness for this project. Configures CLAUDE.md, permissions,
   hooks, MCP servers, agents, and SSOT docs based on your stack and chosen tier.
@@ -9,9 +9,9 @@ description: >
 argument-hint: "[--redo] [--tier essential|standard|full]"
 ---
 
-# /cold-start-interview
+# /init
 
-Mandatory entry point for the plugin. Do not run any other skill before cold-start completes.
+Mandatory entry point for the plugin. Do not run any other skill before init completes.
 
 ## Instructions
 
@@ -240,7 +240,7 @@ write `.claude/starter-context.json` with all interview answers:
 }
 ```
 
-This file is the source of truth for all pillar skills — both when called from cold-start and standalone.
+This file is the source of truth for all pillar skills — both when called from init and standalone.
 Commit this file alongside `.claude/` so the team shares context.
 
 ### Step 5 — Orchestrate Pillar Skills

@@ -93,4 +93,4 @@ If user accepts: invoke the relevant skill directly:
 Tier upgrade path:
 - Tier 1 → list Standard tier items not yet configured
 - Tier 2 → list Full tier items not yet configured
-- To upgrade: run `/shipwithai-starter:cold-start-interview`
+- To upgrade: run `/shipwithai-starter:init`

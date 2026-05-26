@@ -2,7 +2,7 @@
 name: setup-mcp
 description: >
   Configure .mcp.json with MCP servers for external services your project uses.
-  Called by cold-start-interview or standalone to configure the MCP pillar.
+  Called by init or standalone to configure the MCP pillar.
   Trigger phrases: "setup mcp", "configure mcp servers", "connect to [service]".
 argument-hint: "[service-name]"
 ---

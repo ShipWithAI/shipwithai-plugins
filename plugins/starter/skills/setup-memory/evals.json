@@ -13,7 +13,7 @@
       "expect": ["reads existing file first", "asks overwrite / merge / skip", "does not silently overwrite"]
     },
     {
-      "prompt": "Called from cold-start with full context (stack, architecture, conventions collected)",
+      "prompt": "Called from init with full context (stack, architecture, conventions collected)",
       "expect": ["reads starter-context.json", "skips re-asking questions already answered", "writes immediately after confirm"]
     },
     {

@@ -21,7 +21,7 @@
       "expect": ["does not report tested based on .mcp.json declaration alone", "reports configured-not-verified if connection not testable in current session", "explains that MCP servers load at next Claude Code startup"]
     },
     {
-      "prompt": ".claude/starter-context.json exists with mcp_selected already set — setup-mcp is called from cold-start",
+      "prompt": ".claude/starter-context.json exists with mcp_selected already set — setup-mcp is called from init",
       "expect": ["reads starter-context.json", "skips service selection prompt", "uses mcp_selected from context", "updates mcp_selected after writing"]
     },
     {

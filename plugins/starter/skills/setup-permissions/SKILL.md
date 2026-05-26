@@ -2,7 +2,7 @@
 name: setup-permissions
 description: >
   Configure .claude/settings.json with appropriate tool permissions for your stack.
-  Called by cold-start-interview or standalone to configure the permissions pillar.
+  Called by init or standalone to configure the permissions pillar.
   Trigger phrases: "setup permissions", "configure allowed tools", "set claude permissions".
 argument-hint: "[--stack nodejs|python|golang|java|rust|general] [--preset-only]"
 ---

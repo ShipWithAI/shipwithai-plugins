@@ -10,7 +10,7 @@
     },
     {
       "prompt": "Fresh project — no CLAUDE.md, no settings.json, nothing configured",
-      "expect": ["all components show ❌", "treats as Tier 0", "suggests running cold-start-interview", "does not attempt inline fixes"]
+      "expect": ["all components show ❌", "treats as Tier 0", "suggests running init", "does not attempt inline fixes"]
     },
     {
       "prompt": "Harness health check — detect drift only (--drift-only)",

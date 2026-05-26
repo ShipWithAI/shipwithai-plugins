@@ -29,7 +29,7 @@
       "expect": ["detects existing agent file", "does not overwrite without asking", "offers skip or overwrite option"]
     },
     {
-      "prompt": ".claude/starter-context.json exists with agents_selected already set — setup-agents called from cold-start",
+      "prompt": ".claude/starter-context.json exists with agents_selected already set — setup-agents called from init",
       "expect": ["reads starter-context.json", "skips detection and suggestion step", "uses agents_selected from context", "updates agents_selected after writing"]
     },
     {

@@ -1,6 +1,6 @@
 # shipwithai-starter
 
-> Sets up a standardized Claude Code harness for your project. One cold-start interview → consistent setup across every team member.
+> Sets up a standardized Claude Code harness for your project. One init interview → consistent setup across every team member.
 
 ## What it does
 
@@ -19,7 +19,7 @@ Configures 7 pillars of your Claude Code environment:
 ## Quick Start
 
 ```
-/shipwithai-starter:cold-start-interview
+/shipwithai-starter:init
 ```
 
 Runs a guided interview (5–30 min depending on tier), then configures everything for you.
@@ -28,7 +28,7 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 
 | Skill | Description |
 |-------|-------------|
-| `/shipwithai-starter:cold-start-interview` | **Start here.** Setup interview + full harness configuration |
+| `/shipwithai-starter:init` | **Start here.** Setup interview + full harness configuration |
 | `/shipwithai-starter:review` | Audit harness health, detect drift, suggest upgrades |
 | `/shipwithai-starter:update-ssot` | Sync CLAUDE.md and architecture docs with codebase |
 | `/shipwithai-starter:setup-memory` | Configure CLAUDE.md + .claude/memory/ |

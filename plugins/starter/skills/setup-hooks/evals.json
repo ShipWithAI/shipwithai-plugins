@@ -25,7 +25,7 @@
       "expect": ["informs user no hooks were auto-detected", "suggests using --formatter or --test flags to specify manually", "does not write anything to settings.json"]
     },
     {
-      "prompt": ".claude/starter-context.json exists with hooks_selected already set — setup hooks is called from cold-start",
+      "prompt": ".claude/starter-context.json exists with hooks_selected already set — setup hooks is called from init",
       "expect": ["reads starter-context.json", "skips detection step", "uses hooks_selected from context", "does not re-confirm already selected hooks", "updates hooks_selected after write"]
     }
   ]

@@ -2,7 +2,7 @@
 name: setup-ssot
 description: >
   Set up SSOT documentation: docs/architecture.md, ADR structure, and CODEMAPS
-  for codebase navigation. Called by cold-start-interview or standalone.
+  for codebase navigation. Called by init or standalone.
   Trigger phrases: "setup ssot", "create architecture docs", "setup ADR structure",
   "create CODEMAPS", "document architecture".
 argument-hint: "[--architecture-only] [--adr] [--codemaps]"

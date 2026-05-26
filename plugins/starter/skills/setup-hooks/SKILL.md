@@ -2,7 +2,7 @@
 name: setup-hooks
 description: >
   Configure .claude/settings.json hooks section for your stack: auto-format,
-  auto-lint, and test-on-stop triggers. Called by cold-start-interview or
+  auto-lint, and test-on-stop triggers. Called by init or
   standalone to configure the hooks pillar.
   Trigger phrases: "setup hooks", "configure auto-format", "add lint hook".
 argument-hint: "[--formatter prettier|black|ruff|gofmt|rustfmt] [--test jest|pytest|make|cargo]"
