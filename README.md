@@ -16,6 +16,7 @@ Each plugin in this repo ships as a Claude Code skill set — install once, use 
 
 | Plugin | Skills | What it does |
 |--------|--------|-------------|
+| [`shipwithai-starter`](plugins/starter/) | `/starter:init` · `/starter:review` · `/starter:update-ssot` · and 6 more | Sets up a standardized Claude Code harness for any project. One guided interview configures CLAUDE.md, permissions, hooks, MCP servers, agents, and SSOT docs. Three tiers: Essential (5 min), Standard (15 min), Full (30 min). |
 | [`shipwithai-auth`](plugins/auth/) | `/auth:setup` · `/auth:doctor` | Full auth stack for Next.js: Better Auth or Firebase, Google OAuth, UI pages, middleware, DB schema. Doctor scans 22 checks and reports health. |
 
 ## Install
@@ -38,7 +39,7 @@ Clone this repo and point Claude Code at the plugin directory:
 
 ```bash
 git clone https://github.com/ShipWithAI/shipwithai-plugins.git
-claude --plugin-dir ./shipwithai-plugins/plugins/auth
+claude --plugin-dir ./shipwithai-plugins/plugins/starter  # or /auth, etc.
 ```
 
 ### Usage
@@ -46,6 +47,10 @@ claude --plugin-dir ./shipwithai-plugins/plugins/auth
 Once installed, trigger a skill by slash command or describe what you need in chat:
 
 ```bash
+/shipwithai-starter:init
+# or
+> Set up Claude Code harness for my project
+
 /shipwithai-auth:setup
 # or
 > Set up Firebase Auth with Google login for my Next.js app
@@ -58,6 +63,21 @@ See each plugin's `README.md` for full usage, supported stack, and what gets gen
 ```
 shipwithai-plugins/
 ├── plugins/
+│   ├── starter/                # shipwithai-starter plugin
+│   │   ├── skills/
+│   │   │   ├── init/           # Guided setup interview (SKILL.md + evals)
+│   │   │   ├── setup-memory/   # CLAUDE.md + .claude/memory/
+│   │   │   ├── setup-permissions/
+│   │   │   ├── setup-hooks/    # hooks-catalog.json
+│   │   │   ├── setup-mcp/      # mcp-registry.json
+│   │   │   ├── setup-agents/   # agents-catalog.json
+│   │   │   ├── setup-ssot/     # architecture.md + ADR + CODEMAPS
+│   │   │   ├── review/         # Harness health audit
+│   │   │   └── update-ssot/    # Sync docs with codebase
+│   │   ├── agents/             # drift-monitor sub-agent
+│   │   ├── commands/           # add-mcp, add-hook, add-agent, add-adr
+│   │   ├── manifest.json       # Skill registry
+│   │   └── README.md
 │   └── auth/                   # shipwithai-auth plugin
 │       ├── skills/
 │       │   ├── auth-setup/     # Setup wizard (SKILL.md + assets + references)
