@@ -1,0 +1,32 @@
+{
+  "evals": [
+    {
+      "prompt": "Setup hooks for auto-formatting",
+      "expect": ["detects formatters in project", "suggests hooks one at a time", "shows preview before confirm", "merges into settings.json without overwriting permissions"]
+    },
+    {
+      "prompt": "Project has prettier and eslint — suggest hooks",
+      "expect": ["suggests prettier hook", "suggests eslint hook separately", "does not batch-confirm both at once", "shows summary after all hooks processed"]
+    },
+    {
+      "prompt": "Add lint hook",
+      "expect": ["detects eslint config if present", "shows hook preview with command", "confirms before write"]
+    },
+    {
+      "prompt": "Project has go.mod but no prettier or eslint",
+      "expect": ["suggests gofmt hook", "does not suggest prettier for Go project", "does not write hook for undetected tool"]
+    },
+    {
+      "prompt": ".claude/settings.json already has hooks — user adds another hook standalone",
+      "expect": ["reads existing hooks section", "checks hook id before writing", "appends new hook without overwriting existing", "does not duplicate existing hooks"]
+    },
+    {
+      "prompt": "Project has no recognized config files or binaries",
+      "expect": ["informs user no hooks were auto-detected", "suggests using --formatter or --test flags to specify manually", "does not write anything to settings.json"]
+    },
+    {
+      "prompt": ".claude/starter-context.json exists with hooks_selected already set — setup hooks is called from cold-start",
+      "expect": ["reads starter-context.json", "skips detection step", "uses hooks_selected from context", "does not re-confirm already selected hooks", "updates hooks_selected after write"]
+    }
+  ]
+}

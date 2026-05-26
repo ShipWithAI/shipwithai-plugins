@@ -5,7 +5,7 @@ description: >
   auto-lint, and test-on-stop triggers. Called by cold-start-interview or
   standalone to configure the hooks pillar.
   Trigger phrases: "setup hooks", "configure auto-format", "add lint hook".
-argument-hint: "[--formatter prettier|black|gofmt] [--test jest|pytest|make]"
+argument-hint: "[--formatter prettier|black|ruff|gofmt|rustfmt] [--test jest|pytest|make|cargo]"
 ---
 
 # /setup-hooks
@@ -15,33 +15,53 @@ Configures `.claude/settings.json` → `hooks` section.
 ## Mode Detection
 
 ```
-Đọc .claude/starter-context.json nếu tồn tại
-  → Tồn tại: dùng fields stack.detected_tools, hooks_selected — skip detect + confirm
-  → Không tồn tại (standalone): detect tools → suggest từ catalog → confirm
+Read .claude/starter-context.json if it exists
+  → Exists: use fields stack.detected_tools, hooks_selected — skip detect + confirm
+  → Does not exist (standalone): detect tools → suggest from catalog → confirm
 ```
 
-## Hook Suggestions
+## Argument Handling
 
-Load `hooks-catalog.json`, match theo detected tools:
+If flags are provided, skip auto-detection and only suggest hooks for the specified tools:
 
-```
-Prettier detect  → PostToolUse Edit (*.js|ts|jsx|tsx|css|md) → prettier --write $FILE
-ESLint detect    → PostToolUse Edit (*.js|ts|jsx|tsx)        → eslint --fix $FILE
-Black detect     → PostToolUse Edit (*.py)                   → black $FILE
-gofmt detect     → PostToolUse Edit (*.go)                   → gofmt -w $FILE
-Jest detect      → Stop                                      → npm test
-pytest detect    → Stop                                      → pytest
-make test detect → Stop                                      → make test
-```
+- `--formatter <name>`: only suggest hook for that formatter (e.g. `--formatter black`)
+- `--test <name>`: only suggest hook for that test runner (e.g. `--test pytest`)
 
-Từng hook một. Show preview trước khi confirm:
+Flags can be combined: `/setup-hooks --formatter prettier --test jest`
 
-> "Hook này sẽ chạy `prettier --write $FILE` mỗi khi Claude dùng Edit tool
-> trên files `.js|ts|jsx|tsx`. Bật không?"
+## Tool Detection
+
+Load `hooks-catalog.json`. For each entry, detect presence in order:
+
+1. **files**: check whether any listed filename/glob exists in the project root
+2. **packageJson**: read `package.json`, check key under `devDependencies` or `dependencies`
+3. **binary**: run `which <binary>` — pass if exit code is 0
+
+Only suggest a hook if the tool passes at least one of the three checks.
+
+If no tools are detected: inform the user, suggest using flags to specify tools manually.
+
+## Suggest & Confirm
+
+Suggest hooks **one at a time**. Show a preview before confirming:
+
+**PostToolUse hook:**
+> "This hook will run `prettier --write $FILE` every time Claude uses the Edit tool
+> on `.js|ts|jsx|tsx|css|md` files. Enable it?"
+
+**Stop hook:**
+> "This hook will run `npm test` every time Claude finishes a session. Enable it?"
+
+If the user declines: record as skipped, continue to the next hook.
+
+After all hooks are processed, show a summary:
+> "Enabled: prettier-on-edit, eslint-fix-on-edit. Skipped: jest-on-stop."
 
 ## Output Format
 
-Merge vào `.claude/settings.json` — không overwrite permissions section:
+If `.claude/settings.json` does not exist: create it with `{ "hooks": {} }`.
+
+Merge into `.claude/settings.json` — do not overwrite the permissions section:
 
 ```json
 {
@@ -74,6 +94,13 @@ Merge vào `.claude/settings.json` — không overwrite permissions section:
 
 ## Write Rules
 
-- Merge hooks vào settings.json, không overwrite toàn bộ file
-- Không write hook cho tool không detect được trong project
-- Từng hook một — không batch confirm tất cả cùng lúc
+- If `settings.json` does not exist: create it with `{ "hooks": {} }`
+- Merge hooks into `settings.json` — do not overwrite the entire file
+- Before writing: check `hook.id` against existing hooks — skip if the id already exists (prevent duplicates)
+- Do not write a hook for a tool that was not detected (unless specified via flags)
+- Confirm one hook at a time — do not batch-confirm all at once
+
+## Post-Write
+
+If `.claude/starter-context.json` exists:
+→ Update the `hooks_selected` field with the list of `hook.id` values the user confirmed
