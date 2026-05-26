@@ -1,0 +1,40 @@
+{
+  "evals": [
+    {
+      "prompt": "Setup agents for this project",
+      "expect": ["loads agents-catalog.json", "suggests drift-monitor unconditionally (alwaysInclude)", "detects context for other agents", "shows preview per agent", "confirms before write"]
+    },
+    {
+      "prompt": "Setup agents — drift-monitor always included",
+      "expect": ["drift-monitor suggested without condition check", "presented first", "generated file has Context section with selfDiscovers files", "no Expects in prompt block (autonomous)"]
+    },
+    {
+      "prompt": "Team size is 5 and project has .github/ directory — suggest PR review agent",
+      "expect": ["suggests pr-review agent", "explains why (team > 2 and .github/ detected)", "generated file has Expects in prompt block with PR_NUMBER", "does not force-add without confirm"]
+    },
+    {
+      "prompt": "Project has src/workers/ directory — suggest worker-monitor",
+      "expect": ["detects workers directory", "suggests worker-monitor", "generated file is autonomous type — no Expects block, has selfDiscovers"]
+    },
+    {
+      "prompt": "Project has jest.config.js — suggest test-coverage agent",
+      "expect": ["detects jest.config.js", "suggests test-coverage", "uses haiku model", "selfDiscovers includes jest.config and coverage/"]
+    },
+    {
+      "prompt": "Project has package.json — suggest dependency-scanner",
+      "expect": ["detects package.json", "suggests dependency-scanner", "generated file selfDiscovers package.json"]
+    },
+    {
+      "prompt": ".claude/agents/ already has drift-monitor — user runs setup-agents again",
+      "expect": ["detects existing agent file", "does not overwrite without asking", "offers skip or overwrite option"]
+    },
+    {
+      "prompt": ".claude/starter-context.json exists with agents_selected already set — setup-agents called from init",
+      "expect": ["reads starter-context.json", "skips detection and suggestion step", "uses agents_selected from context", "updates agents_selected after writing"]
+    },
+    {
+      "prompt": "/setup-agents pr-review passed as argument",
+      "expect": ["skips suggestion step", "goes directly to pr-review in catalog", "shows preview including Expects in prompt block", "confirms before write"]
+    }
+  ]
+}

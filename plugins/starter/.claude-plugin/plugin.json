@@ -1,0 +1,24 @@
+{
+  "name": "shipwithai-starter",
+  "version": "1.0.0",
+  "description": "Sets up a standardized Claude Code harness for your project: CLAUDE.md with architecture context, tool permissions, hooks, MCP servers, agents, and SSOT docs. One init interview, consistent harness across every team member.",
+  "author": {
+    "name": "ShipWithAI",
+    "url": "https://shipwithai.io"
+  },
+  "homepage": "https://shipwithai.io/plugins/starter",
+  "repository": "https://github.com/ShipWithAI/shipwithai-plugins",
+  "license": "MIT",
+  "keywords": ["claude-code", "harness", "setup", "permissions", "hooks", "mcp", "ssot", "architecture"],
+  "skills": [
+    "./skills/init",
+    "./skills/setup-memory",
+    "./skills/setup-permissions",
+    "./skills/setup-hooks",
+    "./skills/setup-mcp",
+    "./skills/setup-agents",
+    "./skills/setup-ssot",
+    "./skills/review",
+    "./skills/update-ssot"
+  ]
+}

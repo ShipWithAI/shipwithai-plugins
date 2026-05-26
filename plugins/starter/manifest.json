@@ -1,0 +1,77 @@
+{
+  "lastUpdated": 1779753600000,
+  "skills": [
+    {
+      "skillId": "init",
+      "name": "init",
+      "description": "Set up the Claude Code harness for your project. Guided interview configures CLAUDE.md, permissions, hooks, MCP servers, agents, and SSOT docs in one session. Choose Essential (5 min), Standard (15 min), or Full (30 min).",
+      "creatorType": "community",
+      "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "setup-memory",
+      "name": "setup-memory",
+      "description": "Configure project memory: write CLAUDE.md with architecture context and optionally set up .claude/memory/ for persistent cross-session learning.",
+      "creatorType": "community",
+      "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "setup-permissions",
+      "name": "setup-permissions",
+      "description": "Configure .claude/settings.json with appropriate tool permissions for your stack. Stack-matched presets for Node, Python, Go, Java, Rust.",
+      "creatorType": "community",
+      "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "setup-hooks",
+      "name": "setup-hooks",
+      "description": "Configure .claude/settings.json hooks for auto-format, auto-lint, and test-on-stop triggers. Detects Prettier, ESLint, Black, Ruff, gofmt, Rustfmt, Jest, pytest, and more.",
+      "creatorType": "community",
+      "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "setup-mcp",
+      "name": "setup-mcp",
+      "description": "Configure .mcp.json with MCP servers for external services. Registry includes GitHub, Linear, Slack, Sentry, PostgreSQL, Google Drive, Notion, Jira.",
+      "creatorType": "community",
+      "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "setup-agents",
+      "name": "setup-agents",
+      "description": "Configure .claude/agents/ with specialized sub-agents. Context-aware suggestions: drift-monitor, pr-review, test-coverage, worker-monitor, dependency-scanner.",
+      "creatorType": "community",
+      "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "setup-ssot",
+      "name": "setup-ssot",
+      "description": "Set up SSOT documentation: docs/architecture.md, ADR structure with ADR-0001, and CODEMAPS for codebase navigation.",
+      "creatorType": "community",
+      "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "review",
+      "name": "review",
+      "description": "Audit Claude Code harness health: score 8 components, detect drift from codebase, suggest fixes or tier upgrades. Supports --drift-only and --tier-check flags.",
+      "creatorType": "community",
+      "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "update-ssot",
+      "name": "update-ssot",
+      "description": "Sync CLAUDE.md and architecture docs with the current codebase state. Section-by-section diff and confirm. Use after adding dependencies, refactoring, or architecture changes.",
+      "creatorType": "community",
+      "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "evals": [
+    {
+      "prompt": "Setup memory for this project",
+      "expect": ["detects standalone mode", "reads existing CLAUDE.md if present", "asks missing fields", "confirm before write"]
+    },
+    {
+      "prompt": "Write CLAUDE.md for this project",
+      "expect": ["produces CLAUDE.md with actual values", "no [PLACEHOLDER] left in output", "includes architecture section"]
+    },
+    {
+      "prompt": "CLAUDE.md already exists — user runs setup-memory standalone",
+      "expect": ["reads existing file first", "asks overwrite / merge / skip", "does not silently overwrite"]
+    },
+    {
+      "prompt": "Called from init with full context (stack, architecture, conventions collected)",
+      "expect": ["reads starter-context.json", "skips re-asking questions already answered", "writes immediately after confirm"]
+    },
+    {
+      "prompt": "User wants .claude/memory/ structure only, not CLAUDE.md (--memory-only)",
+      "expect": ["checks flag before mode detection", "creates MEMORY.md index", "creates project.md and team.md", "skips CLAUDE.md write"]
+    },
+    {
+      "prompt": "starter-context.json exists but architecture.gotchas field is missing",
+      "expect": ["loads all other fields from context", "asks only for the missing gotchas field", "does not re-ask fields that are present"]
+    },
+    {
+      "prompt": "Standalone mode, user has not set up Tier 3",
+      "expect": ["asks whether to create .claude/memory/", "does not create .claude/memory/ without confirmation", "creates it only if user says yes"]
+    },
+    {
+      "prompt": "CLAUDE.md exists with a custom section the user added — user chooses merge",
+      "expect": ["updates known sections with new values", "preserves custom sections unchanged", "does not delete user content"]
+    }
+  ]
+}

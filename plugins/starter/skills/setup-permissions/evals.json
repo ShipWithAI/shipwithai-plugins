@@ -1,0 +1,40 @@
+{
+  "evals": [
+    {
+      "prompt": "Setup permissions for this project",
+      "expect": ["detects stack", "loads matching preset from settings-presets.json", "shows preset with explanation", "confirms before write"]
+    },
+    {
+      "prompt": "Configure allowed tools — Node.js project",
+      "expect": ["loads nodejs preset", "allow list includes Bash(npm:*) Bash(npx:*) Bash(node:*) Bash(git:*)", "no require-confirm format in output"]
+    },
+    {
+      "prompt": "User wants to block Claude from running rm commands",
+      "expect": ["adds Bash(rm:*) to deny list", "confirms change", "writes to .claude/settings.json"]
+    },
+    {
+      "prompt": ".claude/settings.json already exists with hooks section — user runs setup-permissions standalone",
+      "expect": ["merges permissions section only", "does not overwrite hooks section", "reads existing file first"]
+    },
+    {
+      "prompt": "Unknown or ambiguous stack — no lockfile detected",
+      "expect": ["defaults to general preset", "informs user detection failed", "suggests --stack flag to override", "does not silently apply wrong preset"]
+    },
+    {
+      "prompt": "User passes --stack python explicitly",
+      "expect": ["skips auto-detection", "loads python preset directly", "does not ask about stack"]
+    },
+    {
+      "prompt": "User passes --preset-only",
+      "expect": ["applies matched preset", "skips customization questions", "writes immediately after confirm"]
+    },
+    {
+      "prompt": "Project has both package.json and pyproject.toml (Node + Python monorepo)",
+      "expect": ["detects both stacks", "asks user whether to combine presets", "merges allow lists if confirmed"]
+    },
+    {
+      "prompt": "User marks src/generated/ as read-only",
+      "expect": ["adds Write(src/generated/*) to deny", "adds Edit(src/generated/*) to deny", "does not use require-confirm format"]
+    }
+  ]
+}
