@@ -12,7 +12,9 @@ Create a new agent in `.claude/agents/`. Stateless.
 
 ## Steps
 
-1. Check `skills/setup-agents/agents-catalog.json` for a match with the user's intent.
+1. Check the plugin's `agents-catalog.json`
+   (located at `skills/setup-agents/agents-catalog.json` in the plugin directory)
+   for a match with the user's intent.
    - Match: show preset, confirm or customize.
    - No match: ask:
      - Agent name and purpose?

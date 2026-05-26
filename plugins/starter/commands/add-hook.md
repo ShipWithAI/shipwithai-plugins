@@ -13,7 +13,9 @@ Add a single hook to the `.claude/settings.json` hooks section. Stateless.
 
 ## Steps
 
-1. Check `skills/setup-hooks/hooks-catalog.json` for a matching common pattern.
+1. Check the plugin's `hooks-catalog.json`
+   (located at `skills/setup-hooks/hooks-catalog.json` in the plugin directory)
+   for a matching common pattern.
    - Match found: show preset, confirm or customize.
    - No match: ask:
      - Hook type: PreToolUse / PostToolUse / Stop?
@@ -37,7 +39,9 @@ Add a single hook to the `.claude/settings.json` hooks section. Stateless.
 
 3. Check for duplicate: if an identical hook already exists in `settings.json`, skip.
 
-4. Confirm → merge into `.claude/settings.json` hooks section.
+4. If `.claude/settings.json` does not exist: create it with `{ "hooks": {} }`.
+
+5. Confirm → merge into `.claude/settings.json` hooks section.
    Do not overwrite the permissions section.
 
-5. Update the "Active hooks" section in `CLAUDE.md` if the file exists.
+6. Update `**Last updated:**` date in the Harness config section of `CLAUDE.md` if the file exists.

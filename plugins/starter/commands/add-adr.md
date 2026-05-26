@@ -16,6 +16,7 @@ Create a new ADR in `docs/adr/`. Stateless.
 1. Check if `docs/adr/` exists.
    - Missing: "docs/adr/ does not exist yet. Create the ADR structure?"
      → Yes: create `docs/adr/README.md` then proceed with this ADR.
+   - Exists but `docs/adr/README.md` missing: create `README.md` before writing the ADR.
 
 2. Count existing ADR files → next number = ADR-[XXXX] (zero-padded, e.g. ADR-0004).
 
@@ -26,13 +27,15 @@ Create a new ADR in `docs/adr/`. Stateless.
    - Decision: what was chosen and why?
    - Consequences: trade-offs, risks, next steps?
 
-4. Draft ADR using the template from `skills/setup-ssot/adr-template.md` → show preview → confirm.
+4. Draft ADR using the template from the plugin's `adr-template.md`
+   (located at `skills/setup-ssot/adr-template.md` in the plugin directory)
+   → show preview → confirm.
 
 5. Write `docs/adr/ADR-[XXXX]-[kebab-slug].md`.
 
-6. Update the ADR index table in `docs/adr/README.md` if it exists:
+6. Update the ADR index table in `docs/adr/README.md`:
    ```
    | [ADR-XXXX](ADR-XXXX-title.md) | [title] | Accepted | YYYY-MM-DD |
    ```
 
-7. Update the ADR count in `CLAUDE.md` if it exists.
+7. Update `**Last updated:**` date in the Harness config section of `CLAUDE.md` if the file exists.

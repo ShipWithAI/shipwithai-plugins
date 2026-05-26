@@ -12,7 +12,8 @@ Add a single MCP server to `.mcp.json`. Stateless — no cold-start context requ
 
 ## Steps
 
-1. If user provides a service name → look up in `skills/setup-mcp/mcp-registry.json`.
+1. If user provides a service name → look up in the plugin's `mcp-registry.json`
+   (located at `skills/setup-mcp/mcp-registry.json` in the plugin directory).
    - Found: show preset config, confirm.
    - Not found: "Paste the MCP URL and a short description."
 
@@ -37,4 +38,4 @@ Add a single MCP server to `.mcp.json`. Stateless — no cold-start context requ
 5. Confirm → append to `.mcp.json`.
    Check for duplicate `id` before writing — skip if already present.
 
-6. Update the "MCP servers" section in `CLAUDE.md` if the file exists.
+6. Update `**Last updated:**` date in the Harness config section of `CLAUDE.md` if the file exists.
