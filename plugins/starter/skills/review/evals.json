@@ -1,0 +1,36 @@
+{
+  "evals": [
+    {
+      "prompt": "Check my harness setup",
+      "expect": ["reads all 8 components", "scores each with correct status", "produces health report table in English", "suggests one action at a time starting with ❌ items"]
+    },
+    {
+      "prompt": "What's missing in my Claude setup?",
+      "expect": ["scores each component", "shows ❌ items first in suggestions", "shows upgrade path to next tier", "invokes relevant skill if user accepts a fix"]
+    },
+    {
+      "prompt": "Fresh project — no CLAUDE.md, no settings.json, nothing configured",
+      "expect": ["all components show ❌", "treats as Tier 0", "suggests running cold-start-interview", "does not attempt inline fixes"]
+    },
+    {
+      "prompt": "Harness health check — detect drift only (--drift-only)",
+      "expect": ["skips component scoring", "runs drift detection only", "compares CLAUDE.md stack vs package.json", "compares hooks vs tools present", "reports drift found or none"]
+    },
+    {
+      "prompt": "Check tier only (--tier-check)",
+      "expect": ["skips drift detection", "reads current tier from CLAUDE.md harness config", "lists items missing for next tier", "shows upgrade command"]
+    },
+    {
+      "prompt": "CLAUDE.md mentions prettier but prettier is not in package.json devDependencies",
+      "expect": ["detects stale hook reference", "flags as ⚠️ stale", "suggests fixing via setup-hooks"]
+    },
+    {
+      "prompt": "All components are configured and no drift detected",
+      "expect": ["all components show ✅", "reports drift: none", "no actions suggested", "acknowledges harness is healthy"]
+    },
+    {
+      "prompt": "docs/adr/ exists but only has README.md and no ADR files",
+      "expect": ["scores docs/adr/ as ⚠️ index-only", "not ✅", "suggests creating first ADR"]
+    }
+  ]
+}
