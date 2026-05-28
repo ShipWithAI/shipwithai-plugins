@@ -1,81 +1,81 @@
-# Design Spec: AI Workflow Gates in `shipwithai-starter`
+# Thiết kế: AI Workflow Gates trong `shipwithai-starter`
 
-**Date:** 2026-05-28
-**Status:** Approved
-**Author:** Claude Code (brainstorming session)
-
----
-
-## Overview
-
-Thêm "Development Workflow" instructions vào CLAUDE.md được gen bởi `shipwithai-starter`, cùng với cơ chế **incremental interview** để plugin tự detect khi có câu hỏi mới và hỏi bổ sung mà không re-run toàn bộ interview.
-
-**Problem 1:** Plugin hiện tại gen ra project context tốt nhưng không có AI workflow instructions — Claude không biết nên follow process gì khi làm task.
-
-**Problem 2:** Khi plugin update có feature mới (câu hỏi mới), existing projects không có cơ chế để nhận update mà không bị hỏi lại toàn bộ.
-
-**Solution:**
-- Workflow gates: thêm 1 checkbox question vào Part 3, gen "Development Workflow" section trong CLAUDE.md
-- Schema versioning: `starter-context.json` track version, `init --update` chỉ hỏi missing fields, `review` detect outdated schema
-
-**Core value prop:** Plugin updates → `review` tự phát hiện → user chạy `init --update` → chỉ trả lời câu hỏi mới → CLAUDE.md được cập nhật.
+**Ngày:** 2026-05-28
+**Trạng thái:** Đã duyệt
+**Tác giả:** Claude Code (phiên brainstorming)
 
 ---
 
-## Architecture
+## Tổng quan
 
-### Files thay đổi
+Thêm phần "Quy trình phát triển" vào CLAUDE.md được tạo bởi `shipwithai-starter`, kèm theo cơ chế **phỏng vấn tăng dần** để plugin tự phát hiện khi có câu hỏi mới và chỉ hỏi bổ sung mà không chạy lại toàn bộ phỏng vấn.
+
+**Vấn đề 1:** Plugin hiện tại tạo ra context dự án tốt nhưng không có hướng dẫn quy trình AI — Claude không biết nên theo quy trình nào khi làm task (cần lập kế hoạch trước không? TDD? review code?).
+
+**Vấn đề 2:** Khi plugin cập nhật có tính năng mới (câu hỏi mới), các dự án hiện tại không có cơ chế nhận cập nhật mà không bị hỏi lại toàn bộ.
+
+**Giải pháp:**
+- Workflow gates: thêm 1 câu hỏi checkbox vào Phần 3, tạo section "Quy trình phát triển" trong CLAUDE.md
+- Phiên bản schema: `starter-context.json` theo dõi version, `init --update` chỉ hỏi các trường còn thiếu, `review` phát hiện schema lỗi thời
+
+**Giá trị cốt lõi:** Plugin cập nhật → `review` tự phát hiện → người dùng chạy `init --update` → chỉ trả lời câu hỏi mới → CLAUDE.md được cập nhật.
+
+---
+
+## Kiến trúc
+
+### Các file thay đổi
 
 ```
 plugins/starter/
 ├── skills/
-│   ├── init/SKILL.md           ← +1 câu hỏi cuối Part 3 + --update mode mới
-│   ├── setup-memory/SKILL.md   ← +1 section template + gen logic
-│   └── review/SKILL.md         ← +1 schema version check + 1 component check + 1 drift rule
+│   ├── init/SKILL.md           ← +1 câu hỏi cuối Phần 3 + chế độ --update mới
+│   ├── setup-memory/SKILL.md   ← +1 template section + logic tạo nội dung
+│   └── review/SKILL.md         ← +1 kiểm tra phiên bản schema + 1 kiểm tra component + 1 quy tắc drift
 ```
 
-Không có file mới. Không thay đổi tier model.
+Không có file mới. Không thay đổi mô hình tier.
 
-### Data flow — normal init
+### Luồng dữ liệu — init thông thường
 
 ```
-init (Part 3 interview)
-  → user selects workflow gates
-  → lưu: starter-context.json → conventions.workflow_gates[] + schema_version: "1.1"
+init (phỏng vấn Phần 3)
+  → người dùng chọn workflow gates
+  → lưu vào: starter-context.json → conventions.workflow_gates[] + schema_version: "1.1"
 
-setup-memory (gen CLAUDE.md)
+setup-memory (tạo CLAUDE.md)
   → đọc conventions.workflow_gates[]
-  → gen "Development Workflow" section với instructions tương ứng
+  → tạo section "Quy trình phát triển" với hướng dẫn tương ứng
 ```
 
-### Data flow — plugin update scenario
+### Luồng dữ liệu — khi plugin được cập nhật
 
 ```
-Plugin update: schema_version bump 1.0 → 1.1 (thêm workflow_gates)
+Plugin cập nhật: schema_version tăng 1.0 → 1.1 (thêm workflow_gates)
 
-review (existing project)
+review (dự án hiện tại)
   → đọc starter-context.json → schema_version: "1.0"
-  → so sánh với current plugin schema: "1.1"
-  → flag: "Plugin has new questions (v1.1). Run /shipwithai-starter:init --update"
+  → so sánh với schema plugin hiện tại: "1.1"
+  → cảnh báo: "Plugin có câu hỏi mới (v1.1). Chạy /shipwithai-starter:init --update"
 
-init --update (incremental interview)
+init --update (phỏng vấn tăng dần)
   → đọc starter-context.json
-  → loop qua tất cả interview questions
-  → skip câu đã có answer trong context
-  → hỏi CHỈ câu null/absent: workflow_gates
-  → update starter-context.json + schema_version
-  → invoke setup-memory (merge mode)
+  → duyệt qua tất cả câu hỏi phỏng vấn
+  → bỏ qua câu đã có câu trả lời
+  → chỉ hỏi những trường null/vắng mặt: workflow_gates
+  → cập nhật starter-context.json + schema_version
+  → gọi setup-memory (chế độ merge)
 ```
 
-### starter-context.json schema change
+### Thay đổi schema starter-context.json
 
-Bump version và thêm 1 field:
+Tăng version và thêm 1 trường:
 
 ```json
 {
   "version": "1.1",
   "tier": "full",
-  "stack": { "...": "unchanged" },
+  "stack": { "...": "không đổi" },
   "conventions": {
     "formatter": "prettier",
     "branch_strategy": "gitflow",
@@ -86,192 +86,197 @@ Bump version và thêm 1 field:
 }
 ```
 
-`workflow_gates` values: `"plan-before-code"` | `"tdd"` | `"code-review"` | `"security-review"` | `"none"`
+Giá trị `workflow_gates`: `"plan-before-code"` | `"tdd"` | `"code-review"` | `"security-review"` | `"none"`
 
-`"none"` là mutually exclusive — nếu được chọn, override tất cả gates khác. Interview UI enforce: khi chọn "None", deselect các option còn lại.
+`"none"` là loại trừ lẫn nhau — nếu được chọn, ghi đè tất cả gates khác. Giao diện phỏng vấn đảm bảo: khi chọn "None", bỏ chọn các lựa chọn còn lại.
 
-Backward compatible: `workflow_gates` absent → section không gen, `review` flag schema outdated.
-
----
-
-## Section 1: `init/SKILL.md` changes
-
-### 1a — Câu hỏi mới trong Part 3 (Conventions)
-
-**Vị trí:** Cuối Part 3, sau commit format question (all tiers).
-
-```
-"Which workflow gates should Claude follow when working on tasks?"
-(Select all that apply)
-
-→ [ ] Plan/design before coding
-      Claude must create a plan or design doc before writing code for any task > 30 min
-→ [ ] TDD — write tests first
-      Claude writes failing tests before implementation
-→ [ ] Code review gate
-      Claude runs code-reviewer agent after every significant change
-→ [ ] Security review for sensitive areas
-      Claude runs security-reviewer before committing to sensitive areas
-→ [ ] None — let Claude decide
-```
-
-### 1b — `--update` mode mới
-
-Trigger: `init --update` hoặc khi `review` suggest.
-
-```
-Step 1: Đọc starter-context.json
-        → Không tồn tại: "No context found. Run /shipwithai-starter:init for full setup."
-        → Tồn tại: tiếp tục
-
-Step 2: So sánh existing answers với canonical question list
-        → Tìm tất cả fields null hoặc absent
-
-Step 3: Với mỗi missing field:
-        → Hỏi câu hỏi tương ứng (same wording as full interview)
-        → Lưu answer vào context
-
-Step 4: Update starter-context.json:
-        → Merge answers mới vào
-        → Bump schema_version lên current
-
-Step 5: Invoke setup-memory (merge mode)
-        → Chỉ add/update sections có data mới
-        → Existing sections giữ nguyên
-```
-
-**Standalone mode** (`setup-memory` gọi độc lập, không có context file):
-Hỏi workflow gates question. User skip → không gen section, không để placeholder.
+Tương thích ngược: `workflow_gates` vắng mặt → không tạo section, `review` cảnh báo schema lỗi thời.
 
 ---
 
-## Section 2: `setup-memory/SKILL.md` changes
+## Phần 1: Thay đổi `init/SKILL.md`
 
-### CLAUDE.md template — section mới
+### 1a — Câu hỏi mới trong Phần 3 (Quy ước)
 
-Thêm sau "Key conventions" section:
+**Vị trí:** Cuối Phần 3, sau câu hỏi về định dạng commit (tất cả tiers).
+
+```
+"Claude nên tuân theo những workflow gates nào khi làm task?"
+(Chọn tất cả các mục phù hợp — chọn None sẽ bỏ chọn các mục khác)
+
+→ [ ] Lập kế hoạch/thiết kế trước khi viết code
+      Claude phải tạo kế hoạch hoặc tài liệu thiết kế trước khi viết code cho task > 30 phút
+→ [ ] TDD — viết test trước
+      Claude viết test thất bại trước khi triển khai
+→ [ ] Review code
+      Claude chạy code-reviewer agent sau mỗi thay đổi quan trọng
+→ [ ] Review bảo mật cho các khu vực nhạy cảm
+      Claude chạy security-reviewer trước khi commit vào các khu vực nhạy cảm
+→ [ ] Không — để Claude tự quyết định
+```
+
+### 1b — Chế độ `--update` mới
+
+Kích hoạt: `init --update` hoặc khi `review` gợi ý.
+
+```
+Bước 1: Đọc .claude/starter-context.json
+        → Không tìm thấy: "Không có context. Chạy /shipwithai-starter:init để thiết lập đầy đủ."
+        → Tìm thấy: tiếp tục
+
+Bước 2: So sánh các trường hiện có với schema chuẩn (v1.1)
+        → Tìm tất cả trường null hoặc vắng mặt
+
+Bước 3: Với mỗi trường còn thiếu:
+        → Hỏi câu hỏi tương ứng (cùng nội dung như phỏng vấn đầy đủ)
+        → Bỏ qua tất cả trường đã có câu trả lời
+
+Bước 4: Cập nhật starter-context.json
+        → Merge câu trả lời mới vào
+        → Đặt version thành "1.1"
+
+Bước 5: Gọi setup-memory (chế độ merge)
+        → Chỉ thêm/cập nhật các section có dữ liệu mới
+        → Các section hiện có được giữ nguyên
+```
+
+Các trường schema theo version:
+```
+v1.0: stack, project, architecture, conventions (formatter/branch_strategy/commit_format/coverage_target), permissions, hooks_selected, mcp_selected, agents_selected, ssot
+v1.1: + conventions.workflow_gates
+```
+
+**Chế độ độc lập** (`setup-memory` gọi trực tiếp, không có file context):
+Hỏi câu hỏi workflow gates. Người dùng bỏ qua → không tạo section, không để placeholder.
+
+---
+
+## Phần 2: Thay đổi `setup-memory/SKILL.md`
+
+### Template CLAUDE.md — section mới
+
+Thêm sau section "Quy ước chính":
 
 ```markdown
-## Development workflow
+## Quy trình phát triển
 
-**When working on any task, Claude must follow these gates:**
+**Khi làm bất kỳ task nào, Claude phải tuân theo các gates sau:**
 
-- [generated lines per gate selected]
+- [tạo dòng tương ứng với từng gate được chọn]
 ```
 
-### Gate → instruction mapping
+### Mapping gate → hướng dẫn
 
-| Gate | Instruction |
+| Gate | Hướng dẫn |
 |---|---|
-| `plan-before-code` | **Plan first:** For any task > 30 min, create a plan and get approval before writing code. |
-| `tdd` | **TDD:** Write failing tests first. Never write implementation without a corresponding test. |
-| `code-review` | **Code review:** Run the code-reviewer agent after every significant change. Address all CRITICAL and HIGH findings. |
-| `security-review` (có sensitive_areas) | **Security review:** Before committing to `src/auth/, src/payments/` (từ `architecture.sensitive_areas`), run security-reviewer agent. |
-| `security-review` (sensitive_areas empty) | **Security review:** Before committing to sensitive areas (auth, payments, migrations), run security-reviewer agent. |
-| `none` / empty | *(section omitted entirely)* |
+| `plan-before-code` | **Lập kế hoạch trước:** Với task > 30 phút, tạo kế hoạch và được duyệt trước khi viết code. |
+| `tdd` | **TDD:** Viết test thất bại trước. Không bao giờ viết code triển khai mà không có test tương ứng. |
+| `code-review` | **Review code:** Chạy code-reviewer agent sau mỗi thay đổi quan trọng. Xử lý tất cả phát hiện mức CRITICAL và HIGH. |
+| `security-review` (có sensitive_areas) | **Review bảo mật:** Trước khi commit vào `src/auth/, src/payments/` (từ `architecture.sensitive_areas`), chạy security-reviewer agent. |
+| `security-review` (sensitive_areas rỗng) | **Review bảo mật:** Trước khi commit vào các khu vực nhạy cảm (auth, payments, migrations), chạy security-reviewer agent. |
+| `none` / rỗng | *(bỏ qua toàn bộ section)* |
 
-### Example output (plan-before-code + tdd + code-review)
+### Ví dụ kết quả (chọn plan-before-code + tdd + code-review)
 
 ```markdown
-## Development workflow
+## Quy trình phát triển
 
-**When working on any task, Claude must follow these gates:**
+**Khi làm bất kỳ task nào, Claude phải tuân theo các gates sau:**
 
-- **Plan first:** For any task > 30 min, create a plan and get approval before writing code.
-- **TDD:** Write failing tests first. Never write implementation without a corresponding test.
-- **Code review:** Run the code-reviewer agent after every significant change. Address all CRITICAL and HIGH findings.
+- **Lập kế hoạch trước:** Với task > 30 phút, tạo kế hoạch và được duyệt trước khi viết code.
+- **TDD:** Viết test thất bại trước. Không bao giờ viết code triển khai mà không có test tương ứng.
+- **Review code:** Chạy code-reviewer agent sau mỗi thay đổi quan trọng. Xử lý tất cả phát hiện mức CRITICAL và HIGH.
 ```
 
-### Merge behavior
+### Hành vi merge
 
-CLAUDE.md đã có "Development workflow" section:
-→ Offer Overwrite / Keep existing / Skip — consistent với behavior các section khác.
+CLAUDE.md đã có section "Quy trình phát triển":
+→ Hỏi Ghi đè / Giữ nguyên / Bỏ qua — nhất quán với hành vi các section khác.
 
 ---
 
-## Section 3: `review/SKILL.md` changes
+## Phần 3: Thay đổi `review/SKILL.md`
 
-### Step 1 — Score Components (thêm 1 dòng)
-
-```
-starter-context.json schema  → current ✅ / outdated ⚠️ / missing ❌
-CLAUDE.md workflow section   → present ✅ / missing ⚠️
-```
-
-### Schema version check logic
+### Bước 1 — Chấm điểm Components (thêm 2 dòng)
 
 ```
-starter-context.json tồn tại:
-  → đọc version field
-  → version == current plugin schema ("1.1")  → ✅
-  → version < current ("1.0")                 → ⚠️ "Schema outdated (v1.0 → v1.1)"
-  → version field absent                      → ⚠️ "Schema version unknown"
-
-starter-context.json không tồn tại:
-  → ❌ "Not initialized — run /shipwithai-starter:init"
+Phiên bản schema starter-context.json  → hiện tại (1.1) ✅ / lỗi thời ⚠️ / thiếu ❌
+Section quy trình trong CLAUDE.md      → có ✅ / đã từ chối ✅ / thiếu ⚠️
 ```
 
-### Workflow section check (smart opt-out)
+### Logic kiểm tra phiên bản schema
+
+```
+Đọc .claude/starter-context.json:
+  → không tìm thấy                → ❌ chưa khởi tạo
+  → version == "1.1"              → ✅ cập nhật
+  → version < "1.1" hoặc vắng mặt → ⚠️ lỗi thời (ghi rõ version hiện tại vs kỳ vọng)
+```
+
+### Kiểm tra section quy trình (phát hiện từ chối thông minh)
 
 ```
 starter-context.json tồn tại:
-  → workflow_gates absent        → ⚠️ "Schema outdated — run init --update"
-  → workflow_gates = ["none"]    → ✅ "Explicitly opted out"
-  → workflow_gates = [...]       → check CLAUDE.md section exists → ✅/⚠️
+  → workflow_gates vắng mặt             → ⚠️ schema lỗi thời — chạy init --update
+  → workflow_gates == ["none"] hoặc []  → ✅ đã từ chối có chủ ý
+  → workflow_gates có giá trị           → kiểm tra CLAUDE.md có section "Quy trình phát triển"
+      có                                → ✅
+      thiếu                             → ⚠️ context đã set nhưng CLAUDE.md chưa cập nhật
 
 starter-context.json không tồn tại:
-  → check CLAUDE.md có workflow section không
-  → present                      → ✅
-  → missing                      → ⚠️ "No workflow section found"
+  → kiểm tra CLAUDE.md có section "## Quy trình phát triển" không
+      có                                → ✅
+      thiếu                             → ⚠️ không tìm thấy section quy trình
 ```
 
-### Step 2 — Drift Detection (thêm 1 rule)
+### Bước 2 — Phát hiện Drift (thêm 1 quy tắc)
 
 ```
 workflow_gates  ←→  architecture.sensitive_areas
-  sensitive_areas present NHƯNG "security-review" không có trong workflow_gates?
-  → flag ⚠️ "Sensitive areas detected but no security-review gate configured"
+  sensitive_areas có trong starter-context.json
+  VÀ "security-review" không có trong workflow_gates?
+  → cảnh báo ⚠️ "Phát hiện khu vực nhạy cảm nhưng chưa cấu hình security-review gate"
 ```
 
-### Health report table (thêm 2 rows)
+### Bảng báo cáo sức khỏe (thêm 2 dòng)
 
 ```
-| starter-context.json schema | ⚠️ | Schema outdated (v1.0 → v1.1)           |
-| CLAUDE.md workflow          | ⚠️ | No development workflow gates configured |
+| Phiên bản schema          | ⚠️ | v1.0 → v1.1 có sẵn (workflow_gates)              |
+| Quy trình CLAUDE.md       | ⚠️ | Schema lỗi thời — chạy init --update             |
 ```
 
-### Suggest action
+### Hành động gợi ý
 
-Schema outdated:
-> "Plugin has new questions (v1.1). Run `/shipwithai-starter:init --update` to answer only new questions — existing answers are preserved."
+Schema lỗi thời:
+> "Plugin có câu hỏi mới (v1.1). Chạy `/shipwithai-starter:init --update` để trả lời các câu hỏi mới — các câu trả lời hiện có được giữ nguyên."
 
-Workflow missing nhưng schema current:
-> "Workflow section missing from CLAUDE.md. Run `/shipwithai-starter:init --update` to add it."
+Section quy trình thiếu (schema cập nhật):
+> "Section quy trình phát triển thiếu trong CLAUDE.md. Chạy `/shipwithai-starter:init --update` để thêm vào."
 
 ---
 
 ## Tier
 
-Workflow instructions thuộc **Tier 1 (Essential)** — tất cả tiers đều nhận.
+Hướng dẫn quy trình phát triển thuộc **Tier 1 (Cơ bản)** — tất cả tiers đều nhận.
 
-Schema versioning áp dụng toàn bộ plugin, không phụ thuộc tier.
-
----
-
-## Future-proofing
-
-Mỗi lần plugin thêm feature mới:
-1. Thêm câu hỏi vào interview (init/SKILL.md)
-2. Thêm field vào starter-context.json schema
-3. Bump `schema_version`
-4. `review` tự phát hiện existing projects bị outdated
-5. `init --update` chỉ hỏi field mới — không làm phiền user với câu hỏi cũ
+Phiên bản schema áp dụng cho toàn bộ plugin, không phụ thuộc tier.
 
 ---
 
-## Out of Scope
+## Hướng mở rộng trong tương lai
 
-- `add-workflow` command riêng (superseded by `init --update`)
-- Skill `setup-workflow` riêng (overkill)
-- Autonomous inference từ team_size/stage (không reliable)
-- Enforcement mechanisms ngoài CLAUDE.md instructions
+Mỗi lần plugin thêm tính năng mới:
+1. Thêm câu hỏi vào phỏng vấn (`init/SKILL.md`)
+2. Thêm trường vào schema `starter-context.json`
+3. Tăng `schema_version`
+4. `review` tự phát hiện các dự án hiện tại bị lỗi thời
+5. `init --update` chỉ hỏi trường mới — không làm phiền người dùng với câu hỏi cũ
+
+---
+
+## Ngoài phạm vi
+
+- Lệnh `add-workflow` riêng (thay thế bằng `init --update`)
+- Skill `setup-workflow` riêng (quá phức tạp so với giá trị đạt được)
+- Suy luận tự động từ team_size/stage (không đáng tin, thiếu minh bạch)
+- Cơ chế bắt buộc ngoài hướng dẫn trong CLAUDE.md
