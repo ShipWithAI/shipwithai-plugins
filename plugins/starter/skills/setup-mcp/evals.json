@@ -1,0 +1,32 @@
+{
+  "evals": [
+    {
+      "prompt": "Setup MCP servers",
+      "expect": ["asks which external services project uses", "shows list from mcp-registry.json", "shows auth requirement before writing", "shows config preview per service", "confirms before writing"]
+    },
+    {
+      "prompt": "Connect to GitHub",
+      "expect": ["looks up github in registry", "shows auth requirement (GitHub Copilot or PAT)", "shows config preview", "reports tested / configured-not-verified / not-found accurately", "does not report tested based on .mcp.json alone"]
+    },
+    {
+      "prompt": "Connect to a service not in the registry",
+      "expect": ["does not fabricate a config", "asks user to paste MCP URL if available", "offers to skip and add later"]
+    },
+    {
+      "prompt": ".mcp.json already exists — user adds PostgreSQL MCP",
+      "expect": ["reads existing .mcp.json", "asks user for PostgreSQL connection string before writing", "appends new server without overwriting existing entries", "does not write placeholder connection string literally"]
+    },
+    {
+      "prompt": "User adds GitHub MCP — never reports connection as confirmed unless tool call actually succeeded",
+      "expect": ["does not report tested based on .mcp.json declaration alone", "reports configured-not-verified if connection not testable in current session", "explains that MCP servers load at next Claude Code startup"]
+    },
+    {
+      "prompt": ".claude/starter-context.json exists with mcp_selected already set — setup-mcp is called from init",
+      "expect": ["reads starter-context.json", "skips service selection prompt", "uses mcp_selected from context", "updates mcp_selected after writing"]
+    },
+    {
+      "prompt": "/setup-mcp github passed as argument",
+      "expect": ["skips service selection prompt", "goes directly to github lookup in registry", "shows auth requirement", "shows config preview", "confirms before writing"]
+    }
+  ]
+}

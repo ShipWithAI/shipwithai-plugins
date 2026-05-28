@@ -1,0 +1,153 @@
+{
+  "schema": "1.1",
+  "catalog": [
+    {
+      "id": "prettier-on-edit",
+      "description": "Auto-format JS/TS/CSS/MD files after Claude edits them",
+      "requires": "prettier",
+      "detectBy": {
+        "files": ["prettier.config.*", ".prettierrc*", ".prettierrc.js", ".prettierrc.json"],
+        "packageJson": ["devDependencies.prettier", "dependencies.prettier"],
+        "binary": "prettier"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.js|*.ts|*.jsx|*.tsx|*.css|*.md) npx prettier --write \"$CLAUDE_TOOL_INPUT_PATH\";; esac"}]
+        }]
+      }
+    },
+    {
+      "id": "eslint-fix-on-edit",
+      "description": "Auto-fix ESLint issues after Claude edits JS/TS files",
+      "requires": "eslint",
+      "detectBy": {
+        "files": [".eslintrc*", "eslint.config.*", ".eslintrc.js", ".eslintrc.json"],
+        "packageJson": ["devDependencies.eslint", "dependencies.eslint"],
+        "binary": "eslint"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.js|*.ts|*.jsx|*.tsx) npx eslint --fix \"$CLAUDE_TOOL_INPUT_PATH\";; esac"}]
+        }]
+      }
+    },
+    {
+      "id": "black-on-edit",
+      "description": "Auto-format Python files with Black after edit",
+      "requires": "black",
+      "detectBy": {
+        "files": [".black", "setup.cfg"],
+        "packageJson": [],
+        "binary": "black"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.py) black \"$CLAUDE_TOOL_INPUT_PATH\";; esac"}]
+        }]
+      }
+    },
+    {
+      "id": "ruff-on-edit",
+      "description": "Auto-lint and fix Python files with Ruff after edit",
+      "requires": "ruff",
+      "detectBy": {
+        "files": ["ruff.toml", ".ruff.toml"],
+        "packageJson": [],
+        "binary": "ruff"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.py) ruff check --fix \"$CLAUDE_TOOL_INPUT_PATH\";; esac"}]
+        }]
+      }
+    },
+    {
+      "id": "gofmt-on-edit",
+      "description": "Auto-format Go files after edit",
+      "requires": "gofmt",
+      "detectBy": {
+        "files": ["go.mod"],
+        "packageJson": [],
+        "binary": "gofmt"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.go) gofmt -w \"$CLAUDE_TOOL_INPUT_PATH\";; esac"}]
+        }]
+      }
+    },
+    {
+      "id": "rustfmt-on-edit",
+      "description": "Auto-format Rust files after edit",
+      "requires": "rustfmt",
+      "detectBy": {
+        "files": ["Cargo.toml", "rustfmt.toml", ".rustfmt.toml"],
+        "packageJson": [],
+        "binary": "rustfmt"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.rs) rustfmt \"$CLAUDE_TOOL_INPUT_PATH\";; esac"}]
+        }]
+      }
+    },
+    {
+      "id": "jest-on-stop",
+      "description": "Run Jest test suite when Claude finishes a session",
+      "requires": "jest",
+      "detectBy": {
+        "files": ["jest.config.*", "jest.config.js", "jest.config.ts"],
+        "packageJson": ["devDependencies.jest", "dependencies.jest"],
+        "binary": "jest"
+      },
+      "hook": {
+        "Stop": [{"hooks": [{"type": "command", "command": "npm test"}]}]
+      }
+    },
+    {
+      "id": "pytest-on-stop",
+      "description": "Run pytest when Claude finishes a session",
+      "requires": "pytest",
+      "detectBy": {
+        "files": ["pytest.ini", "conftest.py"],
+        "packageJson": [],
+        "binary": "pytest"
+      },
+      "hook": {
+        "Stop": [{"hooks": [{"type": "command", "command": "pytest"}]}]
+      }
+    },
+    {
+      "id": "make-test-on-stop",
+      "description": "Run make test when Claude finishes a session",
+      "requires": "make",
+      "detectBy": {
+        "files": ["Makefile"],
+        "packageJson": [],
+        "binary": "make"
+      },
+      "hook": {
+        "Stop": [{"hooks": [{"type": "command", "command": "make test"}]}]
+      }
+    },
+    {
+      "id": "cargo-test-on-stop",
+      "description": "Run cargo test when Claude finishes a session",
+      "requires": "cargo",
+      "detectBy": {
+        "files": ["Cargo.toml"],
+        "packageJson": [],
+        "binary": "cargo"
+      },
+      "hook": {
+        "Stop": [{"hooks": [{"type": "command", "command": "cargo test"}]}]
+      }
+    }
+  ]
+}

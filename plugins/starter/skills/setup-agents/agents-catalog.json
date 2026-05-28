@@ -1,0 +1,83 @@
+{
+  "schema": "1.2",
+  "catalog": [
+    {
+      "id": "drift-monitor",
+      "name": "drift-monitor",
+      "description": "Weekly SSOT freshness check — compares CLAUDE.md against codebase reality",
+      "model": "sonnet",
+      "tools": ["Read", "Bash", "Glob", "Grep"],
+      "contextType": "autonomous",
+      "selfDiscovers": ["CLAUDE.md", "src/", "docs/", "package.json"],
+      "expects": [],
+      "alwaysInclude": true,
+      "suggestWhen": {
+        "files": [],
+        "context": []
+      }
+    },
+    {
+      "id": "pr-review",
+      "name": "pr-review",
+      "description": "Reviews pull requests against coding standards and CLAUDE.md conventions",
+      "model": "sonnet",
+      "tools": ["Read", "Bash", "Glob", "Grep"],
+      "contextType": "task-specific",
+      "selfDiscovers": ["CLAUDE.md"],
+      "expects": [
+        "PR_NUMBER or branch name — the PR or branch to review",
+        "Pass as: 'Review PR #42' or 'Review branch feature/foo'"
+      ],
+      "alwaysInclude": false,
+      "suggestWhen": {
+        "files": [".github/", ".github/workflows/"],
+        "context": ["teamSize > 2"]
+      }
+    },
+    {
+      "id": "test-coverage",
+      "name": "test-coverage",
+      "description": "Tracks test coverage drift and flags undertested areas after changes",
+      "model": "haiku",
+      "tools": ["Read", "Bash", "Glob"],
+      "contextType": "autonomous",
+      "selfDiscovers": ["jest.config.*", "vitest.config.*", "pytest.ini", "conftest.py", "coverage/"],
+      "expects": [],
+      "alwaysInclude": false,
+      "suggestWhen": {
+        "files": ["jest.config.*", "pytest.ini", "conftest.py", "vitest.config.*"],
+        "context": []
+      }
+    },
+    {
+      "id": "worker-monitor",
+      "name": "worker-monitor",
+      "description": "Monitors background job health, queue depths, and failure rates",
+      "model": "haiku",
+      "tools": ["Read", "Bash"],
+      "contextType": "autonomous",
+      "selfDiscovers": ["src/workers/", "jobs/", "queues/", "src/jobs/"],
+      "expects": [],
+      "alwaysInclude": false,
+      "suggestWhen": {
+        "files": ["src/workers/", "jobs/", "queues/", "src/jobs/"],
+        "context": []
+      }
+    },
+    {
+      "id": "dependency-scanner",
+      "name": "dependency-scanner",
+      "description": "Weekly scan for outdated or vulnerable dependencies",
+      "model": "haiku",
+      "tools": ["Read", "Bash"],
+      "contextType": "autonomous",
+      "selfDiscovers": ["package.json", "pyproject.toml", "Cargo.toml", "go.mod"],
+      "expects": [],
+      "alwaysInclude": false,
+      "suggestWhen": {
+        "files": ["package.json", "pyproject.toml", "Cargo.toml", "go.mod"],
+        "context": []
+      }
+    }
+  ]
+}

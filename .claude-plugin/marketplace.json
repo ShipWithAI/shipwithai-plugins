@@ -8,6 +8,29 @@
   },
   "plugins": [
     {
+      "name": "shipwithai-starter",
+      "description": "Set up a standardized Claude Code harness for any project. One guided interview configures CLAUDE.md, permissions, hooks, MCP servers, agents, and SSOT docs. Three tiers: Essential (5 min), Standard (15 min), Full (30 min).",
+      "version": "1.0.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": "./plugins/starter",
+      "category": "productivity",
+      "tags": [
+        "setup",
+        "harness",
+        "claude-md",
+        "permissions",
+        "hooks",
+        "mcp",
+        "agents",
+        "ssot",
+        "architecture",
+        "onboarding"
+      ]
+    },
+    {
       "name": "shipwithai-auth",
       "description": "Set up production-ready auth in minutes. Supports Better Auth and Firebase Auth with OAuth social login, UI components, database schemas. Auto-detects existing themes.",
       "version": "1.0.0",

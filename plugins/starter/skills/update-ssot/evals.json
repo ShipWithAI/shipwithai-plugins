@@ -1,0 +1,32 @@
+{
+  "evals": [
+    {
+      "prompt": "My CLAUDE.md is outdated",
+      "expect": ["runs pre-flight check first", "diffs CLAUDE.md against actual codebase across all sections", "reports differences with consistent tags (STACK/DIR/REMOVED/MCP etc)", "updates section by section with confirm each"]
+    },
+    {
+      "prompt": "Sync my architecture docs",
+      "expect": ["compares CLAUDE.md key directories vs actual tree", "flags new directories not documented", "flags removed directories still mentioned", "also checks docs/architecture.md if it exists"]
+    },
+    {
+      "prompt": "Update CLAUDE.md stack section only (--section stack)",
+      "expect": ["only diffs tech stack section", "does not touch architecture, conventions, hooks, or MCP sections", "confirms before updating", "updates timestamp only if change was accepted"]
+    },
+    {
+      "prompt": "package.json added @tanstack/react-query but CLAUDE.md does not mention it",
+      "expect": ["detects new dependency with [STACK] tag", "shows current vs proposed side by side", "waits for confirm before writing"]
+    },
+    {
+      "prompt": "User runs update-ssot but declines all proposed changes",
+      "expect": ["respects skip for each section", "does not write anything without confirm", "does not update timestamp when all changes skipped"]
+    },
+    {
+      "prompt": "CLAUDE.md does not exist in the project",
+      "expect": ["detects missing CLAUDE.md in pre-flight check", "suggests running /shipwithai-starter:setup-ssot first", "offers to continue anyway if user insists"]
+    },
+    {
+      "prompt": "docs/architecture.md exists and src/legacy/ was deleted",
+      "expect": ["detects docs/architecture.md in pre-flight check", "includes architecture.md in diff scope", "reports [ARCH] difference for deleted directory", "confirms before removing from architecture.md"]
+    }
+  ]
+}

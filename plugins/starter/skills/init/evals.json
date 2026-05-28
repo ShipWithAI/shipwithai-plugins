@@ -1,0 +1,40 @@
+{
+  "evals": [
+    {
+      "prompt": "Set up Claude Code harness for this project",
+      "expect": ["state detection first", "fork-first preamble shown", "asks tier before any question", "writes CLAUDE.md", "confirm before write"]
+    },
+    {
+      "prompt": "Configure claude for my team",
+      "expect": ["fork-first preamble shown", "stack auto-detected", "tier selection before interview"]
+    },
+    {
+      "prompt": "Onboard this project to Claude Code",
+      "expect": ["existing files detected", "overwrite prompt if file exists", "does not overwrite without asking"]
+    },
+    {
+      "prompt": "CLAUDE.md already exists and is populated — user runs init again without --redo",
+      "expect": ["detects CLAUDE.md is populated", "offers --redo option", "does not start interview without confirmation"]
+    },
+    {
+      "prompt": "No package.json, no go.mod, no Cargo.toml — ambiguous stack",
+      "expect": ["does not guess stack", "asks language explicitly", "does not write stack as unknown"]
+    },
+    {
+      "prompt": "User selects Tier 1 only",
+      "expect": ["skips Parts 5-8", "writes CLAUDE.md and settings.json only", "no hooks or MCP questions"]
+    },
+    {
+      "prompt": "User selects Tier 3",
+      "expect": ["runs all 8 parts", "invokes setup-ssot", "invokes setup-agents", "includes drift-monitor"]
+    },
+    {
+      "prompt": "User confirms preview — check context file is written before pillar skills run",
+      "expect": ["writes .claude/starter-context.json after confirm", "context file written before any pillar skill invoked", "context file contains tier, stack, project, architecture, conventions"]
+    },
+    {
+      "prompt": "User passes --tier standard as argument",
+      "expect": ["skips tier selection prompt", "proceeds directly to interview with Tier 2", "still shows fork-first preamble"]
+    }
+  ]
+}
