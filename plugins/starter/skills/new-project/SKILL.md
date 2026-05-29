@@ -88,8 +88,9 @@ Use this stack? (yes / swap one thing / different direction)
 
 Generate 4-5 questions dynamically based on confirmed stack. Ask only questions relevant to the stack. One per message. Always include "Let me decide" for decisions that have a sensible default.
 
-When "Let me decide" is chosen: pick an opinionated default, plan to note it in CLAUDE.md as:
-`# Chosen by default — revisit before going to production`
+When "Let me decide" is chosen: pick an opinionated default and record it in
+`starter-context.json` under the relevant field. In CLAUDE.md, add a comment
+inline next to the value: `# default — revisit before production`.
 
 **Required question categories (adapt wording to stack):**
 1. Database access / ORM
