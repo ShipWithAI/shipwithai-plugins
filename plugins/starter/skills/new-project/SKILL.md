@@ -40,9 +40,13 @@ Phase 3 → confirm conventions → final preview → execute
 
 ## Phase 1 — Project Goals
 
-Ask 4 questions, one per message. Do not bundle questions.
+Ask 5 questions, one per message. Do not bundle questions.
+
+**Q0:** What's the project name? *(used for scaffold command and CLAUDE.md)*
+> "What should we call this project? (e.g. my-app, acme-api)"
 
 **Q1:** What are you building?
+> "What type of project is this?"
 - Web app
 - REST API
 - Mobile backend
@@ -50,6 +54,7 @@ Ask 4 questions, one per message. Do not bundle questions.
 - Library
 
 **Q2:** Who will use it?
+> "Who's the primary audience for this project?"
 - Just me (personal / internal tool)
 - Small team or customers (< 1k users)
 - Product with real growth targets
@@ -66,6 +71,8 @@ After Q4, generate and show a tech stack recommendation:
 ```
 Based on your answers, I recommend:
 
+  Project:     [name]
+  Type:        [web app / REST API / mobile backend / CLI / library]
   Language:    [language]
   Framework:   [framework + version]
   Database:    [database]
@@ -98,6 +105,9 @@ inline next to the value: `# default — revisit before production`.
 3. API style
 4. Email service (if web app or API with users)
 5. Payments (if growth-stage product)
+6. Base package (if Java or Kotlin stack only)
+   > "What's your base package? (e.g. com.example, io.acme.myapp)"
+   → Used to generate exact package paths in folder tree: `src/main/java/com/example/myapp/`
 
 **Example — Next.js + PostgreSQL:**
 
@@ -117,6 +127,8 @@ inline next to the value: `# default — revisit before production`.
 | Auth? | Spring Security + JWT / OAuth2 Resource Server / Keycloak / Let me decide |
 | API? | REST / GraphQL / gRPC / Let me decide |
 | Async messaging? | Kafka / RabbitMQ / None yet |
+| Email? | Spring Mail + SendGrid / Resend / None yet |
+| Payments? | Stripe Java SDK / None yet |
 
 ---
 
@@ -127,7 +139,19 @@ Here's your architecture:
 
   Pattern: [pattern name]
 
-  [folder tree — 2 levels deep, with inline comment per directory]
+  [project-name]/
+  ├── src/
+  │   ├── features/          ← business domains (auth, billing, dashboard)
+  │   │   └── <feature>/
+  │   │       ├── components/
+  │   │       ├── actions/   ← Server Actions or route handlers
+  │   │       └── types.ts
+  │   ├── components/        ← shared UI components
+  │   ├── db/
+  │   │   ├── schema.ts      ← Drizzle schema definitions
+  │   │   └── index.ts       ← database client
+  │   └── lib/               ← shared utilities and configs
+  └── [framework-specific root files]
 
   Key decisions:
   - [decision 1 + one-line rationale]
@@ -137,6 +161,8 @@ Here's your architecture:
 Does this architecture look right?
 (yes / adjust folders / different pattern)
 ```
+
+Generate the actual folder tree based on the confirmed stack and technical decisions — the example above is for Next.js + Drizzle. Adapt structure for other stacks (e.g. Spring Boot → `src/main/java/.../controller|service|repository`, Go → flat package layout).
 
 | Response | Action |
 |---|---|
@@ -209,16 +235,9 @@ Ready to execute? (yes / go back to phase 1 / 2 / 3)
 
 Run in this exact order — do not reorder steps:
 
-### Step 1 — Write context file
+### Step 1 — Run scaffold command
 
-Write `.claude/starter-context.json` before scaffold and before any pillar skill.
-Use the v1.1 schema (same as `init`). Always set:
-- `project.stage` → `"greenfield"`
-- `project.team_size` → `1`
-- `architecture.gotchas` → include `"Project is greenfield — structure does not exist yet, build toward it"`
-- `tier` → `"essential"` (default for new-project; user can upgrade via `/shipwithai-starter:review`)
-
-### Step 2 — Run scaffold command
+Run scaffold FIRST while the directory is still empty — writing files before scaffold can cause tools to refuse or warn about non-empty directories.
 
 Show the exact command to the user before running it:
 > "I'll run: `[command]`. This will scaffold the project in the current directory."
@@ -238,12 +257,23 @@ If scaffold fails:
 > "Scaffold failed: [error]. Please fix the issue above, then run `/new-project` again."
 > → stop, do not proceed to pillar skills
 
+### Step 2 — Write context file
+
+After scaffold succeeds, write `.claude/starter-context.json`.
+Use the v1.1 schema (same as `init`). Always set:
+- `project.stage` → `"greenfield"`
+- `project.team_size` → `1`
+- `architecture.gotchas` → include `"Project is greenfield — structure does not exist yet, build toward it"`
+- `tier` → `"essential"` (default for new-project; user can upgrade via `/shipwithai-starter:review`)
+
 ### Step 3 — Invoke pillar skills
 
+Each pillar skill auto-reads `.claude/starter-context.json` — do not pass parameters manually.
+
 ```
-/shipwithai-starter:setup-memory        reads: project, stack, architecture, conventions
-/shipwithai-starter:setup-permissions   reads: stack, permissions
-/shipwithai-starter:setup-ssot --architecture-only  reads: architecture
+/shipwithai-starter:setup-memory        → writes CLAUDE.md + .claude/memory/ structure
+/shipwithai-starter:setup-permissions   → writes .claude/settings.json
+/shipwithai-starter:setup-ssot --architecture-only  → writes docs/architecture.md
 ```
 
 ### Step 4 — After-write summary
