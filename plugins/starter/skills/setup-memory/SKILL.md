@@ -76,6 +76,17 @@ Edit directly — every skill reads this before doing anything.*
 
 **Style:** [monolith / microservices / modular monolith]
 
+[Only include the following block when project.stage is "greenfield":]
+**Status:** Greenfield — build toward this structure
+
+**Build order:**
+[Derive from architecture.build_order if present in starter-context.json.
+ Otherwise generate a sensible 3-step order based on the stack and architecture:
+ - Step 1: foundation first (e.g., db/schema.ts → run initial migration)
+ - Step 2: authentication (e.g., features/auth/ — auth before any business domain)
+ - Step 3: core domain (e.g., features/<core-domain>/)]
+[End greenfield block — omit entirely for non-greenfield projects]
+
 **Key layers:**
 - [e.g., API layer: src/routes/]
 - [e.g., Service layer: src/services/]

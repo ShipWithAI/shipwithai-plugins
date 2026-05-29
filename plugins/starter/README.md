@@ -29,6 +29,7 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 | Skill | Description |
 |-------|-------------|
 | `/shipwithai-starter:init` | **Start here.** Setup interview + full harness configuration |
+| `/shipwithai-starter:new-project` | **Greenfield.** 3-phase interview from empty directory → scaffold + harness |
 | `/shipwithai-starter:review` | Audit harness health, detect drift, suggest upgrades |
 | `/shipwithai-starter:update-ssot` | Sync CLAUDE.md and architecture docs with codebase |
 | `/shipwithai-starter:setup-memory` | Configure CLAUDE.md + .claude/memory/ |

@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.0] — 2026-05-29
+
+### Added
+
+- `new-project` skill — greenfield entry point: 3-phase interview (project goals →
+  tech stack → architecture → conventions), scaffolds via official tools, then
+  configures the Claude harness
+- `init` now routes to `new-project` when no stack files are detected in directory
+- `setup-memory` now writes a greenfield status marker and build order in CLAUDE.md
+  when `project.stage` is `"greenfield"`
+
+## [1.1.0] — 2026-05-28
+
+### Added
+
+- `init` skill schema v1.1: added `conventions.workflow_gates` field — multi-select
+  workflow gates (plan-before-code, TDD, code-review, security-review)
+
 ## [1.0.0] — 2026-05-23
 
 ### Added
