@@ -17,6 +17,21 @@ Mandatory entry point for the plugin. Do not run any other skill before init com
 
 ### Step 1 — State Detection
 
+Before any other detection, check for an empty directory:
+
+```
+Scan for: package.json, pom.xml, build.gradle, go.mod, Cargo.toml,
+          pyproject.toml, Gemfile, composer.json, mix.exs
+
+If NONE of these files are found and no source files exist:
+  "This looks like an empty project. Handing you off to
+   /shipwithai-starter:new-project for a better setup experience."
+  → invoke /shipwithai-starter:new-project
+  → stop
+```
+
+If stack files are found, continue with normal state detection:
+
 Before asking anything, read the project state:
 
 ```
