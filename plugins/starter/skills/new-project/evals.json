@@ -1,0 +1,72 @@
+{
+  "evals": [
+    {
+      "prompt": "I want to start a new Next.js project from scratch",
+      "expect": [
+        "asks Q1 (what are you building) first",
+        "asks Q2 (who will use it)",
+        "asks Q3 (constraints)",
+        "asks Q4 (one-line description)",
+        "generates tech stack recommendation with reasoning",
+        "waits for user confirmation before Phase 2"
+      ]
+    },
+    {
+      "prompt": "Empty directory — user runs new-project but package.json already exists",
+      "expect": [
+        "detects package.json",
+        "stops immediately",
+        "suggests /shipwithai-starter:init instead",
+        "does not ask any interview questions"
+      ]
+    },
+    {
+      "prompt": "User reaches Phase 2 with Next.js + PostgreSQL stack confirmed",
+      "expect": [
+        "asks about ORM",
+        "asks about authentication",
+        "asks about API style",
+        "includes 'Let me decide' option for each technical question",
+        "generates folder structure after last technical question",
+        "waits for architecture confirmation before Phase 3"
+      ]
+    },
+    {
+      "prompt": "User selects 'Let me decide' for ORM in Phase 2",
+      "expect": [
+        "picks an opinionated default",
+        "notes the default choice in CLAUDE.md output as chosen-by-default",
+        "continues interview without blocking"
+      ]
+    },
+    {
+      "prompt": "User reaches Phase 3 and confirms all conventions",
+      "expect": [
+        "shows final preview table with exact scaffold command",
+        "shows stack summary",
+        "shows architecture pattern",
+        "shows selected workflow gates",
+        "waits for final yes/go-back before executing"
+      ]
+    },
+    {
+      "prompt": "User confirms execute — verify execution order",
+      "expect": [
+        "writes .claude/starter-context.json before scaffold command",
+        "shows scaffold command to user before running it",
+        "invokes setup-memory after scaffold",
+        "invokes setup-permissions after scaffold",
+        "invokes setup-ssot --architecture-only after scaffold",
+        "shows after-write summary with next steps"
+      ]
+    },
+    {
+      "prompt": "User says 'go back to phase 2' at final preview",
+      "expect": [
+        "returns to Phase 2 first question",
+        "does not execute anything",
+        "does not write any files"
+      ]
+    }
+  ]
+}
