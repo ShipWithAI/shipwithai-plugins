@@ -40,7 +40,10 @@ Phase 3 → confirm conventions → final preview → execute
 
 ## Phase 1 — Project Goals
 
-Ask 4 questions, one per message. Do not bundle questions.
+Ask 5 questions, one per message. Do not bundle questions.
+
+**Q0:** What's the project name? *(used for scaffold command and CLAUDE.md)*
+> "What should we call this project? (e.g. my-app, acme-api)"
 
 **Q1:** What are you building?
 - Web app
@@ -66,6 +69,8 @@ After Q4, generate and show a tech stack recommendation:
 ```
 Based on your answers, I recommend:
 
+  Project:     [name]
+  Type:        [web app / REST API / mobile backend / CLI / library]
   Language:    [language]
   Framework:   [framework + version]
   Database:    [database]
@@ -117,6 +122,8 @@ inline next to the value: `# default — revisit before production`.
 | Auth? | Spring Security + JWT / OAuth2 Resource Server / Keycloak / Let me decide |
 | API? | REST / GraphQL / gRPC / Let me decide |
 | Async messaging? | Kafka / RabbitMQ / None yet |
+| Email? | Spring Mail + SendGrid / Resend / None yet |
+| Payments? | Stripe Java SDK / None yet |
 
 ---
 
@@ -127,7 +134,19 @@ Here's your architecture:
 
   Pattern: [pattern name]
 
-  [folder tree — 2 levels deep, with inline comment per directory]
+  [project-name]/
+  ├── src/
+  │   ├── features/          ← business domains (auth, billing, dashboard)
+  │   │   └── <feature>/
+  │   │       ├── components/
+  │   │       ├── actions/   ← Server Actions or route handlers
+  │   │       └── types.ts
+  │   ├── components/        ← shared UI components
+  │   ├── db/
+  │   │   ├── schema.ts      ← Drizzle schema definitions
+  │   │   └── index.ts       ← database client
+  │   └── lib/               ← shared utilities and configs
+  └── [framework-specific root files]
 
   Key decisions:
   - [decision 1 + one-line rationale]
@@ -137,6 +156,8 @@ Here's your architecture:
 Does this architecture look right?
 (yes / adjust folders / different pattern)
 ```
+
+Generate the actual folder tree based on the confirmed stack and technical decisions — the example above is for Next.js + Drizzle. Adapt structure for other stacks (e.g. Spring Boot → `src/main/java/.../controller|service|repository`, Go → flat package layout).
 
 | Response | Action |
 |---|---|
