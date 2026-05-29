@@ -7,7 +7,7 @@
         "asks Q2 (who will use it)",
         "asks Q3 (constraints)",
         "asks Q4 (one-line description)",
-        "generates tech stack recommendation with reasoning",
+        "shows recommendation block: Language, Framework, Database, Hosting, and Why",
         "waits for user confirmation before Phase 2"
       ]
     },
@@ -26,13 +26,13 @@
         "asks about ORM",
         "asks about authentication",
         "asks about API style",
-        "includes 'Let me decide' option for each technical question",
+        "includes `Let me decide` option for each technical question",
         "generates folder structure after last technical question",
         "waits for architecture confirmation before Phase 3"
       ]
     },
     {
-      "prompt": "User selects 'Let me decide' for ORM in Phase 2",
+      "prompt": "User selects `Let me decide` for ORM in Phase 2",
       "expect": [
         "picks an opinionated default",
         "notes the default choice in CLAUDE.md output as chosen-by-default",
@@ -43,7 +43,7 @@
       "prompt": "User reaches Phase 3 and confirms all conventions",
       "expect": [
         "shows final preview table with exact scaffold command",
-        "shows stack summary",
+        "shows stack summary: framework, database, ORM, auth, API style",
         "shows architecture pattern",
         "shows selected workflow gates",
         "waits for final yes/go-back before executing"
