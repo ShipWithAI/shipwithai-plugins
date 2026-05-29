@@ -23,7 +23,7 @@ Before any other detection, check for an empty directory:
 Scan for: package.json, pom.xml, build.gradle, go.mod, Cargo.toml,
           pyproject.toml, Gemfile, composer.json, mix.exs
 
-If NONE of these files are found and no source files exist:
+If NONE of these files are found:
   "This looks like an empty project. Handing you off to
    /shipwithai-starter:new-project for a better setup experience."
   → invoke /shipwithai-starter:new-project

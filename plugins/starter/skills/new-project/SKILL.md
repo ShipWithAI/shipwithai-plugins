@@ -216,6 +216,7 @@ Use the v1.1 schema (same as `init`). Always set:
 - `project.stage` → `"greenfield"`
 - `project.team_size` → `1`
 - `architecture.gotchas` → include `"Project is greenfield — structure does not exist yet, build toward it"`
+- `tier` → `"essential"` (default for new-project; user can upgrade via `/shipwithai-starter:review`)
 
 ### Step 2 — Run scaffold command
 

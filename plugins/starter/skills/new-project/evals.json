@@ -35,7 +35,7 @@
       "prompt": "User selects `Let me decide` for ORM in Phase 2",
       "expect": [
         "picks an opinionated default",
-        "notes the default choice in CLAUDE.md output as chosen-by-default",
+        "adds `# default — revisit before production` comment next to the value in CLAUDE.md",
         "continues interview without blocking"
       ]
     },
