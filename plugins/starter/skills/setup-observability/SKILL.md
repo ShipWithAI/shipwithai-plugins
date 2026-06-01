@@ -11,7 +11,7 @@ argument-hint: "[--disable]"
 # /setup-observability
 
 Installs a lightweight logging hook that records tool call metadata.
-Used by `harness-optimizer` to detect patterns and suggest improvements.
+Logs feed future harness analysis tooling (coming in a later phase).
 
 ## What gets logged
 
@@ -64,7 +64,8 @@ After writing:
 ✅ Observability enabled.
 Logs: .claude/logs/ (excluded from git)
 Disable anytime: export DISABLE_OBSERVE=1
-Run /shipwithai-starter:optimize-harness after 7+ days to see suggestions.
+After 7+ days of logging, use `/shipwithai-starter:drift-monitor` to review harness health.
+Harness pattern analysis (optimize-harness) is coming in a future phase.
 ```
 
 ## settings.json Hook Entries

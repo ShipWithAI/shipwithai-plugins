@@ -120,10 +120,21 @@ No build/test commands — content-only workspace. Plugin files are SKILL.md, ma
 
 ---
 
+## Development workflow
+
+**When working on any task, Claude must follow these gates:**
+
+- **Plan first:** For any task > 30 min, create a plan and get approval before writing code.
+- **TDD:** Write failing tests first. Never write implementation without a corresponding test.
+- **Code review:** Run the code-reviewer agent after every significant change. Address all CRITICAL and HIGH findings.
+- **Security review:** Before committing to `assets/` directories, `manifest.json` files, `SKILL.md` files, or `evals/evals.json` files, run security-reviewer agent.
+
+---
+
 ## Harness config
 
 **Tier:** Full (Tier 3)
-**Last updated:** 2026-05-28
+**Last updated:** 2026-06-01
 
 Hooks: see `.claude/settings.json`
 MCP servers: see `.mcp.json`

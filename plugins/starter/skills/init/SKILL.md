@@ -327,7 +327,7 @@ Tier 2: /shipwithai-starter:setup-hooks        (reads: stack.detected_tools, hoo
 
 Tier 3: /shipwithai-starter:setup-agents       (reads: agents_selected, project)
          /shipwithai-starter:setup-ssot --adr --codemaps  (reads: ssot)
-         /shipwithai-starter:setup-observability  (reads: observability)
+         /shipwithai-starter:setup-observability  (reads: observability) — only if observability.enabled == true
 ```
 
 ### Step 6 — After-Write
