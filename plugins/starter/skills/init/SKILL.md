@@ -86,7 +86,7 @@ Step 3: For each missing field, ask the corresponding interview question only
 
 Step 4: Update starter-context.json
         → Merge new answers in
-        → Set version to "1.1"
+        → Set version to "1.2"
 
 Step 5: Invoke setup-memory (merge mode)
         → Adds/updates only sections with new data
@@ -97,6 +97,7 @@ Current schema fields by version:
 ```
 v1.0: stack, project, architecture, conventions (formatter/branch_strategy/commit_format/coverage_target), permissions, hooks_selected, mcp_selected, agents_selected, ssot
 v1.1: + conventions.workflow_gates
+v1.2: + observability.enabled
 ```
 
 ### Step 2 — Fork-First Preamble
@@ -242,6 +243,8 @@ Here is what I will create/update:
 │ .claude/settings.json (hooks)        │ UPDATE   │ 2     │
 │ .mcp.json                            │ CREATE   │ 2     │
 │ .claude/agents/drift-monitor.md      │ CREATE   │ 3     │
+│ .claude/hooks/observe.py             │ CREATE   │ 3     │
+│ .claude/logs/ (.gitignore entry)     │ UPDATE   │ 3     │
 └──────────────────────────────────────┴──────────┴───────┘
 Confirm?
 ```
@@ -255,7 +258,7 @@ write `.claude/starter-context.json` with all interview answers:
 
 ```json
 {
-  "version": "1.1",
+  "version": "1.2",
   "tier": "essential|standard|full",
   "stack": {
     "language": "...",
@@ -300,6 +303,9 @@ write `.claude/starter-context.json` with all interview answers:
     "adr": true,
     "codemaps": false
   },
+  "observability": {
+    "enabled": false
+  },
   "collected_at": "ISO8601 timestamp"
 }
 ```
@@ -321,6 +327,7 @@ Tier 2: /shipwithai-starter:setup-hooks        (reads: stack.detected_tools, hoo
 
 Tier 3: /shipwithai-starter:setup-agents       (reads: agents_selected, project)
          /shipwithai-starter:setup-ssot --adr --codemaps  (reads: ssot)
+         /shipwithai-starter:setup-observability  (reads: observability)
 ```
 
 ### Step 6 — After-Write
