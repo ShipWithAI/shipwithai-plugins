@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.2",
   "tier": "full",
   "stack": {
     "language": "Markdown + JSON",
@@ -47,7 +47,8 @@
     "formatter": "none",
     "branch_strategy": "gitflow",
     "commit_format": "conventional",
-    "coverage_target": "n/a"
+    "coverage_target": "n/a",
+    "workflow_gates": ["plan-before-code", "tdd", "code-review", "security-review"]
   },
   "permissions": {
     "preset": "general",
@@ -73,5 +74,8 @@
   "future_notes": [
     "Telegram release notification via GitHub Actions when tag pushed to main — not implemented yet"
   ],
-  "collected_at": "2026-05-28T00:00:00Z"
+  "observability": {
+    "enabled": true
+  },
+  "collected_at": "2026-06-01T00:00:00Z"
 }

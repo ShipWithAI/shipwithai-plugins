@@ -11,7 +11,7 @@ argument-hint: "[--disable]"
 # /setup-observability
 
 Installs a lightweight logging hook that records tool call metadata.
-Used by `harness-optimizer` to detect patterns and suggest improvements.
+Logs feed future harness analysis tooling (coming in a later phase).
 
 ## What gets logged
 
@@ -64,7 +64,7 @@ After writing:
 ✅ Observability enabled.
 Logs: .claude/logs/ (excluded from git)
 Disable anytime: export DISABLE_OBSERVE=1
-Run /shipwithai-starter:optimize-harness after 7+ days to see suggestions.
+Logs will feed harness analysis tooling (coming in a future phase).
 ```
 
 ## settings.json Hook Entries
@@ -96,5 +96,6 @@ Stop entry to add:
 
 1. Remove PostToolUse hook entry with matcher `Edit|Write|Bash` from `settings.json`
 2. Remove Stop hook rotation entry from `settings.json`
-3. Update `starter-context.json` → `observability.enabled: false`
-4. Report: "Observability disabled. Existing logs at `.claude/logs/` preserved — delete manually if not needed."
+3. Delete `.claude/hooks/observe.py`
+4. Update `starter-context.json` → `observability.enabled: false`
+5. Report: "Observability disabled. Existing logs at `.claude/logs/` preserved — delete manually if not needed."

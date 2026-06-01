@@ -19,3 +19,4 @@ considered, and the rationale behind the choice.
 | ADR | Title | Status | Date |
 |-----|-------|--------|------|
 | [ADR-0001](ADR-0001-initial-architecture.md) | Initial Architecture — Content-Only Plugin Monorepo | Accepted | 2026-05-28 |
+| [ADR-0002](ADR-0002-observability-hook.md) | Observability Hook for Session Replay and Drift Detection | Accepted | 2026-06-01 |

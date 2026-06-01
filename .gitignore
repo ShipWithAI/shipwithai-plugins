@@ -31,4 +31,6 @@ __pycache__/
 # Claude Code worktrees & session state
 .claude/worktrees/
 .claude/settings.local.json
+.claude/logs/
+plugins/*/logs/
 .omc/

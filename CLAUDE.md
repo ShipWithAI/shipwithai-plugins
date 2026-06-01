@@ -32,7 +32,7 @@ Edit directly — every skill reads this before doing anything.*
 **Key layers:**
 - Plugin layer: `plugins/<plugin-name>/` — one Claude Code plugin per directory
 - Skills layer: `plugins/<plugin-name>/skills/<skill-name>/` — SKILL.md + assets + references + evals
-- Hooks layer: `.claude/hooks/` — validate-command.py, protect-files.py
+- Hooks layer: `.claude/hooks/` — validate-command.py, protect-files.py, observe.py
 - Docs layer: `docs/` — architecture, ADRs, CODEMAPS
 - Scripts layer: `scripts/` — publish-plugin.sh for releasing plugins
 
@@ -56,11 +56,15 @@ shipwithai-plugins/
 ├── .claude/
 │   ├── settings.json
 │   ├── starter-context.json
-│   └── hooks/                    ← validate-command.py, protect-files.py
+│   └── hooks/                    ← validate-command.py, protect-files.py, observe.py
 ├── docs/
 │   ├── ARCHITECTURE.md
 │   ├── adr/                      ← Architecture Decision Records
-│   └── CODEMAPS/                 ← codebase navigation guide
+│   ├── CODEMAPS/                 ← codebase navigation guide
+│   ├── starter/                  ← starter plugin PRDs and specs
+│   └── superpowers/              ← plans and specs for superpowers skills
+│       ├── plans/
+│       └── specs/
 └── scripts/
     └── publish-plugin.sh         ← always confirm before running
 ```
@@ -120,10 +124,21 @@ No build/test commands — content-only workspace. Plugin files are SKILL.md, ma
 
 ---
 
+## Development workflow
+
+**When working on any task, Claude must follow these gates:**
+
+- **Plan first:** For any task > 30 min, create a plan and get approval before writing code.
+- **TDD:** Write failing tests first. Never write implementation without a corresponding test.
+- **Code review:** Run the code-reviewer agent after every significant change. Address all CRITICAL and HIGH findings.
+- **Security review:** Before committing to `assets/` directories, `manifest.json` files, `SKILL.md` files, or `evals/evals.json` files, run security-reviewer agent.
+
+---
+
 ## Harness config
 
 **Tier:** Full (Tier 3)
-**Last updated:** 2026-05-28
+**Last updated:** 2026-06-01
 
 Hooks: see `.claude/settings.json`
 MCP servers: see `.mcp.json`
