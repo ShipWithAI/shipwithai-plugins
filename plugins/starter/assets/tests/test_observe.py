@@ -3,7 +3,6 @@ from __future__ import annotations
 import datetime
 import json
 import os
-import pathlib
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -44,7 +43,7 @@ def test_bash_tool_logs_argv0_only():
     assert 'test' not in str(event.get('cmd', ''))
 
 
-def test_bash_strips_args_containing_secrets():
+def test_bash_logs_only_argv0():
     payload = {'tool_name': 'Bash', 'tool_input': {'command': 'aws s3 cp file.txt s3://bucket --aws-access-key-id=AKIA123SECRET'}}
     event = observe.build_event(payload)
     assert event['cmd'] == 'aws'
@@ -148,14 +147,6 @@ def test_log_filename_is_todays_date(log_dir):
 
 
 # ── main ─────────────────────────────────────────────────────────────────────
-
-@pytest.fixture
-def tmp_cwd(tmp_path):
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    yield tmp_path
-    os.chdir(orig)
-
 
 def test_exits_silently_when_disable_observe_set(log_dir):
     with patch.dict(os.environ, {'DISABLE_OBSERVE': '1'}):
