@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1779753600000,
+  "lastUpdated": 1780272000000,
   "skills": [
     {
       "skillId": "init",
@@ -7,6 +7,14 @@
       "description": "Set up the Claude Code harness for your project. Guided interview configures CLAUDE.md, permissions, hooks, MCP servers, agents, and SSOT docs in one session. Choose Essential (5 min), Standard (15 min), or Full (30 min).",
       "creatorType": "community",
       "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "new-project",
+      "name": "new-project",
+      "description": "Start a new project from scratch. 3-phase interview: project goals → tech stack → architecture → conventions. Scaffolds with official tools and configures the Claude harness. Run on an empty directory.",
+      "creatorType": "community",
+      "updatedAt": "2026-05-29T00:00:00Z",
       "enabled": true
     },
     {
@@ -71,6 +79,14 @@
       "description": "Sync CLAUDE.md and architecture docs with the current codebase state. Section-by-section diff and confirm. Use after adding dependencies, refactoring, or architecture changes.",
       "creatorType": "community",
       "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "setup-observability",
+      "name": "setup-observability",
+      "description": "Enable tool call logging: installs observe.py hook that writes tool usage metadata to .claude/logs/ for harness optimization. Tier 3 opt-in.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-01T00:00:00Z",
       "enabled": true
     }
   ]

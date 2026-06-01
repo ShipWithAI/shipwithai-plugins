@@ -1,0 +1,81 @@
+{
+  "version": "1.2",
+  "tier": "full",
+  "stack": {
+    "language": "Markdown + JSON",
+    "framework": "ShipWithAI Claude Code plugin standard",
+    "build_tool": "none",
+    "test_framework": "none",
+    "package_manager": "none",
+    "detected_tools": []
+  },
+  "project": {
+    "name": "shipwithai-plugins",
+    "type": "monorepo",
+    "team_size": 1,
+    "stage": "active"
+  },
+  "architecture": {
+    "style": "monolith",
+    "key_layers": [
+      { "name": "Plugin", "dir": "plugins/<plugin-name>/", "responsibility": "One Claude Code plugin per directory" },
+      { "name": "Skills", "dir": "plugins/<plugin-name>/skills/", "responsibility": "One skill per subdirectory with SKILL.md, assets, references, evals" },
+      { "name": "Hooks", "dir": ".claude/hooks/", "responsibility": "Python safety hooks: validate-command.py, protect-files.py" },
+      { "name": "Docs", "dir": "docs/", "responsibility": "Architecture, ADRs, CODEMAPS" },
+      { "name": "Scripts", "dir": "scripts/", "responsibility": "publish-plugin.sh for releasing plugins" }
+    ],
+    "entry_points": ["plugins/*/manifest.json"],
+    "external_deps": [],
+    "gotchas": [
+      "plugins/*/manifest.json — must stay in sync with actual skills/ subdirectories",
+      ".claude/hooks/*.py — safety hooks, must not be removed or broken",
+      "plugins/*/skills/*/assets/ — template files consumed verbatim by Claude Code; edits affect downstream codegen in user projects",
+      ".claude-plugin/marketplace.json — plugin registry metadata",
+      "SSOT docs (READMEs, plugin docs) — must be updated whenever a plugin or skill is added/changed"
+    ],
+    "build_order": [],
+    "test_isolation": [],
+    "sensitive_areas": [
+      "assets/ directories — template files for user project codegen",
+      "manifest.json files — skill registry, must stay in sync",
+      "SKILL.md files — published to users, 500-line hard cap",
+      "evals/evals.json files — test prompts must remain runnable",
+      "README.md and plugin docs — live SSOT, update after every change"
+    ]
+  },
+  "conventions": {
+    "formatter": "none",
+    "branch_strategy": "gitflow",
+    "commit_format": "conventional",
+    "coverage_target": "n/a",
+    "workflow_gates": ["plan-before-code", "tdd", "code-review", "security-review"]
+  },
+  "permissions": {
+    "preset": "general",
+    "disallowed_tools": [],
+    "readonly_paths": [],
+    "require_confirm": [
+      "Bash(git push*)",
+      "Bash(git push -f*)",
+      "Bash(scripts/publish-plugin.sh*)",
+      "Bash(rm *)",
+      "Bash(rm -r*)",
+      "Bash(curl *)",
+      "Bash(wget *)"
+    ]
+  },
+  "hooks_selected": [],
+  "mcp_selected": ["github"],
+  "agents_selected": ["drift-monitor"],
+  "ssot": {
+    "adr": true,
+    "codemaps": true
+  },
+  "future_notes": [
+    "Telegram release notification via GitHub Actions when tag pushed to main — not implemented yet"
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "collected_at": "2026-06-01T00:00:00Z"
+}

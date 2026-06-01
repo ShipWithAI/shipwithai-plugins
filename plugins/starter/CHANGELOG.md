@@ -1,5 +1,40 @@
 # Changelog
 
+## [2.0.0] — 2026-06-01
+
+### Added
+
+- `setup-observability` skill — Pillar 7: installs `observe.py` PostToolUse hook that
+  logs tool call metadata (tool name, relative file path, command argv[0]) to
+  `.claude/logs/YYYY-MM-DD.jsonl`
+- `assets/observe.py` — stdlib-only Python hook script; silent-fails to never block
+  tool execution; respects `DISABLE_OBSERVE=1` env var for per-session opt-out;
+  passthrough stdout for hook chaining
+- Log rotation via Stop hook: `find .claude/logs -name '*.jsonl' -mtime +30 -delete`
+- `init` updated: schema v1.2 adds `observability.enabled` field; Tier 3 flow now
+  invokes `setup-observability`; preview table includes observe.py and .gitignore entry
+- `review` updated: checks observe.py presence, .claude/logs/ gitignore status,
+  schema v1.2 currency; suggests setup-observability for Tier 3 projects
+- `hooks-catalog.json` updated: adds observability hook template entry
+
+## [1.2.0] — 2026-05-29
+
+### Added
+
+- `new-project` skill — greenfield entry point: 3-phase interview (project goals →
+  tech stack → architecture → conventions), scaffolds via official tools, then
+  configures the Claude harness
+- `init` now routes to `new-project` when no stack files are detected in directory
+- `setup-memory` now writes a greenfield status marker and build order in CLAUDE.md
+  when `project.stage` is `"greenfield"`
+
+## [1.1.0] — 2026-05-28
+
+### Added
+
+- `init` skill schema v1.1: added `conventions.workflow_gates` field — multi-select
+  workflow gates (plan-before-code, TDD, code-review, security-review)
+
 ## [1.0.0] — 2026-05-23
 
 ### Added

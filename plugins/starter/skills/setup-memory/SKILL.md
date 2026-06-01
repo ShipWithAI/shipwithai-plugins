@@ -37,7 +37,8 @@ Required fields from `starter-context.json`:
 `tier`, `project.name`, `project.type`, `project.team_size`, `project.stage`,
 `stack.language`, `stack.framework`, `stack.build_tool`, `stack.test_framework`, `stack.package_manager`,
 `architecture.style`, `architecture.key_layers`, `architecture.entry_points`, `architecture.external_deps`,
-`architecture.gotchas`, `conventions.formatter`, `conventions.branch_strategy`, `conventions.commit_format`
+`architecture.gotchas`, `conventions.formatter`, `conventions.branch_strategy`, `conventions.commit_format`,
+`conventions.workflow_gates` (optional — absent means no workflow section generated)
 
 ## CLAUDE.md Structure
 
@@ -74,6 +75,17 @@ Edit directly — every skill reads this before doing anything.*
 ## Architecture overview
 
 **Style:** [monolith / microservices / modular monolith]
+
+[Only include the following block when project.stage is "greenfield":]
+**Status:** Greenfield — build toward this structure
+
+**Build order:**
+[Derive from architecture.build_order if present in starter-context.json.
+ Otherwise generate a sensible 3-step order based on the stack and architecture:
+ - Step 1: foundation first (e.g., db/schema.ts → run initial migration)
+ - Step 2: authentication (e.g., features/auth/ — auth before any business domain)
+ - Step 3: core domain (e.g., features/<core-domain>/)]
+[End greenfield block — omit entirely for non-greenfield projects]
 
 **Key layers:**
 - [e.g., API layer: src/routes/]
@@ -114,6 +126,23 @@ Edit directly — every skill reads this before doing anything.*
 
 **Sensitive areas (extra care):**
 - [e.g., "auth/ and payments/ require security review before merge"]
+
+---
+
+## Development workflow
+
+[Only include this section if conventions.workflow_gates is present and not ["none"] or []]
+
+**When working on any task, Claude must follow these gates:**
+
+[Generate one bullet per gate selected:]
+- plan-before-code → **Plan first:** For any task > 30 min, create a plan and get approval before writing code.
+- tdd             → **TDD:** Write failing tests first. Never write implementation without a corresponding test.
+- code-review     → **Code review:** Run the code-reviewer agent after every significant change. Address all CRITICAL and HIGH findings.
+- security-review + sensitive_areas present → **Security review:** Before committing to [list from architecture.sensitive_areas], run security-reviewer agent.
+- security-review + sensitive_areas empty  → **Security review:** Before committing to sensitive areas (auth, payments, migrations), run security-reviewer agent.
+
+[If workflow_gates is ["none"] or [] → omit this section entirely]
 
 ---
 
@@ -182,7 +211,7 @@ Create the following structure:
 - Check flags first (`--claude-md-only`, `--memory-only`) before anything else
 - Check if file exists before writing → Overwrite / Merge / Skip?
 - **Merge strategy for CLAUDE.md:**
-  - Known sections (update with new values): Project identity, Tech stack, Architecture overview, Key conventions, What Claude should know, Harness config
+  - Known sections (update with new values): Project identity, Tech stack, Architecture overview, Key conventions, Development workflow, What Claude should know, Harness config
   - Unknown sections (preserve as-is): anything else the user added
   - Always update "Last updated" date on every write, including merges
 - **`.claude/memory/` already exists:**

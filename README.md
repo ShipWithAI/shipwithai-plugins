@@ -63,19 +63,23 @@ See each plugin's `README.md` for full usage, supported stack, and what gets gen
 ```
 shipwithai-plugins/
 ├── plugins/
-│   ├── starter/                # shipwithai-starter plugin
+│   ├── starter/                    # shipwithai-starter plugin
 │   │   ├── skills/
-│   │   │   ├── init/           # Guided setup interview (SKILL.md + evals)
-│   │   │   ├── setup-memory/   # CLAUDE.md + .claude/memory/
+│   │   │   ├── init/               # Guided setup interview (SKILL.md + evals)
+│   │   │   ├── new-project/        # Greenfield 3-phase interview → scaffold + harness
+│   │   │   ├── setup-memory/       # CLAUDE.md + .claude/memory/
 │   │   │   ├── setup-permissions/
-│   │   │   ├── setup-hooks/    # hooks-catalog.json
-│   │   │   ├── setup-mcp/      # mcp-registry.json
-│   │   │   ├── setup-agents/   # agents-catalog.json
-│   │   │   ├── setup-ssot/     # architecture.md + ADR + CODEMAPS
-│   │   │   ├── review/         # Harness health audit
-│   │   │   └── update-ssot/    # Sync docs with codebase
+│   │   │   ├── setup-hooks/        # hooks-catalog.json
+│   │   │   ├── setup-mcp/          # mcp-registry.json
+│   │   │   ├── setup-agents/       # agents-catalog.json
+│   │   │   ├── setup-ssot/         # architecture.md + ADR + CODEMAPS
+│   │   │   ├── setup-observability/ # observe.py hook + .claude/logs/ logging
+│   │   │   ├── review/             # Harness health audit
+│   │   │   └── update-ssot/        # Sync docs with codebase
+│   │   ├── assets/             # Shared hook scripts (observe.py)
 │   │   ├── agents/             # drift-monitor sub-agent
 │   │   ├── commands/           # add-mcp, add-hook, add-agent, add-adr
+│   │   ├── .claude-plugin/     # Plugin metadata (plugin.json)
 │   │   ├── manifest.json       # Skill registry
 │   │   └── README.md
 │   └── auth/                   # shipwithai-auth plugin
@@ -88,7 +92,10 @@ shipwithai-plugins/
 ├── scripts/
 │   └── publish-plugin.sh       # Validate and package a plugin for release
 ├── docs/
-│   └── ARCHITECTURE.md
+│   ├── ARCHITECTURE.md
+│   ├── CODEMAPS/               # Codebase navigation guides
+│   ├── adr/                    # Architecture Decision Records
+│   └── starter/                # Plugin PRDs and design specs
 └── CLAUDE.md                   # Authoring conventions for Claude Code
 ```
 

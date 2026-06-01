@@ -1,7 +1,7 @@
 # shipwithai-starter — Plugin Development Context
 
 > Plugin development workspace. Stack: none (content-only plugin).
-> Last updated: 2026-05-23.
+> Last updated: 2026-06-01.
 
 ## Plugin Identity
 
@@ -29,9 +29,10 @@
 See `docs/superpowers/specs/2026-05-23-shipwithai-starter-design.md` for full design spec.
 
 Key decisions:
-- 7 pillars: Memory, Permissions, Hooks, MCP, Agents, SSOT, Observability (Phase 2)
+- 7 pillars: Memory, Permissions, Hooks, MCP, Agents, SSOT, Observability
 - 3 tiers: Essential → Standard → Full
 - init is mandatory first — orchestrates pillar skills
 - Pillar skills work both called-from-init AND standalone
 - All config written to project-level (no user-level profile)
-- Observability and harness-optimizer deferred to Phase 2
+- Observability shipped in Phase 2 (setup-observability skill, observe.py hook, ADR-0002)
+- harness-optimizer deferred to a future phase

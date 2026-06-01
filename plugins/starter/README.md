@@ -14,7 +14,7 @@ Configures 7 pillars of your Claude Code environment:
 | MCP | `.mcp.json` | Standard |
 | Agents | `.claude/agents/` | Full |
 | SSOT | `docs/architecture.md`, `docs/adr/` | Full |
-| Observability | *(Phase 2)* | — |
+| Observability | `.claude/hooks/observe.py`, `.claude/logs/` | Full |
 
 ## Quick Start
 
@@ -29,6 +29,7 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 | Skill | Description |
 |-------|-------------|
 | `/shipwithai-starter:init` | **Start here.** Setup interview + full harness configuration |
+| `/shipwithai-starter:new-project` | **Greenfield.** 3-phase interview from empty directory → scaffold + harness |
 | `/shipwithai-starter:review` | Audit harness health, detect drift, suggest upgrades |
 | `/shipwithai-starter:update-ssot` | Sync CLAUDE.md and architecture docs with codebase |
 | `/shipwithai-starter:setup-memory` | Configure CLAUDE.md + .claude/memory/ |
@@ -37,6 +38,7 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 | `/shipwithai-starter:setup-mcp` | Configure .mcp.json MCP servers |
 | `/shipwithai-starter:setup-agents` | Configure .claude/agents/ |
 | `/shipwithai-starter:setup-ssot` | Configure architecture docs, ADRs, CODEMAPS |
+| `/shipwithai-starter:setup-observability` | Enable tool call logging for harness optimization (Tier 3 opt-in) |
 
 ## Commands
 
@@ -58,7 +60,7 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 ```
 Tier 1 — Essential (5 min)   → Memory + Permissions
 Tier 2 — Standard (15 min)   → + Hooks + MCP
-Tier 3 — Full (30 min)       → + Agents + SSOT
+Tier 3 — Full (30 min)       → + Agents + SSOT + Observability
 ```
 
 Upgrade anytime: `/shipwithai-starter:review`

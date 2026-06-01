@@ -6,7 +6,7 @@ description: >
   Run on first setup or when CLAUDE.md is missing or has [PLACEHOLDER] markers.
   Trigger phrases: "set up harness", "configure claude", "onboard project",
   "bootstrap claude", "let's get started", "setup claude code".
-argument-hint: "[--redo] [--tier essential|standard|full]"
+argument-hint: "[--redo] [--update] [--tier essential|standard|full]"
 ---
 
 # /init
@@ -16,6 +16,21 @@ Mandatory entry point for the plugin. Do not run any other skill before init com
 ## Instructions
 
 ### Step 1 — State Detection
+
+Before any other detection, check for an empty directory:
+
+```
+Scan for: package.json, pom.xml, build.gradle, go.mod, Cargo.toml,
+          pyproject.toml, Gemfile, composer.json, mix.exs
+
+If NONE of these files are found:
+  "This looks like an empty project. Handing you off to
+   /shipwithai-starter:new-project for a better setup experience."
+  → invoke /shipwithai-starter:new-project
+  → stop
+```
+
+If stack files are found, continue with normal state detection:
 
 Before asking anything, read the project state:
 
@@ -47,9 +62,43 @@ Makefile                       → make
 docker-compose.yml             → Docker Compose
 ```
 
-If CLAUDE.md is already populated and `--redo` is not set: "Harness is already set up. Want to redo? (use --redo)"
+If `--update` is provided: skip to **Update Mode** below — do not run the full interview.
+
+If CLAUDE.md is already populated and `--redo` is not set and `--update` is not set: "Harness is already set up. Want to redo? (use --redo) or answer new questions only? (use --update)"
 
 If `--tier` argument is provided, skip the tier selection prompt in Step 2 and use the given value directly.
+
+### Update Mode (`--update`)
+
+Run when `review` detects schema is outdated, or user runs `init --update` directly.
+
+```
+Step 1: Read .claude/starter-context.json
+        → Not found: "No context found. Run /shipwithai-starter:init for full setup."
+        → Found: continue
+
+Step 2: Compare existing fields against current schema (v1.1)
+        → Find all fields that are null or absent
+
+Step 3: For each missing field, ask the corresponding interview question only
+        → Same wording as full interview
+        → Skip all fields that already have answers
+
+Step 4: Update starter-context.json
+        → Merge new answers in
+        → Set version to "1.2"
+
+Step 5: Invoke setup-memory (merge mode)
+        → Adds/updates only sections with new data
+        → Existing sections preserved
+```
+
+Current schema fields by version:
+```
+v1.0: stack, project, architecture, conventions (formatter/branch_strategy/commit_format/coverage_target), permissions, hooks_selected, mcp_selected, agents_selected, ssot
+v1.1: + conventions.workflow_gates
+v1.2: + observability.enabled
+```
 
 ### Step 2 — Fork-First Preamble
 
@@ -115,6 +164,21 @@ If not detected → ask:
 - Commit format (conventional / custom / none)?
 - Test coverage target?
 
+"Which workflow gates should Claude follow when working on tasks?"
+(Select all that apply — choosing None deselects all others)
+
+```
+→ [ ] Plan/design before coding
+      Claude must create a plan or design doc before writing code for any task > 30 min
+→ [ ] TDD — write tests first
+      Claude writes failing tests before implementation
+→ [ ] Code review gate
+      Claude runs code-reviewer agent after every significant change
+→ [ ] Security review for sensitive areas
+      Claude runs security-reviewer before committing to sensitive areas
+→ [ ] None — let Claude decide
+```
+
 #### Part 4: Permissions *(all tiers)*
 
 Load preset from `./setup-permissions/settings-presets.json` by detected stack.
@@ -179,6 +243,8 @@ Here is what I will create/update:
 │ .claude/settings.json (hooks)        │ UPDATE   │ 2     │
 │ .mcp.json                            │ CREATE   │ 2     │
 │ .claude/agents/drift-monitor.md      │ CREATE   │ 3     │
+│ .claude/hooks/observe.py             │ CREATE   │ 3     │
+│ .claude/logs/ (.gitignore entry)     │ UPDATE   │ 3     │
 └──────────────────────────────────────┴──────────┴───────┘
 Confirm?
 ```
@@ -192,7 +258,7 @@ write `.claude/starter-context.json` with all interview answers:
 
 ```json
 {
-  "version": "1.0",
+  "version": "1.2",
   "tier": "essential|standard|full",
   "stack": {
     "language": "...",
@@ -222,7 +288,8 @@ write `.claude/starter-context.json` with all interview answers:
     "formatter": "prettier",
     "branch_strategy": "trunk-based",
     "commit_format": "conventional",
-    "coverage_target": "80%"
+    "coverage_target": "80%",
+    "workflow_gates": ["plan-before-code", "tdd", "code-review"]
   },
   "permissions": {
     "preset": "nodejs",
@@ -235,6 +302,9 @@ write `.claude/starter-context.json` with all interview answers:
   "ssot": {
     "adr": true,
     "codemaps": false
+  },
+  "observability": {
+    "enabled": false
   },
   "collected_at": "ISO8601 timestamp"
 }
@@ -257,6 +327,7 @@ Tier 2: /shipwithai-starter:setup-hooks        (reads: stack.detected_tools, hoo
 
 Tier 3: /shipwithai-starter:setup-agents       (reads: agents_selected, project)
          /shipwithai-starter:setup-ssot --adr --codemaps  (reads: ssot)
+         /shipwithai-starter:setup-observability  (reads: observability) — only if observability.enabled == true
 ```
 
 ### Step 6 — After-Write

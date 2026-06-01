@@ -22,7 +22,9 @@ Audit full harness health. Detect drift. Suggest next actions.
 Read and score each component:
 
 ```
+starter-context.json    → version current (1.1) ✅ / outdated ⚠️ / missing ❌
 CLAUDE.md               → populated ✅ / has-placeholder ⚠️ / missing ❌
+CLAUDE.md workflow      → present ✅ / opted-out ✅ / missing ⚠️
 .claude/settings.json   → configured ✅ / exists-empty ⚠️ / missing ❌
 settings.json hooks     → hooks configured ✅ / empty ⚠️ / missing ❌
 .mcp.json               → servers configured ✅ / exists-empty ⚠️ / missing ❌
@@ -30,6 +32,32 @@ settings.json hooks     → hooks configured ✅ / empty ⚠️ / missing ❌
 docs/architecture.md    → exists ✅ / missing ❌
 docs/adr/               → ADRs present ✅ / index-only ⚠️ / missing ❌
 .claude/memory/         → MEMORY.md with content ✅ / exists-empty ⚠️ / missing ❌
+.claude/hooks/observe.py  → present ✅ / missing (Tier 3 opt-in) ❌
+.claude/logs/ in .gitignore → in gitignore ✅ / tracked by git ⚠️ / not applicable ✅
+```
+
+**Schema version check:**
+```
+Read .claude/starter-context.json:
+  → not found                    → ❌ not initialized
+  → version == "1.2"             → ✅ current
+  → version == "1.1"             → ⚠️ outdated — run init --update (adds observability field)
+  → version < "1.1" or absent    → ⚠️ outdated — run init --update
+```
+
+**Workflow section check (smart opt-out):**
+```
+starter-context.json exists:
+  → workflow_gates absent                → ⚠️ schema outdated — run init --update
+  → workflow_gates == ["none"] or []     → ✅ explicitly opted out
+  → workflow_gates has values            → check CLAUDE.md has "Development workflow" section
+      present                            → ✅
+      missing                            → ⚠️ context set but CLAUDE.md not updated
+
+starter-context.json not found:
+  → check CLAUDE.md for "## Development workflow" section
+      present                            → ✅
+      missing                            → ⚠️ no workflow section found
 ```
 
 Detect current tier from the `Harness config` section of `CLAUDE.md`.
@@ -56,6 +84,11 @@ docs/adr/  ←→  git log
   Commits in past 30 days added/removed directories, changed framework,
   or modified core config (package.json, pyproject.toml)?
   AND no new ADR written?  → flag ⚠️ decision not recorded
+
+workflow_gates  ←→  architecture.sensitive_areas
+  sensitive_areas present in starter-context.json
+  AND "security-review" not in workflow_gates?
+  → flag ⚠️ "Sensitive areas detected but no security-review gate configured"
 ```
 
 ## Step 3 — Health Report
@@ -67,13 +100,16 @@ Checked: YYYY-MM-DD
 
 | Component            | Status | Issue                                      |
 |----------------------|--------|--------------------------------------------|
+| Schema version       | ⚠️     | v1.0 → v1.1 available (workflow_gates)     |
 | CLAUDE.md            | ✅     | —                                          |
+| CLAUDE.md workflow   | ⚠️     | Schema outdated — run init --update        |
 | settings.json        | ✅     | —                                          |
 | Hooks                | ⚠️     | prettier hook but prettier not in project  |
 | .mcp.json            | ❌     | Redis used in code, no MCP server          |
 | docs/architecture.md | ⚠️     | Not updated in 45 days                     |
 | ADRs                 | ✅     | 3 ADRs present                             |
 | .claude/memory/      | ❌     | Not set up (Tier 3 item)                   |
+| Observability        | ❌     | observe.py not installed (Tier 3 opt-in)   |
 
 Drift detected: [list of flagged items, or "None"]
 ```
@@ -85,10 +121,14 @@ Prioritize by severity: ❌ first, then ⚠️. Suggest one action at a time:
 > "Want to fix [highest priority issue] now?"
 
 If user accepts: invoke the relevant skill directly:
+- Schema outdated → `/shipwithai-starter:init --update` ("Plugin has new questions (v1.1). Run init --update to answer only new questions — existing answers are preserved.")
+- Workflow missing (schema current) → `/shipwithai-starter:init --update`
 - Hooks issue → `/shipwithai-starter:setup-hooks`
 - MCP issue → `/shipwithai-starter:setup-mcp`
 - Agents issue → `/shipwithai-starter:setup-agents`
 - SSOT/docs issue → `/shipwithai-starter:update-ssot`
+- Observability missing (Tier 3) → `/shipwithai-starter:setup-observability`
+- Logs tracked by git → warn: run `git rm -r --cached .claude/logs/` and add to .gitignore
 
 Tier upgrade path:
 - Tier 1 → list Standard tier items not yet configured
