@@ -32,7 +32,7 @@ Edit directly — every skill reads this before doing anything.*
 **Key layers:**
 - Plugin layer: `plugins/<plugin-name>/` — one Claude Code plugin per directory
 - Skills layer: `plugins/<plugin-name>/skills/<skill-name>/` — SKILL.md + assets + references + evals
-- Hooks layer: `.claude/hooks/` — validate-command.py, protect-files.py
+- Hooks layer: `.claude/hooks/` — validate-command.py, protect-files.py, observe.py
 - Docs layer: `docs/` — architecture, ADRs, CODEMAPS
 - Scripts layer: `scripts/` — publish-plugin.sh for releasing plugins
 
@@ -56,11 +56,15 @@ shipwithai-plugins/
 ├── .claude/
 │   ├── settings.json
 │   ├── starter-context.json
-│   └── hooks/                    ← validate-command.py, protect-files.py
+│   └── hooks/                    ← validate-command.py, protect-files.py, observe.py
 ├── docs/
 │   ├── ARCHITECTURE.md
 │   ├── adr/                      ← Architecture Decision Records
-│   └── CODEMAPS/                 ← codebase navigation guide
+│   ├── CODEMAPS/                 ← codebase navigation guide
+│   ├── starter/                  ← starter plugin PRDs and specs
+│   └── superpowers/              ← plans and specs for superpowers skills
+│       ├── plans/
+│       └── specs/
 └── scripts/
     └── publish-plugin.sh         ← always confirm before running
 ```

@@ -16,7 +16,7 @@ Claude Code loads plugins via `manifest.json` at session start or on-demand via 
 |-------|-----------|----------------|
 | Plugin root | `plugins/<plugin-name>/` | One Claude Code plugin per directory |
 | Skills | `plugins/<plugin-name>/skills/<skill-name>/` | SKILL.md + assets + references + evals |
-| Hooks | `.claude/hooks/` | Python safety hooks (validate-command, protect-files) |
+| Hooks | `.claude/hooks/` | Python safety hooks (validate-command, protect-files, observe) |
 | Docs | `docs/` | Architecture, ADRs, CODEMAPS |
 | Scripts | `scripts/` | publish-plugin.sh — always confirm before running |
 | Harness | `.claude/` | settings.json, agents/, memory/, starter-context.json |
@@ -55,7 +55,8 @@ shipwithai-plugins/
 │   ├── memory/                     ← project facts + team preferences
 │   └── hooks/
 │       ├── validate-command.py
-│       └── protect-files.py
+│       ├── protect-files.py
+│       └── observe.py
 ├── docs/
 │   ├── ARCHITECTURE.md             ← this file
 │   ├── adr/                        ← Architecture Decision Records
