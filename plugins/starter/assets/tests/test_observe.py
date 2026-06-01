@@ -155,6 +155,26 @@ class TestMain(unittest.TestCase):
         observe.main(b'{"tool_input":{}}')
         self.assertFalse(Path('.claude/logs').exists())
 
+    def test_passthrough_writes_raw_to_stdout(self):
+        import io
+        raw = b'{"tool_name":"Edit","tool_input":{"file_path":"/p/f.ts"}}'
+        with patch('os.getcwd', return_value='/p'), \
+             patch('sys.stdout') as mock_stdout:
+            mock_stdout.buffer = io.BytesIO()
+            observe.main(raw)
+        mock_stdout.buffer.seek(0)
+        self.assertEqual(mock_stdout.buffer.read(), raw)
+
+    def test_passthrough_runs_even_when_disable_observe_set(self):
+        import io
+        raw = b'{"tool_name":"Edit","tool_input":{"file_path":"/p/f.ts"}}'
+        with patch.dict(os.environ, {'DISABLE_OBSERVE': '1'}), \
+             patch('sys.stdout') as mock_stdout:
+            mock_stdout.buffer = io.BytesIO()
+            observe.main(raw)
+        mock_stdout.buffer.seek(0)
+        self.assertEqual(mock_stdout.buffer.read(), raw)
+
 
 if __name__ == '__main__':
     unittest.main()

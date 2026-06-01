@@ -22,7 +22,7 @@ def build_event(payload):
     session_id = os.environ.get('CLAUDE_SESSION_ID', '')
 
     event = {
-        'ts': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+        'ts': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
         'sid': session_id[:8],
         'event': 'tool',
         'tool': tool,
@@ -59,10 +59,13 @@ def write_log(event):
 
 def main(stdin_bytes=None):
     """Main entry point. stdin_bytes is injectable for testing."""
+    raw = stdin_bytes if stdin_bytes is not None else sys.stdin.buffer.read()
+
+    # Always passthrough stdin so downstream hooks in the chain receive data
+    sys.stdout.buffer.write(raw)
+
     if os.environ.get('DISABLE_OBSERVE'):
         return
-
-    raw = stdin_bytes if stdin_bytes is not None else sys.stdin.buffer.read()
 
     try:
         payload = json.loads(raw) if raw and raw.strip() else {}
@@ -77,9 +80,6 @@ def main(stdin_bytes=None):
         write_log(event)
     except Exception:
         pass  # Silent fail — never block tool execution
-
-    # Passthrough: write stdin back to stdout for hook chaining
-    sys.stdout.buffer.write(raw)
 
 
 if __name__ == '__main__':
