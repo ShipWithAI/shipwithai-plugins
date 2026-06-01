@@ -14,7 +14,7 @@ Configures 7 pillars of your Claude Code environment:
 | MCP | `.mcp.json` | Standard |
 | Agents | `.claude/agents/` | Full |
 | SSOT | `docs/architecture.md`, `docs/adr/` | Full |
-| Observability | *(Phase 2)* | — |
+| Observability | `.claude/hooks/observe.py`, `.claude/logs/` | Full |
 
 ## Quick Start
 
@@ -38,6 +38,7 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 | `/shipwithai-starter:setup-mcp` | Configure .mcp.json MCP servers |
 | `/shipwithai-starter:setup-agents` | Configure .claude/agents/ |
 | `/shipwithai-starter:setup-ssot` | Configure architecture docs, ADRs, CODEMAPS |
+| `/shipwithai-starter:setup-observability` | Enable tool call logging for harness optimization (Tier 3 opt-in) |
 
 ## Commands
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.0] — 2026-06-01
+
+### Added
+
+- `setup-observability` skill — Pillar 7: installs `observe.py` PostToolUse hook that
+  logs tool call metadata (tool name, relative file path, command argv[0]) to
+  `.claude/logs/YYYY-MM-DD.jsonl`
+- `assets/observe.py` — stdlib-only Python hook script; silent-fails to never block
+  tool execution; respects `DISABLE_OBSERVE=1` env var for per-session opt-out;
+  passthrough stdout for hook chaining
+- Log rotation via Stop hook: `find .claude/logs -name '*.jsonl' -mtime +30 -delete`
+- `init` updated: schema v1.2 adds `observability.enabled` field; Tier 3 flow now
+  invokes `setup-observability`; preview table includes observe.py and .gitignore entry
+- `review` updated: checks observe.py presence, .claude/logs/ gitignore status,
+  schema v1.2 currency; suggests setup-observability for Tier 3 projects
+- `hooks-catalog.json` updated: adds observability hook template entry
+
 ## [1.2.0] — 2026-05-29
 
 ### Added
