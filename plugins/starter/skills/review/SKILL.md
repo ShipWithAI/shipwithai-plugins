@@ -32,14 +32,17 @@ settings.json hooks     → hooks configured ✅ / empty ⚠️ / missing ❌
 docs/architecture.md    → exists ✅ / missing ❌
 docs/adr/               → ADRs present ✅ / index-only ⚠️ / missing ❌
 .claude/memory/         → MEMORY.md with content ✅ / exists-empty ⚠️ / missing ❌
+.claude/hooks/observe.py  → present ✅ / missing (Tier 3 opt-in) ❌
+.claude/logs/ in .gitignore → in gitignore ✅ / tracked by git ⚠️ / not applicable ✅
 ```
 
 **Schema version check:**
 ```
 Read .claude/starter-context.json:
   → not found                    → ❌ not initialized
-  → version == "1.1"             → ✅ current
-  → version < "1.1" or absent    → ⚠️ outdated (flag with current vs expected)
+  → version == "1.2"             → ✅ current
+  → version == "1.1"             → ⚠️ outdated — run init --update (adds observability field)
+  → version < "1.1" or absent    → ⚠️ outdated — run init --update
 ```
 
 **Workflow section check (smart opt-out):**
@@ -106,6 +109,7 @@ Checked: YYYY-MM-DD
 | docs/architecture.md | ⚠️     | Not updated in 45 days                     |
 | ADRs                 | ✅     | 3 ADRs present                             |
 | .claude/memory/      | ❌     | Not set up (Tier 3 item)                   |
+| Observability        | ❌     | observe.py not installed (Tier 3 opt-in)   |
 
 Drift detected: [list of flagged items, or "None"]
 ```
@@ -123,6 +127,8 @@ If user accepts: invoke the relevant skill directly:
 - MCP issue → `/shipwithai-starter:setup-mcp`
 - Agents issue → `/shipwithai-starter:setup-agents`
 - SSOT/docs issue → `/shipwithai-starter:update-ssot`
+- Observability missing (Tier 3) → `/shipwithai-starter:setup-observability`
+- Logs tracked by git → warn: run `git rm -r --cached .claude/logs/` and add to .gitignore
 
 Tier upgrade path:
 - Tier 1 → list Standard tier items not yet configured
