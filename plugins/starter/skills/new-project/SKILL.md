@@ -255,7 +255,7 @@ Other stack   → ask user for the scaffold command
 
 If scaffold fails:
 > "Scaffold failed: [error]. Please fix the issue above, then run `/new-project` again."
-> → stop, do not proceed
+> → stop, do not proceed to pillar skills
 
 ### Step 2 — Write context file
 

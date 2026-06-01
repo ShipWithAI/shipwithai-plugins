@@ -148,6 +148,25 @@
       "hook": {
         "Stop": [{"hooks": [{"type": "command", "command": "cargo test"}]}]
       }
+    },
+    {
+      "id": "observability",
+      "description": "Log tool call metadata (relative file path, command name) to .claude/logs/ for harness optimization",
+      "requires": "python3",
+      "detectBy": {
+        "files": [],
+        "packageJson": [],
+        "binary": "python3"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit|Write|Bash",
+          "hooks": [{"type": "command", "command": "python3 .claude/hooks/observe.py"}]
+        }],
+        "Stop": [{
+          "hooks": [{"type": "command", "command": "find .claude/logs -name '*.jsonl' -mtime +30 -delete 2>/dev/null || true"}]
+        }]
+      }
     }
   ]
 }

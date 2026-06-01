@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1779753600000,
+  "lastUpdated": 1780272000000,
   "skills": [
     {
       "skillId": "init",
@@ -79,6 +79,14 @@
       "description": "Sync CLAUDE.md and architecture docs with the current codebase state. Section-by-section diff and confirm. Use after adding dependencies, refactoring, or architecture changes.",
       "creatorType": "community",
       "updatedAt": "2026-05-26T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "setup-observability",
+      "name": "setup-observability",
+      "description": "Enable tool call logging: installs observe.py hook that writes tool usage metadata to .claude/logs/ for harness optimization. Tier 3 opt-in.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-01T00:00:00Z",
       "enabled": true
     }
   ]
