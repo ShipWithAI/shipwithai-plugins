@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import pathlib
 import sys
 import tempfile
 import unittest
@@ -90,23 +91,26 @@ class TestWriteLog(unittest.TestCase):
 
     def setUp(self):
         self.tmpdir = tempfile.mkdtemp()
-        self.orig_cwd = os.getcwd()
-        os.chdir(self.tmpdir)
+        self.log_dir = pathlib.Path(self.tmpdir) / 'logs'
+        self._patcher = patch.object(observe, '_LOG_DIR', self.log_dir)
+        self._patcher.start()
 
     def tearDown(self):
-        os.chdir(self.orig_cwd)
+        self._patcher.stop()
+        import shutil
+        shutil.rmtree(self.tmpdir, ignore_errors=True)
 
     def _make_event(self, tool='Edit', file='src/x.ts'):
         return {'ts': '2026-06-01T10:00:00Z', 'sid': 'a1b2c3d4', 'event': 'tool', 'tool': tool, 'file': file}
 
     def test_creates_log_directory_if_missing(self):
         observe.write_log(self._make_event())
-        self.assertTrue(Path('.claude/logs').is_dir())
+        self.assertTrue(self.log_dir.is_dir())
 
     def test_writes_valid_jsonl_line(self):
         observe.write_log(self._make_event())
         today = datetime.date.today().isoformat()
-        content = Path(f'.claude/logs/{today}.jsonl').read_text().strip()
+        content = (self.log_dir / f'{today}.jsonl').read_text().strip()
         parsed = json.loads(content)
         self.assertEqual(parsed['tool'], 'Edit')
 
@@ -114,21 +118,20 @@ class TestWriteLog(unittest.TestCase):
         observe.write_log(self._make_event(file='a.ts'))
         observe.write_log(self._make_event(file='b.ts'))
         today = datetime.date.today().isoformat()
-        lines = Path(f'.claude/logs/{today}.jsonl').read_text().strip().split('\n')
+        lines = (self.log_dir / f'{today}.jsonl').read_text().strip().split('\n')
         self.assertEqual(len(lines), 2)
 
     def test_skips_write_when_over_50mb(self):
-        log_dir = Path('.claude/logs')
-        log_dir.mkdir(parents=True)
-        (log_dir / 'old.jsonl').write_bytes(b'x' * (51 * 1024 * 1024))
+        self.log_dir.mkdir(parents=True)
+        (self.log_dir / 'old.jsonl').write_bytes(b'x' * (51 * 1024 * 1024))
         observe.write_log(self._make_event())
         today = datetime.date.today().isoformat()
-        self.assertFalse(Path(f'.claude/logs/{today}.jsonl').exists())
+        self.assertFalse((self.log_dir / f'{today}.jsonl').exists())
 
     def test_log_filename_is_todays_date(self):
         observe.write_log(self._make_event())
         today = datetime.date.today().isoformat()
-        self.assertTrue(Path(f'.claude/logs/{today}.jsonl').exists())
+        self.assertTrue((self.log_dir / f'{today}.jsonl').exists())
 
 
 class TestMain(unittest.TestCase):
@@ -158,22 +161,24 @@ class TestMain(unittest.TestCase):
     def test_passthrough_writes_raw_to_stdout(self):
         import io
         raw = b'{"tool_name":"Edit","tool_input":{"file_path":"/p/f.ts"}}'
+        buf = io.BytesIO()
         with patch('os.getcwd', return_value='/p'), \
              patch('sys.stdout') as mock_stdout:
-            mock_stdout.buffer = io.BytesIO()
+            mock_stdout.buffer = buf
             observe.main(raw)
-        mock_stdout.buffer.seek(0)
-        self.assertEqual(mock_stdout.buffer.read(), raw)
+            buf.seek(0)
+            self.assertEqual(buf.read(), raw)
 
     def test_passthrough_runs_even_when_disable_observe_set(self):
         import io
         raw = b'{"tool_name":"Edit","tool_input":{"file_path":"/p/f.ts"}}'
+        buf = io.BytesIO()
         with patch.dict(os.environ, {'DISABLE_OBSERVE': '1'}), \
              patch('sys.stdout') as mock_stdout:
-            mock_stdout.buffer = io.BytesIO()
+            mock_stdout.buffer = buf
             observe.main(raw)
-        mock_stdout.buffer.seek(0)
-        self.assertEqual(mock_stdout.buffer.read(), raw)
+            buf.seek(0)
+            self.assertEqual(buf.read(), raw)
 
 
 if __name__ == '__main__':

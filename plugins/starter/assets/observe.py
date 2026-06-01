@@ -14,8 +14,12 @@ import sys
 
 MAX_LOG_BYTES = 50 * 1024 * 1024  # 50 MB
 
+# Anchor log directory to .claude/logs/ relative to this hook's installed location.
+# observe.py lives at .claude/hooks/observe.py, so parent.parent = .claude/
+_LOG_DIR = pathlib.Path(__file__).resolve().parent.parent / 'logs'
 
-def build_event(payload):
+
+def build_event(payload: dict) -> dict:
     """Build a log event dict from the hook payload. Never logs content."""
     tool = payload.get('tool_name', '')
     tool_input = payload.get('tool_input', {})
@@ -43,21 +47,20 @@ def build_event(payload):
     return event
 
 
-def write_log(event):
+def write_log(event: dict) -> None:
     """Append event to today's JSONL log file."""
-    log_dir = pathlib.Path('.claude/logs')
-    log_dir.mkdir(parents=True, exist_ok=True)
+    _LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-    total = sum(f.stat().st_size for f in log_dir.glob('*.jsonl') if f.exists())
+    total = sum(f.stat().st_size for f in _LOG_DIR.glob('*.jsonl'))
     if total > MAX_LOG_BYTES:
         return
 
     today = datetime.date.today().isoformat()
-    with open(log_dir / f'{today}.jsonl', 'a') as f:
+    with open(_LOG_DIR / f'{today}.jsonl', 'a') as f:
         f.write(json.dumps(event, separators=(',', ':')) + '\n')
 
 
-def main(stdin_bytes=None):
+def main(stdin_bytes: bytes | None = None) -> None:
     """Main entry point. stdin_bytes is injectable for testing."""
     raw = stdin_bytes if stdin_bytes is not None else sys.stdin.buffer.read()
 
