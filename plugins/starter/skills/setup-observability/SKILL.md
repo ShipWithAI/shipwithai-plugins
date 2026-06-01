@@ -1,10 +1,10 @@
 ---
 name: setup-observability
 description: >
-  Enable tool call logging: installs observe.py hook that writes tool usage
-  metadata to .claude/logs/. Opt-in Tier 3 feature for harness optimization.
+  Enable tool call logging for harness optimization. Installs observe.py hook
+  writing tool metadata to .claude/logs/. Tier 3 opt-in.
   Trigger phrases: "setup observability", "enable tool logging", "track tool usage",
-  "add observability hook", "observe tool calls".
+  "observe tool calls".
 argument-hint: "[--disable]"
 ---
 
