@@ -60,7 +60,7 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 ```
 Tier 1 — Essential (5 min)   → Memory + Permissions
 Tier 2 — Standard (15 min)   → + Hooks + MCP
-Tier 3 — Full (30 min)       → + Agents + SSOT
+Tier 3 — Full (30 min)       → + Agents + SSOT + Observability
 ```
 
 Upgrade anytime: `/shipwithai-starter:review`
