@@ -28,25 +28,25 @@
     {
       "skillId": "setup-permissions",
       "name": "setup-permissions",
-      "description": "Configure .claude/settings.json with appropriate tool permissions for your stack. Stack-matched presets for Node, Python, Go, Java, Rust.",
+      "description": "Configure .claude/settings.json with appropriate tool permissions for your stack. 10 stack presets including Node, Python, Go, Java, Rust, Ruby, Flutter, .NET.",
       "creatorType": "community",
-      "updatedAt": "2026-05-26T00:00:00Z",
+      "updatedAt": "2026-06-06T00:00:00Z",
       "enabled": true
     },
     {
       "skillId": "setup-hooks",
       "name": "setup-hooks",
-      "description": "Configure .claude/settings.json hooks for auto-format, auto-lint, and test-on-stop triggers. Detects Prettier, ESLint, Black, Ruff, gofmt, Rustfmt, Jest, pytest, and more.",
+      "description": "Configure .claude/settings.json hooks for auto-format, auto-lint, and test-on-stop triggers. 15 templates including Prettier, Biome, ESLint, Black, Ruff, mypy, gofmt, Rustfmt, deno fmt, SwiftFormat, Jest, pytest, and more.",
       "creatorType": "community",
-      "updatedAt": "2026-05-26T00:00:00Z",
+      "updatedAt": "2026-06-06T00:00:00Z",
       "enabled": true
     },
     {
       "skillId": "setup-mcp",
       "name": "setup-mcp",
-      "description": "Configure .mcp.json with MCP servers for external services. Registry includes GitHub, Linear, Slack, Sentry, PostgreSQL, Google Drive, Notion, Jira.",
+      "description": "Configure .mcp.json with MCP servers for external services. Registry of 14 servers including GitHub, Linear, Slack, Sentry, Supabase, Stripe, Datadog, Vercel, Cloudflare, Neon, and more. Supports custom server entries.",
       "creatorType": "community",
-      "updatedAt": "2026-05-26T00:00:00Z",
+      "updatedAt": "2026-06-06T00:00:00Z",
       "enabled": true
     },
     {

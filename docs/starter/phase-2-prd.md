@@ -282,15 +282,18 @@ Scanned: 2026-06-01 | 4 projects found
 
 ### Priority note
 
-**Lowest priority — likely defer sang Phase 3.**
-`review` đã cover single-project health tốt. Dashboard chỉ có giá trị khi user có ≥ 3 active projects.
-Có thể implement như một simple bash script thay vì full skill.
+**Shipped as lightweight `/dashboard` command in v2.2.0.**
+Implemented as a command (not a full skill): read-only scan, no interview, outputs aggregate health table.
+Health scored by missing expected files per tier (0=✅, 1–2=⚠️, 3+=❌).
 
 ### Open questions
 
 1. **Scope:** Full skill hay `find ~ -name starter-context.json | xargs ...` bash script?
+   → Resolved: lightweight command (dashboard.md), no skill-level interview needed.
 2. **Search paths:** Scan `~/` hay user configure `search_paths`?
+   → Resolved: defaults to parent of current dir; `--path` flag for override; warns before scanning `~/`.
 3. **In scope Phase 2?** Current leaning: defer sang Phase 3.
+   → Resolved: ✅ Shipped in v2.2.0 as `/shipwithai-starter:dashboard`.
 
 ---
 
@@ -302,7 +305,7 @@ Component 1 (Observability)  → Standalone. Build first.
 Component 2 (Optimizer)      → Requires Component 1 logs (runtime rules).
                                Static analysis rules work without logs.
 
-Component 3 (Dashboard)      → Independent. Lowest value. Defer.
+Component 3 (Dashboard)      → Independent. ✅ Shipped in v2.2.0.
 ```
 
 ## Tier mapping
@@ -319,4 +322,4 @@ Tier 3 (Full):      + Observability (new) + harness-optimizer (new)
 |---------|-------|
 | v2.0.0 | Component 1: Observability |
 | v2.1.0 | Component 2: harness-optimizer |
-| v2.2.0 | Component 3: Dashboard (or defer to Phase 3) |
+| v2.2.0 | Component 3: Dashboard — shipped as `/dashboard` command |

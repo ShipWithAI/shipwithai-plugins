@@ -45,16 +45,18 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 
 | Command | Description |
 |---------|-------------|
-| `/shipwithai-starter:add-mcp` | Add a single MCP server |
+| `/shipwithai-starter:add-mcp` | Add a single MCP server (supports custom entries not in registry) |
 | `/shipwithai-starter:add-hook` | Add a single hook |
 | `/shipwithai-starter:add-agent` | Create a new agent |
 | `/shipwithai-starter:add-adr` | Create an Architecture Decision Record |
+| `/shipwithai-starter:dashboard` | Show harness health across all projects on this machine |
 
 ## Agents
 
 | Agent | Description |
 |-------|-------------|
 | `drift-monitor` | Weekly: checks if CLAUDE.md matches codebase reality |
+| `harness-optimizer` | Analyzes tool call logs and triggers optimize-harness (Haiku, lightweight) |
 
 ## Tier Model
 

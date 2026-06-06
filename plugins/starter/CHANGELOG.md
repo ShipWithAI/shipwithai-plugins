@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.2.0] — 2026-06-06
+
+### Added
+
+- `setup-mcp` skill — MCP registry expanded to 14 servers: added Supabase, Stripe, Datadog, Vercel,
+  Cloudflare, Neon
+- Custom MCP server support: select `[N+1] Custom` from the registry list to add any server not in
+  the registry; guided flow collects name, type, URL/command+args, auth, description; writes to
+  `.mcp.json`; tracks as `"custom-<id>"` in `starter-context.json`
+- `add-mcp` command — custom server fallback: if service not found in registry, offers custom server
+  flow inline without leaving the command
+- `setup-hooks` skill — hooks catalog expanded to 15 templates: added Biome, mypy, deno fmt,
+  SwiftFormat
+- `setup-permissions` skill — settings presets expanded to 10 stacks: added Flutter/Dart and
+  .NET/NuGet
+- `dashboard` command — lightweight aggregate health report across all harness-configured projects;
+  scans `--path` or parent directory for `starter-context.json` files; read-only, no file
+  modifications; health scored by missing expected files per tier
+
+### Fixed
+
+- `setup-observability/evals.json` — standardized to `{"evals": [...]}` format with `"expect"` array
+  keys (was bare array with `"expected"` string keys)
+- `review` skill — Step 2b MCP bidirectional table extended to 14 services matching updated registry
+- `optimize-harness` rule R3 — accepts Biome (`biome-on-edit`) as valid JS/TS formatter alternative
+  to Prettier
+
 ## [2.1.0] — 2026-06-06
 
 ### Added

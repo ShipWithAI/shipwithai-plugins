@@ -1,7 +1,7 @@
 # shipwithai-starter — Plugin Development Context
 
 > Plugin development workspace. Stack: none (content-only plugin).
-> Last updated: 2026-06-01.
+> Last updated: 2026-06-06.
 
 ## Plugin Identity
 
@@ -36,3 +36,5 @@ Key decisions:
 - All config written to project-level (no user-level profile)
 - Observability shipped in Phase 2 (setup-observability skill, observe.py hook, ADR-0002)
 - harness-optimizer shipped in v2.1.0 (optimize-harness skill, optimize-rules.json, harness-optimizer agent)
+- MCP registry expanded to 14 servers in v2.2.0; custom MCP entry support added (flow in setup-mcp + add-mcp fallback)
+- dashboard command added in v2.2.0 (read-only aggregate health across all harness-configured projects)
