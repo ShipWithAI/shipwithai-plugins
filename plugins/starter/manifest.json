@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1780272000000,
+  "lastUpdated": 1780704000000,
   "skills": [
     {
       "skillId": "init",
@@ -68,9 +68,9 @@
     {
       "skillId": "review",
       "name": "review",
-      "description": "Audit Claude Code harness health: score 8 components, detect drift from codebase, suggest fixes or tier upgrades. Supports --drift-only and --tier-check flags.",
+      "description": "Audit Claude Code harness health: score components, detect drift, run static analysis (hook binaries, MCP alignment), suggest fixes or tier upgrades. Supports --drift-only and --tier-check flags.",
       "creatorType": "community",
-      "updatedAt": "2026-05-26T00:00:00Z",
+      "updatedAt": "2026-06-06T00:00:00Z",
       "enabled": true
     },
     {

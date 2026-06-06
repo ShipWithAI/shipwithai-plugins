@@ -35,4 +35,4 @@ Key decisions:
 - Pillar skills work both called-from-init AND standalone
 - All config written to project-level (no user-level profile)
 - Observability shipped in Phase 2 (setup-observability skill, observe.py hook, ADR-0002)
-- harness-optimizer deferred to a future phase
+- harness-optimizer shipped in v2.1.0 (optimize-harness skill, optimize-rules.json, harness-optimizer agent)

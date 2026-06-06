@@ -179,3 +179,13 @@ Your harness matches your usage patterns. Keep it up!
 
 Read `.claude/starter-context.json`, merge `optimizer.last_run = today_iso_date`,
 write back. Preserve all other fields.
+
+## Failure Modes
+
+- Don't suggest hooks for tools not detected in logs
+- Don't auto-apply any changes — every suggestion includes an action command, user runs manually
+- Don't run analysis with <7 days data or <50 events — guard clause handles this
+- Don't duplicate static analysis from `/review` (hook binaries, MCP alignment, schema drift)
+- Don't crash on malformed log lines — skip silently
+- Don't show LOW confidence suggestions unless `--verbose` is set
+- Don't write cooldown timestamp if analysis was blocked by a guard clause
