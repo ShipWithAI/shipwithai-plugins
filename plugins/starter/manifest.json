@@ -88,6 +88,14 @@
       "creatorType": "community",
       "updatedAt": "2026-06-01T00:00:00Z",
       "enabled": true
+    },
+    {
+      "skillId": "optimize-harness",
+      "name": "optimize-harness",
+      "description": "Analyze Claude Code tool call logs and suggest harness improvements: hooks to add, workflow gates to enable, based on actual usage patterns. Requires 7 days of observability data.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-06T00:00:00Z",
+      "enabled": true
     }
   ]
 }

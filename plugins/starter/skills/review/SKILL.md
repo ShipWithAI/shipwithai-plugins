@@ -176,3 +176,6 @@ Tier upgrade path:
 - Tier 1 → list Standard tier items not yet configured
 - Tier 2 → list Full tier items not yet configured
 - To upgrade: run `/shipwithai-starter:init`
+
+If `.claude/logs/` exists and contains log files spanning ≥7 calendar days:
+> For runtime-based suggestions (usage patterns, hook coverage): `/shipwithai-starter:optimize-harness`

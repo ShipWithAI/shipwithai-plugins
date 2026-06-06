@@ -1,0 +1,73 @@
+{
+  "evals": [
+    {
+      "prompt": "Optimize my harness — I have 30 days of logs and npm appears 45 times but I have no jest hook",
+      "expect": [
+        "reads .claude/logs/*.jsonl files",
+        "triggers R1 with HIGH confidence (npm >= 20)",
+        "evidence line mentions npm count (45)",
+        "action points to /shipwithai-starter:setup-hooks",
+        "outputs Usage Summary section with top files and commands"
+      ]
+    },
+    {
+      "prompt": "Optimize my harness — I only have 4 days of logs",
+      "expect": [
+        "detects fewer than 7 distinct calendar days",
+        "outputs not-enough-data message with current day count",
+        "shows required: 7 days AND 50 tool calls",
+        "does NOT run the analysis pipeline or score any rules",
+        "does NOT output a Suggestions section"
+      ]
+    },
+    {
+      "prompt": "Optimize my harness — .claude/logs/ does not exist",
+      "expect": [
+        "detects Guard 1: observability not enabled",
+        "outputs observability-not-enabled message",
+        "mentions /shipwithai-starter:setup-observability",
+        "does NOT attempt to read any log files",
+        "stops immediately after the guard message"
+      ]
+    },
+    {
+      "prompt": "Optimize my harness — 30 days of logs, all relevant hooks already configured (prettier-on-edit, jest-on-stop) and security-review gate is active",
+      "expect": [
+        "runs full pipeline through all 8 rules",
+        "no rules trigger given the configured hooks and gate",
+        "outputs Usage Summary section",
+        "outputs 'No issues detected' message",
+        "shows next optimization date (today + 7 days)"
+      ]
+    },
+    {
+      "prompt": "Optimize my harness — 20 days of logs, 15 edits found in src/auth/ directory, starter-context has sensitive_areas: [src/auth/] but no security-review in workflow_gates",
+      "expect": [
+        "triggers R5 with HIGH confidence",
+        "evidence mentions 15 edits in src/auth/",
+        "action points to /shipwithai-starter:init --update",
+        "does not trigger R1-R4 R6 (those commands/extensions not heavily used)",
+        "security-review gate suggestion appears first (HIGH)"
+      ]
+    },
+    {
+      "prompt": "Optimize my harness --verbose",
+      "expect": [
+        "includes LOW confidence suggestions (R7, R8) if conditions met",
+        "confidence label shows [LOW] prefix for low-confidence items",
+        "HIGH and MEDIUM suggestions still ranked before LOW",
+        "total suggestions may exceed what --verbose-off would show"
+      ]
+    },
+    {
+      "prompt": "Optimize my harness --json",
+      "expect": [
+        "outputs valid JSON only — no markdown formatting",
+        "JSON has top-level keys: project, generated_at, period, summary, suggestions",
+        "period has: start, end, days, sessions, total_events",
+        "summary has: top_files, top_commands, top_dirs, tool_distribution",
+        "each suggestion has: id, confidence, title, evidence, action"
+      ]
+    }
+  ]
+}

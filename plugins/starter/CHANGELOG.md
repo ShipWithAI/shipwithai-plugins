@@ -4,6 +4,15 @@
 
 ### Added
 
+- `optimize-harness` skill — runtime harness optimization from observability logs
+  - 3-phase guard: checks observability enabled, ≥7 days data, 7-day cooldown advisory
+  - 6-phase analysis pipeline: parse → aggregate → correlate → score rules → filter/rank → report
+  - 8 rules (R1-R8): jest/pytest/make/cargo test hooks, JS/TS/Python formatters, security gate,
+    heavily-edited-without-tests, long session duration
+  - Supports `--verbose` (show LOW confidence), `--window N` (custom days), `--json`, `--force`
+  - Writes `optimizer.last_run` to `starter-context.json` after each run
+- `optimize-rules.json` — externalized rule definitions (R1-R8), extend without editing SKILL.md
+- `agents/harness-optimizer.md` — lightweight agent (Haiku) that invokes optimize-harness
 - `review` skill — Step 2b: Static Analysis, runs for all tiers (no runtime logs required)
   - **Hook binary check**: for each hook in `settings.json`, verifies the effective binary
     (`npx <pkg>` → checks `<pkg>`; otherwise first token) exists in `devDependencies` or PATH
