@@ -51,8 +51,37 @@ For each selected service:
 5. Attempt test connection after writing (see Verification below).
 6. Confirm before writing.
 
-If the requested service is not in the registry: do not fabricate a config.
-Ask the user to paste an MCP URL if they have one, or skip for now.
+After listing registry options, always show:
+```
+[N+1] Custom — add your own MCP server
+```
+
+If user selects Custom, run the Custom Server Flow below instead.
+
+If the requested service is not in the registry: offer the Custom Server Flow.
+
+## Custom Server Flow
+
+Ask in order:
+
+1. **Name** — display name (e.g. "My Internal API")
+2. **Type** — `http` (remote URL) or `stdio` (local command)
+3. If `http`: **URL endpoint** (e.g. `https://api.example.com/mcp`)
+4. If `stdio`: **Command** (e.g. `npx`) + **Args** as a JSON array (e.g. `["my-mcp-server"]`)
+5. **Auth required?** (yes/no) — if yes, ask for a one-line auth note
+6. **Description** — one line describing what this server does
+
+Generate `id` as a slug: lowercase, spaces → hyphens, strip special chars (e.g. "My API" → `my-api`).
+
+Write to `.mcp.json` using the same format as registry servers:
+```json
+"my-api": {
+  "url": "https://api.example.com/mcp",
+  "type": "http",
+  "description": "User-provided description"
+}
+```
+Update `starter-context.json` → append `"custom-<id>"` to `mcp_selected`.
 
 ## Output Format
 

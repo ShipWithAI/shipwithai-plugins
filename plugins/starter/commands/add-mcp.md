@@ -15,7 +15,10 @@ Add a single MCP server to `.mcp.json`. Stateless — no init context required.
 1. If user provides a service name → look up in the plugin's `mcp-registry.json`
    (located at `skills/setup-mcp/mcp-registry.json` in the plugin directory).
    - Found: show preset config, confirm.
-   - Not found: "Paste the MCP URL and a short description."
+   - Not found in registry: respond with:
+     > "Server [name] not found in registry. Want to add it as a custom server?"
+     If yes: ask for type (`http`/`stdio`), URL or command+args, auth note, description.
+     Generate id as slug (lowercase, spaces→hyphens). Write to `.mcp.json` as a custom entry.
 
 2. Show config preview before writing:
    ```json

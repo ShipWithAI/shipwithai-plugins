@@ -1,26 +1,57 @@
-[
-  {
-    "prompt": "set up observability for my project",
-    "expected": "Copies observe.py to .claude/hooks/, adds PostToolUse hook for Edit|Write|Bash, adds Stop rotation hook, adds .claude/logs/ to .gitignore, updates starter-context.json observability.enabled to true"
-  },
-  {
-    "prompt": "I want to track which tools Claude uses most in my project",
-    "expected": "Triggers setup-observability, explains log format (YYYY-MM-DD.jsonl), explains what is logged (file path, cmd argv[0] only), explains DISABLE_OBSERVE=1 opt-out"
-  },
-  {
-    "prompt": "enable tool call logging so harness-optimizer has data",
-    "expected": "Runs setup flow, shows preview table of files to create/update, asks for confirmation before writing"
-  },
-  {
-    "prompt": "/shipwithai-starter:setup-observability --disable",
-    "expected": "Removes PostToolUse hook entry, removes Stop rotation hook, sets starter-context.json observability.enabled to false, reports that existing logs are preserved"
-  },
-  {
-    "prompt": "I already ran setup-observability, run it again",
-    "expected": "Detects existing hook entry, skips without duplicating (idempotent), reports already configured"
-  },
-  {
-    "prompt": "setup observability — but what exactly gets logged? I am worried about privacy",
-    "expected": "Shows the table: Edit/Write log relative file path only, Bash logs argv[0] only (no arguments), no content/output/prompt ever logged, explains DISABLE_OBSERVE=1 per-session opt-out"
-  }
-]
+{
+  "evals": [
+    {
+      "prompt": "set up observability for my project",
+      "expect": [
+        "copies observe.py to .claude/hooks/",
+        "adds PostToolUse hook for Edit|Write|Bash",
+        "adds Stop rotation hook",
+        "adds .claude/logs/ to .gitignore",
+        "updates starter-context.json observability.enabled to true"
+      ]
+    },
+    {
+      "prompt": "I want to track which tools Claude uses most in my project",
+      "expect": [
+        "triggers setup-observability flow",
+        "explains log format (YYYY-MM-DD.jsonl)",
+        "explains what is logged: file path and cmd argv[0] only",
+        "explains DISABLE_OBSERVE=1 opt-out"
+      ]
+    },
+    {
+      "prompt": "enable tool call logging so harness-optimizer has data",
+      "expect": [
+        "runs setup flow",
+        "shows preview table of files to create/update before writing",
+        "asks for confirmation before writing"
+      ]
+    },
+    {
+      "prompt": "/shipwithai-starter:setup-observability --disable",
+      "expect": [
+        "removes PostToolUse hook entry from settings.json",
+        "removes Stop rotation hook from settings.json",
+        "sets starter-context.json observability.enabled to false",
+        "reports that existing logs at .claude/logs/ are preserved"
+      ]
+    },
+    {
+      "prompt": "I already ran setup-observability, run it again",
+      "expect": [
+        "detects existing hook entry in settings.json",
+        "skips without duplicating (idempotent)",
+        "reports already configured"
+      ]
+    },
+    {
+      "prompt": "setup observability — but what exactly gets logged? I am worried about privacy",
+      "expect": [
+        "shows the privacy table: Edit/Write log relative file path only",
+        "Bash logs argv[0] only — no arguments logged",
+        "no content, output, or prompt ever logged",
+        "explains DISABLE_OBSERVE=1 per-session opt-out"
+      ]
+    }
+  ]
+}
