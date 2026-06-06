@@ -37,6 +37,12 @@ PostgreSQL   → direct DB queries, schema inspection
 Google Drive → search and read documents
 Notion       → read and search pages and databases
 Jira         → issue tracking, sprint management
+Supabase     → database, migrations, edge functions, auth
+Stripe       → payments, subscriptions, invoices
+Datadog      → metrics, logs, alerts, APM traces
+Vercel       → deployments, env vars, domains
+Cloudflare   → Workers, Pages, DNS, R2, D1
+Neon         → serverless PostgreSQL, branches, queries
 ```
 
 For each selected service:
