@@ -91,6 +91,44 @@ workflow_gates  ←→  architecture.sensitive_areas
   → flag ⚠️ "Sensitive areas detected but no security-review gate configured"
 ```
 
+## Step 2b — Static Analysis
+
+Run for ALL tiers. No runtime logs required.
+
+### Hook binary check
+
+For each hook command in `.claude/settings.json`:
+- Extract effective binary: `npx <pkg>` → check `<pkg>`; `python3 <script>` → check `python3`; otherwise check first token
+- Binary in `devDependencies` / `dependencies` (package.json) OR `which <binary>` returns a path → ✅
+- Neither found → flag ⚠️ `Hook [hook-id] references [binary] but it's not installed`
+
+### Hook pattern match check
+
+For hook commands that filter by file extension (e.g. `case "$CLAUDE_TOOL_INPUT_PATH" in *.ts|*.tsx`):
+- Extract file extensions from the command (patterns after `*.`)
+- `find . -name "*.<ext>" -not -path "*/node_modules/*"` returns results → ✅
+- No matching files in project → flag ⚠️ `Hook [hook-id] matches [pattern] but no matching files found`
+
+### MCP usage vs codebase
+
+Compare `.mcp.json` servers vs actual imports/usage in source files. Check both directions:
+
+| MCP server | Detect usage by looking for |
+|------------|----------------------------|
+| github     | `@octokit/*`, `octokit` (JS imports), `gh` CLI calls |
+| linear     | `@linear/sdk` import |
+| slack      | `@slack/bolt`, `@slack/web-api` import |
+| sentry     | `@sentry/*` import, `sentry-sdk` (Python) |
+| postgres   | `pg`, `postgres` (JS), `psycopg2`, `sqlalchemy` (Python) |
+| notion     | `@notionhq/client` import |
+| jira       | `jira-client` (JS), `jira` (Python) |
+
+**Configured but no usage found:**
+→ flag ⚠️ `MCP [name] configured but no related usage found — consider removing`
+
+**Usage found but no MCP configured:**
+→ flag ⚠️ `Code imports [package] but no [service] MCP configured — consider adding`
+
 ## Step 3 — Health Report
 
 ```
@@ -110,8 +148,12 @@ Checked: YYYY-MM-DD
 | ADRs                 | ✅     | 3 ADRs present                             |
 | .claude/memory/      | ❌     | Not set up (Tier 3 item)                   |
 | Observability        | ❌     | observe.py not installed (Tier 3 opt-in)   |
+| Hook binaries        | ⚠️     | jest-on-stop: jest not in devDeps or PATH  |
+| Hook patterns        | ✅     | —                                          |
+| MCP alignment        | ⚠️     | GitHub MCP configured, no octokit imports  |
 
 Drift detected: [list of flagged items, or "None"]
+Static analysis: [list of flagged items, or "None"]
 ```
 
 ## Step 4 — Suggest Actions
@@ -134,3 +176,6 @@ Tier upgrade path:
 - Tier 1 → list Standard tier items not yet configured
 - Tier 2 → list Full tier items not yet configured
 - To upgrade: run `/shipwithai-starter:init`
+
+If `.claude/logs/` exists and contains log files spanning ≥7 calendar days:
+> For runtime-based suggestions (usage patterns, hook coverage): `/shipwithai-starter:optimize-harness`

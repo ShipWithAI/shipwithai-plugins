@@ -31,6 +31,14 @@
     {
       "prompt": "docs/adr/ exists but only has README.md and no ADR files",
       "expect": ["scores docs/adr/ as ⚠️ index-only", "not ✅", "suggests creating first ADR"]
+    },
+    {
+      "prompt": "settings.json has a prettier-on-edit hook but prettier is not in package.json and `which prettier` returns nothing",
+      "expect": ["runs Step 2b static analysis", "flags ⚠️ hook binary not installed", "identifies prettier as the missing binary", "reports in Static analysis section of health report"]
+    },
+    {
+      "prompt": "GitHub MCP is configured in .mcp.json but grep finds no @octokit imports or gh CLI calls in the codebase; meanwhile package.json has @linear/sdk but Linear MCP is not in .mcp.json",
+      "expect": ["flags ⚠️ GitHub MCP configured but no related usage found", "flags ⚠️ @linear/sdk imported but no Linear MCP configured", "reports both findings in MCP alignment row", "suggests removing GitHub MCP and adding Linear MCP"]
     }
   ]
 }
