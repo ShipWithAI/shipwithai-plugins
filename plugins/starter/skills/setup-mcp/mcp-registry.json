@@ -1,5 +1,5 @@
 {
-  "schema": "1.1",
+  "schema": "1.2",
   "registry": [
     {
       "id": "github",
@@ -81,6 +81,66 @@
       "categories": ["project-management"],
       "authRequired": true,
       "authNote": "Requires Atlassian API token"
+    },
+    {
+      "id": "supabase",
+      "name": "Supabase",
+      "url": "https://mcp.supabase.com/mcp",
+      "type": "http",
+      "description": "Database queries, migrations, edge functions, auth management",
+      "categories": ["database", "auth", "serverless"],
+      "authRequired": true,
+      "authNote": "Requires Supabase project access — OAuth flow"
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe",
+      "url": "https://mcp.stripe.com",
+      "type": "http",
+      "description": "Payment data, subscriptions, invoices, product catalog",
+      "categories": ["payments"],
+      "authRequired": true,
+      "authNote": "Requires Stripe API key — OAuth flow"
+    },
+    {
+      "id": "datadog",
+      "name": "Datadog",
+      "url": "https://mcp.datadoghq.com/mcp",
+      "type": "http",
+      "description": "Metrics, logs, alerts, APM traces, dashboard data",
+      "categories": ["monitoring", "observability"],
+      "authRequired": true,
+      "authNote": "Requires Datadog API and application keys"
+    },
+    {
+      "id": "vercel",
+      "name": "Vercel",
+      "url": "https://mcp.vercel.com/mcp",
+      "type": "http",
+      "description": "Deployments, environment variables, domains, project settings",
+      "categories": ["hosting", "deployment"],
+      "authRequired": true,
+      "authNote": "Requires Vercel access token — OAuth flow"
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare",
+      "url": "https://mcp.cloudflare.com/mcp",
+      "type": "http",
+      "description": "Workers, Pages, DNS, R2 storage, D1 database",
+      "categories": ["hosting", "serverless", "cdn"],
+      "authRequired": true,
+      "authNote": "Requires Cloudflare API token"
+    },
+    {
+      "id": "neon",
+      "name": "Neon",
+      "url": "https://mcp.neon.tech/mcp",
+      "type": "http",
+      "description": "Serverless PostgreSQL — branches, queries, schema management",
+      "categories": ["database"],
+      "authRequired": true,
+      "authNote": "Requires Neon API key"
     }
   ]
 }

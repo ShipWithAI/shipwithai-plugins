@@ -68,6 +68,24 @@
       "allowedTools": ["Read", "Grep", "Glob", "Bash(git:*)", "Bash(find:*)"],
       "requireConfirm": ["Write", "Edit", "Bash"],
       "disallowedTools": ["Write", "Edit"]
+    },
+    "flutter": {
+      "description": "Flutter / Dart project",
+      "allowedTools": [
+        "Read", "Write", "Edit", "Grep", "Glob",
+        "Bash(dart:*)", "Bash(flutter:*)", "Bash(pub:*)", "Bash(git:*)"
+      ],
+      "requireConfirm": ["Bash(rm:*)", "Bash(curl:*)", "Bash(wget:*)"],
+      "disallowedTools": []
+    },
+    "dotnet": {
+      "description": ".NET / C# project",
+      "allowedTools": [
+        "Read", "Write", "Edit", "Grep", "Glob",
+        "Bash(dotnet:*)", "Bash(nuget:*)", "Bash(git:*)"
+      ],
+      "requireConfirm": ["Bash(rm:*)", "Bash(curl:*)", "Bash(wget:*)"],
+      "disallowedTools": []
     }
   }
 }

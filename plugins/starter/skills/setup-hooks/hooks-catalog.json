@@ -1,5 +1,5 @@
 {
-  "schema": "1.1",
+  "schema": "1.2",
   "catalog": [
     {
       "id": "prettier-on-edit",
@@ -165,6 +165,70 @@
         }],
         "Stop": [{
           "hooks": [{"type": "command", "command": "find .claude/logs -name '*.jsonl' -mtime +30 -delete 2>/dev/null || true"}]
+        }]
+      }
+    },
+    {
+      "id": "biome-on-edit",
+      "description": "Auto-format and lint JS/TS/JSON files with Biome after edit",
+      "requires": "biome",
+      "detectBy": {
+        "files": ["biome.json", "biome.jsonc"],
+        "packageJson": ["devDependencies.@biomejs/biome"],
+        "binary": "biome"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.js|*.ts|*.jsx|*.tsx|*.json) npx @biomejs/biome check --fix \"$CLAUDE_TOOL_INPUT_PATH\";; esac"}]
+        }]
+      }
+    },
+    {
+      "id": "mypy-on-edit",
+      "description": "Run mypy type check on Python files after edit",
+      "requires": "mypy",
+      "detectBy": {
+        "files": ["mypy.ini", ".mypy.ini", "setup.cfg"],
+        "packageJson": [],
+        "binary": "mypy"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.py) mypy \"$CLAUDE_TOOL_INPUT_PATH\" --no-error-summary 2>/dev/null || true;; esac"}]
+        }]
+      }
+    },
+    {
+      "id": "deno-fmt-on-edit",
+      "description": "Auto-format files with deno fmt after edit",
+      "requires": "deno",
+      "detectBy": {
+        "files": ["deno.json", "deno.jsonc"],
+        "packageJson": [],
+        "binary": "deno"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.ts|*.tsx|*.js|*.jsx|*.md|*.json) deno fmt \"$CLAUDE_TOOL_INPUT_PATH\";; esac"}]
+        }]
+      }
+    },
+    {
+      "id": "swiftformat-on-edit",
+      "description": "Auto-format Swift files after edit",
+      "requires": "swiftformat",
+      "detectBy": {
+        "files": [".swiftformat", "Package.swift"],
+        "packageJson": [],
+        "binary": "swiftformat"
+      },
+      "hook": {
+        "PostToolUse": [{
+          "matcher": "Edit",
+          "hooks": [{"type": "command", "command": "case \"$CLAUDE_TOOL_INPUT_PATH\" in *.swift) swiftformat \"$CLAUDE_TOOL_INPUT_PATH\";; esac"}]
         }]
       }
     }

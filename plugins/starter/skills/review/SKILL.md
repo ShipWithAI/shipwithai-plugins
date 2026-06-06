@@ -122,6 +122,12 @@ Compare `.mcp.json` servers vs actual imports/usage in source files. Check both 
 | postgres   | `pg`, `postgres` (JS), `psycopg2`, `sqlalchemy` (Python) |
 | notion     | `@notionhq/client` import |
 | jira       | `jira-client` (JS), `jira` (Python) |
+| supabase   | `@supabase/supabase-js` import, `supabase` CLI calls |
+| stripe     | `stripe` (JS/Python), `@stripe/*` imports |
+| datadog    | `dd-trace`, `datadog-api-client`, `@datadog/*` imports |
+| vercel     | `vercel` CLI calls, `@vercel/*` imports |
+| cloudflare | `wrangler` CLI calls, `@cloudflare/*` imports |
+| neon       | `@neondatabase/serverless` import |
 
 **Configured but no usage found:**
 → flag ⚠️ `MCP [name] configured but no related usage found — consider removing`

@@ -25,9 +25,9 @@
     },
     {
       "id": "R3",
-      "name": "js/ts edits without prettier",
+      "name": "js/ts edits without prettier or biome",
       "extensions": [".ts", ".tsx", ".js", ".jsx"],
-      "hook_missing": "prettier-on-edit",
+      "hooks_missing_any": ["prettier-on-edit", "biome-on-edit"],
       "threshold_high": 50,
       "threshold_medium": 20,
       "suggestion": "Add prettier-on-edit hook to auto-format JS/TS files",
