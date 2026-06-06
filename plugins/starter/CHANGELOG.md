@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.1.0] — 2026-06-06
+
+### Added
+
+- `review` skill — Step 2b: Static Analysis, runs for all tiers (no runtime logs required)
+  - **Hook binary check**: for each hook in `settings.json`, verifies the effective binary
+    (`npx <pkg>` → checks `<pkg>`; otherwise first token) exists in `devDependencies` or PATH
+  - **Hook pattern match check**: for hooks that filter by file extension, verifies matching
+    files exist in the project (skips `node_modules`)
+  - **MCP usage vs codebase (bidirectional)**: compares `.mcp.json` servers against actual
+    imports/CLI usage in source files; flags MCP configured but unused AND imports present
+    but no MCP configured; covers GitHub, Linear, Slack, Sentry, PostgreSQL, Notion, Jira
+  - Health report table extended with `Hook binaries`, `Hook patterns`, `MCP alignment` rows
+    and a `Static analysis:` summary line
+- `evals.json` — 2 new eval prompts covering hook binary missing and MCP bidirectional mismatch
+
 ## [2.0.0] — 2026-06-01
 
 ### Added
