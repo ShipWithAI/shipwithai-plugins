@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1780704000000,
+  "lastUpdated": 1781456400000,
   "skills": [
     {
       "skillId": "init",
@@ -95,6 +95,14 @@
       "description": "Analyze Claude Code tool call logs and suggest harness improvements: hooks to add, workflow gates to enable, based on actual usage patterns. Requires 7 days of observability data.",
       "creatorType": "community",
       "updatedAt": "2026-06-06T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "setup-skills",
+      "name": "setup-skills",
+      "description": "Install reusable project-level skills into .claude/skills/. Ships git-workflow (commit/branch/PR conventions matched to your init choices). Catalog-driven, extensible.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-15T00:00:00Z",
       "enabled": true
     }
   ]
