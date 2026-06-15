@@ -1,5 +1,5 @@
 # setup-skills Skill — Implementation Spec
-> Version target: 2.3.0 (Skills Provisioning)
+> Version target: 2.2.0 (Skills Provisioning)
 > Target plugin: `plugins/starter/`
 > Status: Draft — pending approval
 > Flagship installable skill: `git-workflow`
@@ -81,7 +81,7 @@ file is built field-by-field). Skills are larger and authored → use the
 .claude/skills/<skill-id>/SKILL.md
 ```
 One directory per installed skill. (Future: a skill may ship `references/` too —
-out of scope for v2.3.0; `git-workflow` is single-file.)
+out of scope for v2.2.0; `git-workflow` is single-file.)
 
 ### Template source (shipped with plugin, co-located with the skill)
 ```
@@ -429,11 +429,11 @@ Also add `"./skills/setup-skills"` to `plugin.json` `skills` array.
 ### Update
 | File | Change |
 |------|--------|
-| `plugins/starter/.claude-plugin/plugin.json` | add `./skills/setup-skills` to skills array; bump version 2.3.0 |
+| `plugins/starter/.claude-plugin/plugin.json` | add `./skills/setup-skills` to skills array; bump version 2.2.0 |
 | `plugins/starter/manifest.json` | add setup-skills entry (§11); bump lastUpdated |
 | `plugins/starter/skills/init/SKILL.md` | Part 7.5; schema v1.3 (`skills_selected`); preview row; Step 5 orchestration |
 | `plugins/starter/skills/review/SKILL.md` | Step 2b template_version staleness check; health row |
-| `plugins/starter/CHANGELOG.md` | add [2.3.0] entry |
+| `plugins/starter/CHANGELOG.md` | add [2.2.0] entry |
 | `plugins/starter/README.md` | add setup-skills to skills table; note git-workflow install |
 | `plugins/starter/CLAUDE.md` | note skills provisioning pillar |
 
@@ -447,7 +447,7 @@ Also add `"./skills/setup-skills"` to `plugin.json` `skills` array.
 | Synthesize from catalog (like agents) or template? | **Template + inject.** Skills are larger and authored; field-synthesis fits agents, not skills. |
 | Static template or convention-adaptive? | **Convention-adaptive.** This is the core value — the skill matches the project's chosen commit/branch conventions. |
 | Tier placement? | **Tier 2 (Standard).** git-workflow is cheap and universal; gating it behind Tier 3 (agents) undersells it. |
-| Catalog beyond git? | **git-workflow only for v2.3.0.** Catalog schema is extensible (testing-workflow, code-review skills as future entries) without a new installer. |
+| Catalog beyond git? | **git-workflow only for v2.2.0.** Catalog schema is extensible (testing-workflow, code-review skills as future entries) without a new installer. |
 | Installed skill in manifest? | **No.** It is a template asset of starter, installed into the user's repo; only the `setup-skills` installer is a plugin skill. |
 | Staleness after plugin updates? | **template_version frontmatter + review check.** Detect-and-notify, never auto-overwrite. |
 | Collision with OMC/superpowers git skills? | **Detect dir + offer Skip/Overwrite; scoped triggers** to limit redundant loads. |
@@ -456,8 +456,7 @@ Also add `"./skills/setup-skills"` to `plugin.json` `skills` array.
 
 ## 14. Version Note
 
-This spec targets **v2.3.0**. The separately drafted `docs/starter/v2.2.0-prompts.md`
-(catalog expansion + dashboard) is independent and untouched by this work. If
-v2.2.0 ships first, only the `plugin.json`/`manifest.json`/CHANGELOG version
-numbers here need rebasing — no design conflict.
+This spec ships as **v2.2.0**. The previously drafted catalog-expansion + dashboard
+plan (`docs/starter/v2.2.0-prompts.md`) was dropped; this skills-provisioning work
+takes the v2.2.0 slot.
 ```

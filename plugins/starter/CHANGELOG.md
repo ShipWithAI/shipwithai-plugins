@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.0] — 2026-06-15
+## [2.2.0] — 2026-06-15
 
 ### Added
 
@@ -23,9 +23,6 @@
 
 - `plugin.json` skills array: added the missing `optimize-harness` entry
   (was present in `manifest.json` and on disk but absent from `plugin.json`).
-
-> Note: v2.2.0 is reserved for the separately drafted catalog-expansion +
-> dashboard work (`docs/starter/v2.2.0-prompts.md`), not yet released.
 
 ## [2.1.0] — 2026-06-06
 
