@@ -1,10 +1,9 @@
 ---
 name: setup-skills
 description: >
-  Install reusable project-level skills into .claude/skills/ for your project.
-  Ships git-workflow (commit/branch/PR conventions matched to your init choices).
-  Called by init or standalone to provision project skills.
-  Trigger phrases: "setup skills", "install project skills", "add git skill".
+  Install reusable project skills into .claude/skills/. Ships git-workflow
+  (commit/branch/PR conventions from your init choices).
+  Triggers: "setup skills", "install project skills", "add git skill".
 argument-hint: "[skill-id]"
 ---
 
@@ -27,6 +26,11 @@ If a skill id is passed directly (e.g. `/setup-skills git-workflow`): skip the
 suggestion step and go straight to that catalog entry.
 
 ## Step 1 — Context Detection
+
+**Context mode** (`starter-context.json` present): install exactly the ids listed
+in `skills_selected` — skip the suggestion logic below. If `skills_selected` is
+absent or empty, the user declined skills at init; do not re-suggest. The
+`suggestWhen` / `alwaysInclude` evaluation applies to **standalone mode only**.
 
 Load `skills-catalog.json`. For each entry, evaluate `suggestWhen`:
 
@@ -70,8 +74,11 @@ For each skill to install:
      BRANCH_BLOCK       = variants.branch[branch_strategy]  (fallback: branch.trunk-based)
      PROTECTED_BRANCHES = variants.protected_branches[branch_strategy] (fallback: trunk-based)
 4. Substitute every {{TOKEN}} in the template. PROJECT_NAME and TEMPLATE_VERSION
-   come from Step 2, not the variants file.
-5. Result: the final SKILL.md content. Confirm no {{...}} tokens remain.
+   come from Step 2, not the variants file. Treat PROJECT_NAME as a literal
+   single-line string: strip newlines and any YAML control characters
+   (`:`, leading `-`, `#`) that could break frontmatter; if it is empty or
+   unsafe, fall back to "this project".
+5. Validate: no {{...}} tokens remain AND the frontmatter still parses as valid YAML.
 ```
 
 ## Step 4 — Write Rules

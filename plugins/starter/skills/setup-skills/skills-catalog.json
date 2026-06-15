@@ -8,7 +8,7 @@
       "template": "templates/git-workflow.SKILL.md.tmpl",
       "variants": "templates/git-workflow.variants.json",
       "version": "1.0.0",
-      "injects": ["COMMIT_BLOCK", "BRANCH_BLOCK", "PROTECTED_BRANCHES", "PROJECT_NAME"],
+      "injects": ["COMMIT_BLOCK", "BRANCH_BLOCK", "PROTECTED_BRANCHES", "PROJECT_NAME", "TEMPLATE_VERSION"],
       "alwaysInclude": true,
       "suggestWhen": {
         "files": [".git/"],

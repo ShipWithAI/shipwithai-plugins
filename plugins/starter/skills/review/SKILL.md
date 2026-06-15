@@ -133,7 +133,7 @@ Compare `.mcp.json` servers vs actual imports/usage in source files. Check both 
 
 For each `.claude/skills/<id>/SKILL.md` that has a `template_version` in frontmatter:
 - Compare against the matching entry's `version` in this plugin's `setup-skills/skills-catalog.json`
-- `template_version` < catalog `version` → flag ⚠️ `[id] skill is v[X]; current template is v[Y] — re-run /shipwithai-starter:setup-skills to refresh`
+- `template_version` < catalog `version` (compare as semver — numeric components, not lexically) → flag ⚠️ `[id] skill is v[X]; current template is v[Y] — re-run /shipwithai-starter:setup-skills to refresh`
 - Skills without a `template_version` (hand-written) → skip, do not flag
 
 ## Step 3 — Health Report
