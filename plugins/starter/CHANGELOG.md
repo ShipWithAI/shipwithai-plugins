@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.2.0] — 2026-06-15
+
+### Added
+
+- `setup-skills` skill — provisions reusable project-level skills into
+  `.claude/skills/`, the sibling of `setup-agents` for the skills artifact type.
+  Catalog-driven (`skills-catalog.json`), extensible.
+- `git-workflow` installable skill (flagship) — commit message format, branch
+  naming, and PR flow, **generated to match the conventions chosen at init**
+  (`commit_format`, `branch_strategy`). Template + inject via
+  `templates/git-workflow.SKILL.md.tmpl` and `git-workflow.variants.json`
+  (3 commit variants × 2 branch variants). Committed into the user's repo so
+  teammates get it without installing the plugin.
+- `init` schema v1.3: adds `skills_selected` field; Part 6.5 (Tier 2+) offers
+  git-workflow; preview table and Step 5 orchestration updated.
+- `review` Step 2b: project-skill staleness check — compares installed
+  `template_version` against the catalog and flags skills behind the current
+  template. Health report gains a `Project skills` row.
+
+### Fixed
+
+- `plugin.json` skills array: added the missing `optimize-harness` entry
+  (was present in `manifest.json` and on disk but absent from `plugin.json`).
+
 ## [2.1.0] — 2026-06-06
 
 ### Added

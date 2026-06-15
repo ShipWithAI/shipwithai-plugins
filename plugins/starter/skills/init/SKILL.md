@@ -77,7 +77,7 @@ Step 1: Read .claude/starter-context.json
         → Not found: "No context found. Run /shipwithai-starter:init for full setup."
         → Found: continue
 
-Step 2: Compare existing fields against current schema (v1.1)
+Step 2: Compare existing fields against current schema (v1.3)
         → Find all fields that are null or absent
 
 Step 3: For each missing field, ask the corresponding interview question only
@@ -86,7 +86,7 @@ Step 3: For each missing field, ask the corresponding interview question only
 
 Step 4: Update starter-context.json
         → Merge new answers in
-        → Set version to "1.2"
+        → Set version to "1.3"
 
 Step 5: Invoke setup-memory (merge mode)
         → Adds/updates only sections with new data
@@ -98,6 +98,7 @@ Current schema fields by version:
 v1.0: stack, project, architecture, conventions (formatter/branch_strategy/commit_format/coverage_target), permissions, hooks_selected, mcp_selected, agents_selected, ssot
 v1.1: + conventions.workflow_gates
 v1.2: + observability.enabled
+v1.3: + skills_selected
 ```
 
 ### Step 2 — Fork-First Preamble
@@ -216,6 +217,12 @@ For each selected service:
 - Never report ✓ without actually testing.
 - Confirm before adding.
 
+#### Part 6.5: Project Skills *(Tier 2+)*
+
+Load `./setup-skills/skills-catalog.json` → suggest installable project skills.
+`git-workflow` is alwaysInclude — offer it by default (every project has git).
+Show preview with the resolved commit/branch variant → confirm.
+
 #### Part 7: Agents *(Tier 3+)*
 
 Load `./setup-agents/agents-catalog.json` → suggest agents by project type/team size.
@@ -242,6 +249,7 @@ Here is what I will create/update:
 │ .claude/settings.json (permissions)  │ CREATE   │ 1     │
 │ .claude/settings.json (hooks)        │ UPDATE   │ 2     │
 │ .mcp.json                            │ CREATE   │ 2     │
+│ .claude/skills/git-workflow/SKILL.md │ CREATE   │ 2     │
 │ .claude/agents/drift-monitor.md      │ CREATE   │ 3     │
 │ .claude/hooks/observe.py             │ CREATE   │ 3     │
 │ .claude/logs/ (.gitignore entry)     │ UPDATE   │ 3     │
@@ -258,7 +266,7 @@ write `.claude/starter-context.json` with all interview answers:
 
 ```json
 {
-  "version": "1.2",
+  "version": "1.3",
   "tier": "essential|standard|full",
   "stack": {
     "language": "...",
@@ -299,6 +307,7 @@ write `.claude/starter-context.json` with all interview answers:
   "hooks_selected": ["prettier", "eslint"],
   "mcp_selected": ["github", "linear"],
   "agents_selected": ["drift-monitor"],
+  "skills_selected": ["git-workflow"],
   "ssot": {
     "adr": true,
     "codemaps": false
@@ -324,6 +333,7 @@ Tier 1: /shipwithai-starter:setup-memory       (reads: project, stack, architect
 
 Tier 2: /shipwithai-starter:setup-hooks        (reads: stack.detected_tools, hooks_selected)
          /shipwithai-starter:setup-mcp          (reads: mcp_selected)
+         /shipwithai-starter:setup-skills       (reads: skills_selected, conventions)
 
 Tier 3: /shipwithai-starter:setup-agents       (reads: agents_selected, project)
          /shipwithai-starter:setup-ssot --adr --codemaps  (reads: ssot)

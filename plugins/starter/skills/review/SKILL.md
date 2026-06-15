@@ -22,7 +22,7 @@ Audit full harness health. Detect drift. Suggest next actions.
 Read and score each component:
 
 ```
-starter-context.json    → version current (1.1) ✅ / outdated ⚠️ / missing ❌
+starter-context.json    → version current (1.3) ✅ / outdated ⚠️ / missing ❌
 CLAUDE.md               → populated ✅ / has-placeholder ⚠️ / missing ❌
 CLAUDE.md workflow      → present ✅ / opted-out ✅ / missing ⚠️
 .claude/settings.json   → configured ✅ / exists-empty ⚠️ / missing ❌
@@ -40,9 +40,9 @@ docs/adr/               → ADRs present ✅ / index-only ⚠️ / missing ❌
 ```
 Read .claude/starter-context.json:
   → not found                    → ❌ not initialized
-  → version == "1.2"             → ✅ current
-  → version == "1.1"             → ⚠️ outdated — run init --update (adds observability field)
-  → version < "1.1" or absent    → ⚠️ outdated — run init --update
+  → version == "1.3"             → ✅ current
+  → version == "1.2"             → ⚠️ outdated — run init --update (adds skills_selected field)
+  → version < "1.2" or absent    → ⚠️ outdated — run init --update
 ```
 
 **Workflow section check (smart opt-out):**
@@ -129,6 +129,13 @@ Compare `.mcp.json` servers vs actual imports/usage in source files. Check both 
 **Usage found but no MCP configured:**
 → flag ⚠️ `Code imports [package] but no [service] MCP configured — consider adding`
 
+### Project skills staleness
+
+For each `.claude/skills/<id>/SKILL.md` that has a `template_version` in frontmatter:
+- Compare against the matching entry's `version` in this plugin's `setup-skills/skills-catalog.json`
+- `template_version` < catalog `version` (compare as semver — numeric components, not lexically) → flag ⚠️ `[id] skill is v[X]; current template is v[Y] — re-run /shipwithai-starter:setup-skills to refresh`
+- Skills without a `template_version` (hand-written) → skip, do not flag
+
 ## Step 3 — Health Report
 
 ```
@@ -151,6 +158,7 @@ Checked: YYYY-MM-DD
 | Hook binaries        | ⚠️     | jest-on-stop: jest not in devDeps or PATH  |
 | Hook patterns        | ✅     | —                                          |
 | MCP alignment        | ⚠️     | GitHub MCP configured, no octokit imports  |
+| Project skills       | ✅     | —                                          |
 
 Drift detected: [list of flagged items, or "None"]
 Static analysis: [list of flagged items, or "None"]
@@ -170,6 +178,7 @@ If user accepts: invoke the relevant skill directly:
 - Agents issue → `/shipwithai-starter:setup-agents`
 - SSOT/docs issue → `/shipwithai-starter:update-ssot`
 - Observability missing (Tier 3) → `/shipwithai-starter:setup-observability`
+- Stale project skill (template_version behind catalog) → `/shipwithai-starter:setup-skills`
 - Logs tracked by git → warn: run `git rm -r --cached .claude/logs/` and add to .gitignore
 
 Tier upgrade path:

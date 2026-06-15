@@ -1,0 +1,35 @@
+---
+name: git-workflow
+description: >
+  {{PROJECT_NAME}} git conventions — commit message format, branch naming,
+  and PR flow. Apply when committing, branching, or opening a pull request.
+  Trigger phrases: "commit", "create branch", "open PR", "git workflow".
+template_version: {{TEMPLATE_VERSION}}
+---
+
+# Git Workflow — {{PROJECT_NAME}}
+
+Project-specific git rules. Follow these for every commit, branch, and PR.
+This is not a git tutorial — it encodes the conventions chosen for this repo.
+
+## Commits
+
+{{COMMIT_BLOCK}}
+
+## Branches
+
+{{BRANCH_BLOCK}}
+
+## Pull Requests
+
+- PR title = the commit subject (or the dominant change if multiple commits).
+- Body: summarize *what changed and why*, derived from the commit history
+  (`git log <base>..HEAD`).
+- Include a short test plan / verification note.
+- Keep PRs scoped to one logical change.
+
+## Boundaries
+
+- Do not force-push to shared branches ({{PROTECTED_BRANCHES}}).
+- Do not amend or rebase commits already pushed to a shared branch.
+- Do not commit secrets, build artifacts, or files matching `.gitignore`.

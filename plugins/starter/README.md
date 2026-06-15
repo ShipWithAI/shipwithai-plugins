@@ -40,6 +40,7 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 | `/shipwithai-starter:setup-ssot` | Configure architecture docs, ADRs, CODEMAPS |
 | `/shipwithai-starter:setup-observability` | Enable tool call logging for harness optimization (Tier 3 opt-in) |
 | `/shipwithai-starter:optimize-harness` | Analyze tool call logs and suggest hooks/gates based on actual usage patterns |
+| `/shipwithai-starter:setup-skills` | Install reusable project skills (git-workflow) into .claude/skills/, matched to your conventions |
 
 ## Commands
 

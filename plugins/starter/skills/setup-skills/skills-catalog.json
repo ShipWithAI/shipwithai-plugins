@@ -1,0 +1,20 @@
+{
+  "schema": "1.0",
+  "catalog": [
+    {
+      "id": "git-workflow",
+      "name": "git-workflow",
+      "description": "Project git conventions — commit message format, branch naming, PR flow",
+      "template": "templates/git-workflow.SKILL.md.tmpl",
+      "variants": "templates/git-workflow.variants.json",
+      "version": "1.0.0",
+      "injects": ["COMMIT_BLOCK", "BRANCH_BLOCK", "PROTECTED_BRANCHES", "PROJECT_NAME", "TEMPLATE_VERSION"],
+      "alwaysInclude": true,
+      "suggestWhen": {
+        "files": [".git/"],
+        "context": []
+      },
+      "triggers": ["commit", "create branch", "open PR", "git workflow"]
+    }
+  ]
+}
