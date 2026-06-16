@@ -50,6 +50,27 @@
         "firebase",
         "nextjs"
       ]
+    },
+    {
+      "name": "shipwithai-java-backend-toolkit",
+      "description": "Guardrail-first Spring Boot + JPA toolkit. Just-in-time hooks catch missing @Version, broken @Transactional proxies, entity-in-controller leaks, N+1, and query injection as you write them; scaffold skills generate correct-by-default entities, endpoints, and migrations; a tuned reviewer agent shares one ruleset with the hooks.",
+      "version": "0.1.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": "./plugins/java-backend-toolkit",
+      "category": "productivity",
+      "tags": [
+        "spring-boot",
+        "java",
+        "jpa",
+        "backend",
+        "guardrails",
+        "scaffold",
+        "code-review",
+        "hooks"
+      ]
     }
   ],
   "version": "1.0.0"

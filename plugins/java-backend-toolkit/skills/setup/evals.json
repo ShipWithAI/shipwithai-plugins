@@ -1,0 +1,55 @@
+{
+  "evals": [
+    {
+      "prompt": "Set up Spring Boot guardrails — project has pom.xml with spring-boot-starter-data-jpa and a Flyway dependency",
+      "expect": [
+        "verifies Spring Boot + JPA before doing anything",
+        "detects MIGRATION_TOOL = Flyway",
+        "copies jpa-guardrail.py, ruleset.json, guardrails-config.json into .claude/hooks/",
+        "registers a PostToolUse Write|Edit hook in .claude/settings.json without removing existing hooks",
+        "injects the Spring Boot rule block into CLAUDE.md (or .claude/rules/springboot.md)",
+        "copies springboot-reviewer.md into .claude/agents/"
+      ]
+    },
+    {
+      "prompt": "Install java backend toolkit on a project whose .claude/settings.json already has protect-files.py and observe.py PostToolUse hooks",
+      "expect": [
+        "preserves protect-files.py and observe.py entries",
+        "appends the jpa-guardrail entry, does not replace the array",
+        "is idempotent — does not add a second jpa-guardrail entry if rerun"
+      ]
+    },
+    {
+      "prompt": "Set up spring boot guardrails on a Kotlin Ktor project",
+      "expect": [
+        "detects this is not the supported paved road (Spring Boot + JPA)",
+        "stops and explains v1 scope excludes Kotlin/non-Spring",
+        "does not write any files"
+      ]
+    },
+    {
+      "prompt": "Set up the guardrails but I want injection to only warn, not block — pass advisory-only",
+      "expect": [
+        "sets strictChecks to [] in the copied guardrails-config.json",
+        "explains jpql-injection will advise instead of blocking"
+      ]
+    },
+    {
+      "prompt": "Set up spring boot guardrails --no-agent",
+      "expect": [
+        "installs hook, ruleset, config, and rule block",
+        "does NOT copy springboot-reviewer.md",
+        "reports what was installed"
+      ]
+    },
+    {
+      "prompt": "Wire jpa guardrails — project uses Liquibase and a @MappedSuperclass AuditableEntity",
+      "expect": [
+        "detects MIGRATION_TOOL = Liquibase",
+        "detects BASE_ENTITY references AuditableEntity",
+        "uses those values when injecting the rule block",
+        "confirms slots before writing"
+      ]
+    }
+  ]
+}

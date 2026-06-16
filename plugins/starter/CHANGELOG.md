@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.3.0] — 2026-06-16
+
+### Added
+
+- **Stack-plugin routing** — `init` now recommends a dedicated ShipWithAI plugin
+  based on the detected stack (launcher model). New `init/stack-recipes.json` maps
+  a stack to a `recommendPlugin` + `setupCommand`; first recipe ships `spring-boot`
+  → `shipwithai-java-backend-toolkit`.
+- `init` Part 6.6 (Tier 2+): surfaces the matched stack plugin and, on confirm,
+  records it in `stack_plugins_selected` and invokes its setup in Step 5. Recommend-
+  only — never force-installs a plugin the user has not enabled.
+- `init` schema v1.4: adds `stack_plugins_selected` field; Update Mode offers the
+  recommendation when the field is missing.
+- `review` schema-version check updated: v1.4 is now current; v1.3/v1.2 report as
+  outdated (→ `init --update`) so existing harnesses are prompted to pick up the
+  stack-plugin field.
+- `review` stack-plugin coverage check: on a project whose stack matches a recipe,
+  flags the recommended plugin as ⚠️ when its `verifyArtifact` is absent (drift-style —
+  distinguishes "selected but not installed" from "available but not set up"). New
+  `verifyArtifact` field in `stack-recipes.json`.
+
+### Fixed
+
+- `new-project` wrote a stale **v1.1** `starter-context.json` (missing `workflow_gates`,
+  `observability.enabled`, `skills_selected`, `stack_plugins_selected`) — it would have
+  been flagged outdated by `review` the moment it was created. Now emits the current
+  **v1.4** schema with essential-tier defaults.
+
 ## [2.2.0] — 2026-06-15
 
 ### Added

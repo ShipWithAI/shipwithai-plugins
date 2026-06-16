@@ -1,0 +1,48 @@
+{
+  "evals": [
+    {
+      "prompt": "Scaffold a REST controller for Order with get-by-id, list, and create",
+      "expect": [
+        "generates OrderController, OrderResponse, OrderRequest",
+        "every controller method returns a DTO type, never the Order entity",
+        "create() takes @Valid @RequestBody OrderRequest",
+        "transactional boundary (if any) is on the service, not the controller"
+      ]
+    },
+    {
+      "prompt": "Add an endpoint that returns a Customer — make sure it doesn't leak the entity",
+      "expect": [
+        "controller return type is CustomerResponse (DTO), not Customer (@Entity)",
+        "the entity-in-controller guardrail would not fire on the generated code"
+      ]
+    },
+    {
+      "prompt": "Add a POST endpoint for Product",
+      "expect": [
+        "request body is a validated ProductRequest DTO with @Valid",
+        "does not accept the JPA entity as the request body"
+      ]
+    },
+    {
+      "prompt": "Scaffold a rest controller but there's no entity for Invoice yet",
+      "expect": [
+        "suggests scaffolding the entity first (/jpa-entity)",
+        "still generates DTO-based controller, not entity-based"
+      ]
+    },
+    {
+      "prompt": "Add an endpoint to an existing OrderController",
+      "expect": [
+        "shows a diff and confirms before overwriting the existing controller",
+        "keeps DTO return types"
+      ]
+    },
+    {
+      "prompt": "Scaffold endpoint for Account in a project that uses MapStruct",
+      "expect": [
+        "matches the existing mapper convention (MapStruct) instead of a hand-written mapper",
+        "controller still returns AccountResponse DTO"
+      ]
+    }
+  ]
+}

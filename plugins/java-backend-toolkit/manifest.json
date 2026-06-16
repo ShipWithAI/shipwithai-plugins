@@ -1,0 +1,45 @@
+{
+  "lastUpdated": 1781629200000,
+  "skills": [
+    {
+      "skillId": "setup",
+      "name": "setup",
+      "description": "Wire the Spring Boot guardrails into this project: install the jpa-guardrail PostToolUse hook, the scaffold skills, the rule block in CLAUDE.md, and the springboot-reviewer agent. Short interview fills project-specific slots (BaseEntity, audit strategy).",
+      "creatorType": "community",
+      "updatedAt": "2026-06-16T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "jpa-entity",
+      "name": "jpa-entity",
+      "description": "Scaffold a Spring Data JPA @Entity correct-by-default: @Version optimistic lock, business-key equals/hashCode, audit fields, optional soft-delete, matching project conventions.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-16T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "spring-rest-endpoint",
+      "name": "spring-rest-endpoint",
+      "description": "Scaffold a Spring Web REST endpoint with request/response DTOs, a service method, and a mapper — never exposing the JPA entity directly.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-16T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "db-migration",
+      "name": "db-migration",
+      "description": "Generate a Flyway or Liquibase migration alongside entity changes so schema and entities stay in lockstep. Detects which migration tool the project uses.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-16T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "springboot-conventions",
+      "name": "springboot-conventions",
+      "description": "Fine-grained Spring Boot conventions, split by domain (persistence, web, transactions, testing). Lazy-loaded references explaining the why behind each guardrail rule.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-16T00:00:00Z",
+      "enabled": true
+    }
+  ]
+}

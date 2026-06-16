@@ -22,7 +22,7 @@ Audit full harness health. Detect drift. Suggest next actions.
 Read and score each component:
 
 ```
-starter-context.json    → version current (1.3) ✅ / outdated ⚠️ / missing ❌
+starter-context.json    → version current (1.4) ✅ / outdated ⚠️ / missing ❌
 CLAUDE.md               → populated ✅ / has-placeholder ⚠️ / missing ❌
 CLAUDE.md workflow      → present ✅ / opted-out ✅ / missing ⚠️
 .claude/settings.json   → configured ✅ / exists-empty ⚠️ / missing ❌
@@ -40,8 +40,9 @@ docs/adr/               → ADRs present ✅ / index-only ⚠️ / missing ❌
 ```
 Read .claude/starter-context.json:
   → not found                    → ❌ not initialized
-  → version == "1.3"             → ✅ current
-  → version == "1.2"             → ⚠️ outdated — run init --update (adds skills_selected field)
+  → version == "1.4"             → ✅ current
+  → version == "1.3"             → ⚠️ outdated — run init --update (adds stack_plugins_selected field)
+  → version == "1.2"             → ⚠️ outdated — run init --update (adds skills_selected, stack_plugins_selected)
   → version < "1.2" or absent    → ⚠️ outdated — run init --update
 ```
 
@@ -136,6 +137,26 @@ For each `.claude/skills/<id>/SKILL.md` that has a `template_version` in frontma
 - `template_version` < catalog `version` (compare as semver — numeric components, not lexically) → flag ⚠️ `[id] skill is v[X]; current template is v[Y] — re-run /shipwithai-starter:setup-skills to refresh`
 - Skills without a `template_version` (hand-written) → skip, do not flag
 
+### Stack plugin coverage
+
+Read `../init/stack-recipes.json`. Determine the project stack (from
+`starter-context.json.stack`, else detect like init Step 1: `pom.xml`/`build.gradle` → Java).
+For each recipe whose `detect` matches (a `files` entry exists AND, if `content` is set,
+one of those strings appears in it):
+
+```
+verifyArtifact file exists (e.g. .claude/hooks/jpa-guardrail.py)   → ✅ wired
+artifact absent BUT stack_plugins_selected lists recommendPlugin   → ⚠️ selected but not installed —
+                                                                       re-run [setupCommand]
+artifact absent AND not selected                                   → ⚠️ [label] detected —
+                                                                       [recommendPlugin] available but not set up
+no recipe matches the stack                                        → not applicable (no row)
+```
+
+Recommend only; do not claim the plugin is installed when its `verifyArtifact` is absent.
+If the plugin is not enabled in the marketplace, note that the user must enable
+`[marketplace]` first.
+
 ## Step 3 — Health Report
 
 ```
@@ -159,6 +180,7 @@ Checked: YYYY-MM-DD
 | Hook patterns        | ✅     | —                                          |
 | MCP alignment        | ⚠️     | GitHub MCP configured, no octokit imports  |
 | Project skills       | ✅     | —                                          |
+| Stack plugin         | ⚠️     | Spring Boot — java-backend-toolkit not set up |
 
 Drift detected: [list of flagged items, or "None"]
 Static analysis: [list of flagged items, or "None"]
@@ -179,6 +201,7 @@ If user accepts: invoke the relevant skill directly:
 - SSOT/docs issue → `/shipwithai-starter:update-ssot`
 - Observability missing (Tier 3) → `/shipwithai-starter:setup-observability`
 - Stale project skill (template_version behind catalog) → `/shipwithai-starter:setup-skills`
+- Stack plugin available but not set up → run the recipe's `setupCommand` (e.g. `/shipwithai-java-backend-toolkit:setup`); if not enabled, enable the recipe's marketplace first
 - Logs tracked by git → warn: run `git rm -r --cached .claude/logs/` and add to .gitignore
 
 Tier upgrade path:

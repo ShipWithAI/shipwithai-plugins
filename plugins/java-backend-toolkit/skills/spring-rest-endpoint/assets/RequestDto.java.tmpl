@@ -1,0 +1,13 @@
+package {{PACKAGE}}.web.dto;
+
+import jakarta.validation.constraints.NotBlank;
+
+/**
+ * Validated request body for creating/updating a {{RESOURCE}}.
+ * Bean Validation runs because the controller annotates it @Valid.
+ */
+public record {{RESOURCE}}Request(
+    // TODO: replace with real fields + constraints
+    @NotBlank String name
+) {
+}
