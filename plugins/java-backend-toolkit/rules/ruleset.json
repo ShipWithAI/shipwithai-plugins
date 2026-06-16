@@ -1,0 +1,95 @@
+{
+  "schema": "1.0",
+  "framework": "spring-boot",
+  "description": "Single source of truth for Spring Boot + JPA guardrail rules. Consumed by hooks/jpa-guardrail.py (runtime advisories) and agents/springboot-reviewer.md (review checklist). One rule defined here updates both.",
+  "rules": [
+    {
+      "id": "jpa-optimistic-lock",
+      "title": "Entity missing @Version (no optimistic locking)",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "file-has-without",
+        "has": ["@Entity\\b"],
+        "without": ["@Version\\b"]
+      },
+      "advisory": "Entity has no @Version field. Concurrent updates can silently overwrite each other (lost-update). Add optimistic locking unless intentionally omitted.",
+      "fixHint": "Add `@Version private Long version;` to the entity (or document why optimistic locking is not needed)."
+    },
+    {
+      "id": "jpa-entity-equals",
+      "title": "Entity equals/hashCode must use a stable business key, not the generated @Id",
+      "severity": "info",
+      "hookEnabled": false,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "reviewer-only",
+        "note": "Whether equals/hashCode is safe depends on WHICH field it uses — a business key/UUID (correct) vs the generated @Id (wrong). A line-level regex cannot tell these apart, so it would also flag correct-by-default entities (e.g. the jpa-entity scaffold). The reviewer reads the equals body and judges; the hook stays out of it."
+      },
+      "advisory": "equals()/hashCode() based on a generated @Id is unsafe before the entity is persisted (id is null) and breaks Set/Map membership. Use a stable business key or an assigned UUID.",
+      "fixHint": "Base equals/hashCode on an immutable business key (e.g. a natural key or a UUID assigned at construction), not the generated @Id."
+    },
+    {
+      "id": "tx-proxy",
+      "title": "@Transactional on a non-public method (Spring AOP won't proxy it)",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "@Transactional[^\\n]*\\n\\s*(private|protected|static)\\b",
+        "flags": "m"
+      },
+      "advisory": "@Transactional on a private/protected/static method is silently ignored — Spring's proxy only advises public methods invoked from another bean. The transaction will NOT start.",
+      "fixHint": "Make the method public and call it from a different bean, or move the transactional boundary to a public service method."
+    },
+    {
+      "id": "entity-in-controller",
+      "title": "Controller returns a JPA entity instead of a DTO",
+      "severity": "warning",
+      "hookEnabled": false,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "reviewer-only",
+        "note": "Cross-file: a @RestController method whose return type is a class annotated @Entity. Requires resolving types across files — handled by the reviewer agent, not the line-level hook."
+      },
+      "advisory": "Returning a JPA entity from a controller leaks the persistence model to the API and risks LazyInitializationException during serialization. Map to a DTO.",
+      "fixHint": "Introduce a response DTO and map the entity to it in the service or a mapper; never serialize the entity directly."
+    },
+    {
+      "id": "nplus1-heuristic",
+      "title": "Possible N+1 — repository call inside a loop",
+      "severity": "info",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "(for\\s*\\(|\\.forEach\\s*\\(|\\.stream\\s*\\(\\s*\\))[\\s\\S]{0,300}?\\w*[Rr]epository[\\s\\S]{0,80}?\\.(find|get|count|exists)",
+        "flags": ""
+      },
+      "advisory": "A repository call appears inside a loop — likely an N+1 query pattern. Each iteration may hit the database.",
+      "fixHint": "Fetch in one query: a JOIN FETCH / @EntityGraph, a batch findAllById, or @BatchSize. Verify whether this loop actually issues per-row queries."
+    },
+    {
+      "id": "jpql-injection",
+      "title": "Query built by string concatenation (injection risk)",
+      "severity": "critical",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": true,
+      "match": {
+        "strategy": "regex",
+        "pattern": "(@Query\\s*\\(|createQuery\\s*\\(|createNativeQuery\\s*\\()[^)]*\"\\s*\\+",
+        "flags": ""
+      },
+      "advisory": "A JPQL/native query is assembled with string concatenation. This is an injection vector and defeats query plan caching.",
+      "fixHint": "Use bind parameters (`:name` with @Param, or positional `?1`) — never concatenate user input into a query string."
+    }
+  ]
+}

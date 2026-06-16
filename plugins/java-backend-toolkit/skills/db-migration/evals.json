@@ -1,0 +1,49 @@
+{
+  "evals": [
+    {
+      "prompt": "Create a migration for a new orders table — project uses Flyway",
+      "expect": [
+        "detects Flyway from db/migration/ or flyway-core",
+        "names the file V<n>__create_orders_table.sql with the next version number",
+        "includes a version column and created_at/updated_at audit columns"
+      ]
+    },
+    {
+      "prompt": "Add a db migration in a Liquibase project",
+      "expect": [
+        "detects Liquibase from db/changelog/ or liquibase-core",
+        "generates a changeSet with a unique incrementing id and author",
+        "does not produce a Flyway .sql file"
+      ]
+    },
+    {
+      "prompt": "Create a migration — existing migrations go up to V7",
+      "expect": [
+        "computes next version V8",
+        "does not reuse V7 or an earlier number"
+      ]
+    },
+    {
+      "prompt": "Generate a migration for a project with no migration tool configured",
+      "expect": [
+        "asks which tool (defaults to Flyway)",
+        "notes the dependency the project must add"
+      ]
+    },
+    {
+      "prompt": "I just scaffolded an Account entity with @Version and audit fields — generate the matching migration",
+      "expect": [
+        "creates the account table migration",
+        "the DDL includes the version column and created_at/updated_at",
+        "reminds to commit entity + migration together"
+      ]
+    },
+    {
+      "prompt": "Edit the already-applied V3 migration to add a column",
+      "expect": [
+        "refuses to edit an applied migration",
+        "creates a new migration (V<next>) with an ALTER instead"
+      ]
+    }
+  ]
+}

@@ -42,6 +42,18 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 | `/shipwithai-starter:optimize-harness` | Analyze tool call logs and suggest hooks/gates based on actual usage patterns |
 | `/shipwithai-starter:setup-skills` | Install reusable project skills (git-workflow) into .claude/skills/, matched to your conventions |
 
+## Stack Plugins
+
+When `init` detects a stack with a dedicated ShipWithAI plugin (Part 6.6, Tier 2+),
+it recommends and — if the plugin is enabled — wires it in. Routing lives in
+`skills/init/stack-recipes.json` (a stack → `recommendPlugin` + `setupCommand` map).
+starter knows *when*; the stack plugin knows *what*. Recommend-only — it never
+force-installs a plugin you have not enabled.
+
+| Detected stack | Recommends |
+|----------------|-----------|
+| Spring Boot + JPA (`pom.xml`/`build.gradle` + `spring-boot-starter`) | `shipwithai-java-backend-toolkit` |
+
 ## Commands
 
 | Command | Description |

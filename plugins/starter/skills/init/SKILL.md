@@ -77,7 +77,7 @@ Step 1: Read .claude/starter-context.json
         → Not found: "No context found. Run /shipwithai-starter:init for full setup."
         → Found: continue
 
-Step 2: Compare existing fields against current schema (v1.3)
+Step 2: Compare existing fields against current schema (v1.4)
         → Find all fields that are null or absent
 
 Step 3: For each missing field, ask the corresponding interview question only
@@ -86,7 +86,7 @@ Step 3: For each missing field, ask the corresponding interview question only
 
 Step 4: Update starter-context.json
         → Merge new answers in
-        → Set version to "1.3"
+        → Set version to "1.4"
 
 Step 5: Invoke setup-memory (merge mode)
         → Adds/updates only sections with new data
@@ -99,6 +99,7 @@ v1.0: stack, project, architecture, conventions (formatter/branch_strategy/commi
 v1.1: + conventions.workflow_gates
 v1.2: + observability.enabled
 v1.3: + skills_selected
+v1.4: + stack_plugins_selected
 ```
 
 ### Step 2 — Fork-First Preamble
@@ -223,6 +224,24 @@ Load `./setup-skills/skills-catalog.json` → suggest installable project skills
 `git-workflow` is alwaysInclude — offer it by default (every project has git).
 Show preview with the resolved commit/branch variant → confirm.
 
+#### Part 6.6: Stack Plugins *(Tier 2+)*
+
+Load `./stack-recipes.json` → for each recipe whose `detect` matches the project
+(a `files` entry exists AND, if `content` is set, one of those strings appears in it),
+surface the recommended ShipWithAI plugin:
+
+"Detected [recipe.label]. ShipWithAI has a dedicated plugin for this stack:
+ **[recommendPlugin]** — [reason]. Set it up?"
+
+- On yes, record `recommendPlugin` in `stack_plugins_selected`. If the plugin is
+  already enabled (its `setupCommand` resolves), invoke that command in Step 5.
+- If the plugin is not enabled, tell the user how to add it (enable the
+  `[marketplace]` marketplace), then it wires on the next `init`/`--update` run.
+  Never claim it is installed when it is not.
+
+Only recommend; never force-install. starter cannot enable a plugin the user has not
+added — that is the user's action. A user who declines is fine; do not re-ask.
+
 #### Part 7: Agents *(Tier 3+)*
 
 Load `./setup-agents/agents-catalog.json` → suggest agents by project type/team size.
@@ -266,7 +285,7 @@ write `.claude/starter-context.json` with all interview answers:
 
 ```json
 {
-  "version": "1.3",
+  "version": "1.4",
   "tier": "essential|standard|full",
   "stack": {
     "language": "...",
@@ -308,6 +327,7 @@ write `.claude/starter-context.json` with all interview answers:
   "mcp_selected": ["github", "linear"],
   "agents_selected": ["drift-monitor"],
   "skills_selected": ["git-workflow"],
+  "stack_plugins_selected": ["shipwithai-java-backend-toolkit"],
   "ssot": {
     "adr": true,
     "codemaps": false
@@ -334,6 +354,10 @@ Tier 1: /shipwithai-starter:setup-memory       (reads: project, stack, architect
 Tier 2: /shipwithai-starter:setup-hooks        (reads: stack.detected_tools, hooks_selected)
          /shipwithai-starter:setup-mcp          (reads: mcp_selected)
          /shipwithai-starter:setup-skills       (reads: skills_selected, conventions)
+         For each entry in stack_plugins_selected whose plugin is enabled:
+           invoke its setupCommand from stack-recipes.json   (reads: stack_plugins_selected)
+           e.g. /shipwithai-java-backend-toolkit:setup
+           (if not enabled, skip and remind the user to enable it, then re-run)
 
 Tier 3: /shipwithai-starter:setup-agents       (reads: agents_selected, project)
          /shipwithai-starter:setup-ssot --adr --codemaps  (reads: ssot)

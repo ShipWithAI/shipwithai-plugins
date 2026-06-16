@@ -1,0 +1,37 @@
+package {{PACKAGE}}.web;
+
+import {{PACKAGE}}.web.dto.{{RESOURCE}}Request;
+import {{PACKAGE}}.web.dto.{{RESOURCE}}Response;
+import jakarta.validation.Valid;
+import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/{{RESOURCE_LOWER}}s")
+public class {{RESOURCE}}Controller {
+
+    private final {{RESOURCE}}Service {{RESOURCE_LOWER}}Service;
+
+    public {{RESOURCE}}Controller({{RESOURCE}}Service {{RESOURCE_LOWER}}Service) {
+        this.{{RESOURCE_LOWER}}Service = {{RESOURCE_LOWER}}Service;
+    }
+
+    // Returns a DTO, never the JPA entity.
+    @GetMapping("/{id}")
+    public {{RESOURCE}}Response getById(@PathVariable Long id) {
+        return {{RESOURCE_LOWER}}Service.getById(id);
+    }
+
+    @GetMapping
+    public List<{{RESOURCE}}Response> list() {
+        return {{RESOURCE_LOWER}}Service.list();
+    }
+
+    @PostMapping
+    public ResponseEntity<{{RESOURCE}}Response> create(@Valid @RequestBody {{RESOURCE}}Request request) {
+        {{RESOURCE}}Response created = {{RESOURCE_LOWER}}Service.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+}
