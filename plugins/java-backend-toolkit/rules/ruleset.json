@@ -90,6 +90,21 @@
       },
       "advisory": "A JPQL/native query is assembled with string concatenation. This is an injection vector and defeats query plan caching.",
       "fixHint": "Use bind parameters (`:name` with @Param, or positional `?1`) — never concatenate user input into a query string."
+    },
+    {
+      "id": "jpa-eager-fetch",
+      "title": "FetchType.EAGER on an association (over-fetching / N+1 source)",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "FetchType\\.EAGER\\b",
+        "flags": ""
+      },
+      "advisory": "FetchType.EAGER loads the association on every query — over-fetching and a frequent N+1 source. Note @ManyToOne/@OneToOne default to EAGER, so set fetch explicitly. Prefer LAZY and fetch on demand.",
+      "fixHint": "Use fetch = FetchType.LAZY; load the association when needed via a JOIN FETCH query or @EntityGraph."
     }
   ]
 }

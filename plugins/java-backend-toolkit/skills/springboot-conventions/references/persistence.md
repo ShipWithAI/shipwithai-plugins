@@ -62,3 +62,12 @@ Optional<User> findByEmail(@Param("email") String email);
 This rule blocks by default (`strictChecks`). If you have a vetted dynamic-query
 builder (Criteria API / QueryDSL), use it rather than string concat — don't just
 suppress.
+
+## Eager fetching (`jpa-eager-fetch`)
+
+**Failure mode:** `FetchType.EAGER` loads the association on *every* query, even when
+the caller never touches it — wasted joins/queries, and a classic N+1 trigger. Remember
+`@ManyToOne`/`@OneToOne` default to EAGER, so the cost is easy to ship by accident.
+
+**Fix:** make associations `fetch = FetchType.LAZY` and pull them in only when needed
+via a `JOIN FETCH` query or `@EntityGraph(attributePaths = …)`.
