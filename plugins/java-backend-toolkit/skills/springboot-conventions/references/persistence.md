@@ -91,3 +91,13 @@ throughput hit on large writes.
 
 **Fix:** use `GenerationType.SEQUENCE` with a `@SequenceGenerator(allocationSize = 50)`
 (pooled allocator) so ids are reserved in blocks and inserts can batch.
+
+## Open Session In View (`jpa-osiv`)
+
+**Failure mode:** `spring.jpa.open-in-view=true` (the Spring Boot default) holds the
+persistence context open through view rendering. Lazy associations then load during
+controller serialization, so N+1 queries hide outside the service layer where you can't
+see or tune them. Detected in `application.properties`/`.yml`, not Java.
+
+**Fix:** set `spring.jpa.open-in-view=false` and load the associations you need in the
+service layer explicitly — `JOIN FETCH`, `@EntityGraph`, or a DTO projection.

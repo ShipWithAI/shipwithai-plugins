@@ -135,6 +135,21 @@
       },
       "advisory": "GenerationType.IDENTITY disables JDBC batch inserts (Hibernate must read each generated key per row), hurting bulk-insert throughput. Prefer SEQUENCE with a pooled allocator.",
       "fixHint": "Use @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = \"...\") + @SequenceGenerator(allocationSize = 50) for batchable inserts."
+    },
+    {
+      "id": "jpa-osiv",
+      "title": "Open Session In View enabled (lazy loads leak into the view layer)",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "open-in-view\\s*[:=]\\s*true",
+        "flags": ""
+      },
+      "advisory": "spring.jpa.open-in-view=true keeps the persistence context open through view rendering, hiding lazy-loading queries in the controller/serialization layer and causing surprise N+1. Disable it and fetch explicitly in the service layer.",
+      "fixHint": "Set spring.jpa.open-in-view=false and load required associations in the service (JOIN FETCH / @EntityGraph / DTO projection)."
     }
   ]
 }
