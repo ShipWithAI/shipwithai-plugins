@@ -40,6 +40,14 @@
       "creatorType": "community",
       "updatedAt": "2026-06-16T00:00:00Z",
       "enabled": true
+    },
+    {
+      "skillId": "rest-error-handler",
+      "name": "rest-error-handler",
+      "description": "Scaffold a global @RestControllerAdvice that maps exceptions to RFC 7807 ProblemDetail: validation errors to 400 with field details, a domain NotFoundException to 404, and a fallback 500 that never leaks stack traces.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
     }
   ]
 }

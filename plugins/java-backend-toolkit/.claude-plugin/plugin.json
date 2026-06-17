@@ -15,7 +15,8 @@
     "./skills/jpa-entity",
     "./skills/spring-rest-endpoint",
     "./skills/db-migration",
-    "./skills/springboot-conventions"
+    "./skills/springboot-conventions",
+    "./skills/rest-error-handler"
   ],
   "agents": [
     "./agents/springboot-reviewer.md"
