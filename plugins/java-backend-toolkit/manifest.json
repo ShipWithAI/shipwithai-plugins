@@ -56,6 +56,14 @@
       "creatorType": "community",
       "updatedAt": "2026-06-17T00:00:00Z",
       "enabled": true
+    },
+    {
+      "skillId": "security-filter-chain",
+      "name": "security-filter-chain",
+      "description": "Scaffold a Spring Security 6 SecurityFilterChain @Bean baseline: deny-by-default authorizeHttpRequests, a BCryptPasswordEncoder, explicit CORS, and CSRF guidance (kept for cookie/session auth, disabled only for stateless token APIs). Lambda DSL, no deprecated adapter.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
     }
   ]
 }

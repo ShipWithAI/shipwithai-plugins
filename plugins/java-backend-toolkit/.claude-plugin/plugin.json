@@ -17,7 +17,8 @@
     "./skills/db-migration",
     "./skills/springboot-conventions",
     "./skills/rest-error-handler",
-    "./skills/idempotent-endpoint"
+    "./skills/idempotent-endpoint",
+    "./skills/security-filter-chain"
   ],
   "agents": [
     "./agents/springboot-reviewer.md"
