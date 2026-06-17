@@ -1,0 +1,52 @@
+{
+  "evals": [
+    {
+      "prompt": "Add JWT bearer authentication to my stateless API",
+      "expect": [
+        "recommends the Spring Security resource server (oauth2ResourceServer.jwt) as option 1",
+        "offers a custom OncePerRequestFilter only as a fallback",
+        "plugs into a stateless SecurityFilterChain (CSRF off, SessionCreationPolicy.STATELESS)"
+      ]
+    },
+    {
+      "prompt": "Write a JWT filter that validates the Authorization Bearer token",
+      "expect": [
+        "verifies the signature before trusting the token (parseSignedClaims / verifyWith)",
+        "rejects alg=none and algorithm-confusion attempts",
+        "checks token expiry (exp) / not-before (nbf)",
+        "sets the SecurityContext only after successful verification"
+      ]
+    },
+    {
+      "prompt": "Make sure forged or expired tokens are rejected with a 401",
+      "expect": [
+        "an invalid/expired/forged token does NOT populate the SecurityContext",
+        "returns a 401 JSON response via an AuthenticationEntryPoint",
+        "clears the security context on failure instead of continuing the chain"
+      ]
+    },
+    {
+      "prompt": "Where should the JWT signing secret come from?",
+      "expect": [
+        "secret/key is injected from configuration/environment (e.g. ${security.jwt.secret})",
+        "never hardcodes the secret in source (would trip sec-hardcoded-secret)",
+        "notes the HS256 key must be at least 256 bits"
+      ]
+    },
+    {
+      "prompt": "My tokens are issued by Auth0 / Keycloak — how do I validate them?",
+      "expect": [
+        "uses the resource server with a JwtDecoder backed by the issuer's JWKS URI",
+        "does not hand-roll signature verification",
+        "lets the framework validate signature, exp, and issuer"
+      ]
+    },
+    {
+      "prompt": "Can I just base64-decode the JWT and read the user id?",
+      "expect": [
+        "refuses to trust an unverified token (decoding is not verifying)",
+        "directs to verify the signature first via the resource server or jjwt verify"
+      ]
+    }
+  ]
+}

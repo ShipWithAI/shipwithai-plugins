@@ -64,6 +64,14 @@
       "creatorType": "community",
       "updatedAt": "2026-06-17T00:00:00Z",
       "enabled": true
+    },
+    {
+      "skillId": "jwt-auth",
+      "name": "jwt-auth",
+      "description": "Scaffold JWT bearer auth for a stateless API: recommends Spring Security's resource server (framework verifies signature + exp), and ships a custom jjwt filter that verifies the signature, rejects alg=none, checks exp/nbf, and returns 401 JSON. Secret from env.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
     }
   ]
 }

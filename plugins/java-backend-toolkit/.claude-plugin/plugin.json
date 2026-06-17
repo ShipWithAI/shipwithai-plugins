@@ -18,7 +18,8 @@
     "./skills/springboot-conventions",
     "./skills/rest-error-handler",
     "./skills/idempotent-endpoint",
-    "./skills/security-filter-chain"
+    "./skills/security-filter-chain",
+    "./skills/jwt-auth"
   ],
   "agents": [
     "./agents/springboot-reviewer.md"
