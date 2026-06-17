@@ -193,6 +193,21 @@
       },
       "advisory": "Slow/blocking work in a controller method holds the request thread and caps throughput under concurrency. Move it into a service (and consider @Async / a task executor for long work).",
       "fixHint": "Delegate to a service method; for genuinely long operations use @Async or return early and process out-of-band."
+    },
+    {
+      "id": "sec-weak-hash",
+      "title": "Weak hash (MD5/SHA-1) — broken for password hashing",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "(MessageDigest\\.getInstance\\(\\s*\"(?:MD5|SHA-1|SHA1)\"|DigestUtils\\.(?:md5|sha1)(?:Hex|DigestAsHex)?)",
+        "flags": ""
+      },
+      "advisory": "MD5/SHA-1 is cryptographically broken for password hashing (fast + collision-prone). Use BCrypt, Argon2, or PBKDF2 (e.g. Spring Security's PasswordEncoder). If this hash is a non-security checksum, suppress with // jbt:ignore sec-weak-hash.",
+      "fixHint": "Hash passwords with BCryptPasswordEncoder / Argon2PasswordEncoder (Spring Security) or PBKDF2; never a bare MessageDigest."
     }
   ]
 }
