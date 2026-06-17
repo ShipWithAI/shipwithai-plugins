@@ -72,6 +72,14 @@
       "creatorType": "community",
       "updatedAt": "2026-06-17T00:00:00Z",
       "enabled": true
+    },
+    {
+      "skillId": "integration-test",
+      "name": "integration-test",
+      "description": "Scaffold a Spring Boot integration test against real infrastructure via Testcontainers (Postgres, Kafka optional), wired with Spring Boot 3.1+ @ServiceConnection so there's no manual datasource config. Async assertions use Awaitility, never Thread.sleep.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
     }
   ]
 }
