@@ -208,6 +208,20 @@
       },
       "advisory": "MD5/SHA-1 is cryptographically broken for password hashing (fast + collision-prone). Use BCrypt, Argon2, or PBKDF2 (e.g. Spring Security's PasswordEncoder). If this hash is a non-security checksum, suppress with // jbt:ignore sec-weak-hash.",
       "fixHint": "Hash passwords with BCryptPasswordEncoder / Argon2PasswordEncoder (Spring Security) or PBKDF2; never a bare MessageDigest."
+    },
+    {
+      "id": "sec-mass-assignment",
+      "title": "Request payload bound directly onto a JPA @Entity (mass assignment)",
+      "severity": "warning",
+      "hookEnabled": false,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "reviewer-only",
+        "note": "A request payload (@RequestBody) bound directly onto a JPA @Entity lets a client set fields it shouldn't (id, role, balance, audit). Detecting this needs resolving the param type across files to see it's an @Entity — the reviewer does it, not a line regex."
+      },
+      "advisory": "Binding a request body straight onto a JPA @Entity is a mass-assignment / object-binding risk — clients can set protected fields. Bind to a DTO with only the writable fields.",
+      "fixHint": "Introduce a request DTO exposing only client-writable fields; map it to the entity in the service."
     }
   ]
 }
