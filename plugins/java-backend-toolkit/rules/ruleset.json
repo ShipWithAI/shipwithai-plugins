@@ -164,6 +164,21 @@
       },
       "advisory": "This read path loads full entities where a DTO or interface projection would fetch exactly the needed columns in a single query, avoiding over-fetching and lazy-loading surprises.",
       "fixHint": "Return a Spring Data interface projection or a JPQL constructor-expression DTO for read-only queries; see springboot-conventions/references/persistence.md (jpa-dto-projection)."
+    },
+    {
+      "id": "web-missing-valid",
+      "title": "@RequestBody/@ModelAttribute parameter not validated with @Valid",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "^(?:(?!@Valid|@Validated).)*@(?:RequestBody|ModelAttribute)\\b",
+        "flags": "m"
+      },
+      "advisory": "@RequestBody/@ModelAttribute parameter is not validated with @Valid — Bean Validation constraints on the DTO are skipped and invalid input reaches the service layer.",
+      "fixHint": "Add @Valid (or @Validated for group validation): create(@Valid @RequestBody CreateDto dto)."
     }
   ]
 }
