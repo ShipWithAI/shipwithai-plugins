@@ -45,15 +45,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         try {
             Claims claims = jwtService.verify(header.substring(PREFIX.length())); // verifies sig + exp
-            List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
-            var auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
+            var auth = new UsernamePasswordAuthenticationToken(
+                    claims.getSubject(), null, authorities(claims));
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (JwtException ex) {
             SecurityContextHolder.clearContext();
             entryPoint.commence(request, response, new BadCredentialsException("Invalid token", ex));
             return; // 401 JSON — do NOT continue the chain authenticated
+        } catch (RuntimeException ex) {
+            SecurityContextHolder.clearContext(); // any unexpected failure → 401, never a 500 with internals
+            entryPoint.commence(request, response, new BadCredentialsException("Invalid token", ex));
+            return;
         }
         chain.doFilter(request, response);
+    }
+
+    /**
+     * Map a "roles" claim (e.g. ["ADMIN","USER"]) to authorities so @PreAuthorize /
+     * hasRole(...) works. Adjust the claim name and prefix to match your token issuer;
+     * falls back to ROLE_USER when the token carries no roles.
+     */
+    private static List<SimpleGrantedAuthority> authorities(Claims claims) {
+        Object roles = claims.get("roles");
+        if (roles instanceof List<?> list && !list.isEmpty()) {
+            return list.stream().map(Object::toString)
+                    .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r)
+                    .map(SimpleGrantedAuthority::new)
+                    .toList();
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 }

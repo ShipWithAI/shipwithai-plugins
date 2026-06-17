@@ -27,7 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
@@ -37,6 +37,9 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 // Deny-by-default: everything not matched above requires authentication.
                 .anyRequest().authenticated());
+        // After running the jwt-auth skill, register its filter + entry point here:
+        // http.exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+        //     .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -51,7 +54,9 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("{{ALLOWED_ORIGIN}}")); // exact origins, never "*" with credentials
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setAllowCredentials(true);
+        // Bearer tokens ride the Authorization header (allowed above) — a stateless token API
+        // does NOT need credentialed CORS. Set true ONLY if you also use httpOnly cookies.
+        config.setAllowCredentials(false);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

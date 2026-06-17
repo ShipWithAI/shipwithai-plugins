@@ -59,6 +59,9 @@ What the templates guarantee:
 - The filter only trusts a token after `verify` returns; on any `JwtException` it clears
   the context and returns **401 JSON** via the entry point — never partially authenticated.
 - The secret is injected from `${security.jwt.secret}` (env), HS256 key >= 256 bits.
+- Authorities are mapped from a `roles` claim (fallback `ROLE_USER`) in the filter's
+  `authorities(...)` helper — adjust the claim name/prefix to match your issuer so
+  `hasRole(...)` / `@PreAuthorize` reflect real token roles.
 
 Wire the filter in `SecurityConfig`:
 ```java

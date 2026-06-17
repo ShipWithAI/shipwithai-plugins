@@ -232,7 +232,7 @@
       "strictEligible": false,
       "match": {
         "strategy": "regex",
-        "pattern": "(password|passwd|secret|api[_-]?key|access[_-]?key|auth[_-]?token|token|credential)\\s*=\\s*\"(?!\\$\\{)[^\"]{6,}\"",
+        "pattern": "(password|passwd|secret|api[_-]?key|access[_-]?key|auth[_-]?token|refresh[_-]?token|private[_-]?key|credential)\\s*=\\s*\"(?!\\$\\{)[^\"]{8,}\"",
         "flags": "i"
       },
       "advisory": "A secret (key/password/token) appears hardcoded as a string literal. Committed secrets leak via VCS history. Inject from the environment or a secret manager.",
