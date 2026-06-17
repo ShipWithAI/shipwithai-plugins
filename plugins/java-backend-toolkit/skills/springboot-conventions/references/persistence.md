@@ -71,3 +71,13 @@ the caller never touches it — wasted joins/queries, and a classic N+1 trigger.
 
 **Fix:** make associations `fetch = FetchType.LAZY` and pull them in only when needed
 via a `JOIN FETCH` query or `@EntityGraph(attributePaths = …)`.
+
+## Cascading & orphan removal (`jpa-cascade-all`)
+
+**Failure mode:** `CascadeType.ALL` (and `orphanRemoval=true`) propagate *remove* as well
+as persist. Deleting one entity can silently cascade through the object graph and wipe
+rows you never meant to touch — especially across an association you don't fully own.
+
+**Fix:** cascade explicitly and narrowly — e.g. `cascade = {PERSIST, MERGE}` — and only
+inside an aggregate root that owns its children. Avoid `REMOVE`/`ALL` across entity
+boundaries; delete related rows deliberately in the service layer instead.

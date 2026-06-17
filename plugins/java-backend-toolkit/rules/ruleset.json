@@ -105,6 +105,21 @@
       },
       "advisory": "FetchType.EAGER loads the association on every query — over-fetching and a frequent N+1 source. Note @ManyToOne/@OneToOne default to EAGER, so set fetch explicitly. Prefer LAZY and fetch on demand.",
       "fixHint": "Use fetch = FetchType.LAZY; load the association when needed via a JOIN FETCH query or @EntityGraph."
+    },
+    {
+      "id": "jpa-cascade-all",
+      "title": "CascadeType.ALL / orphanRemoval propagates remove across associations",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "(CascadeType\\.ALL|orphanRemoval\\s*=\\s*true)",
+        "flags": ""
+      },
+      "advisory": "CascadeType.ALL / orphanRemoval=true propagates persist AND remove across the association and can delete entire object graphs unintentionally. Only cascade inside an aggregate boundary you fully own.",
+      "fixHint": "Cascade explicitly (e.g. {PERSIST, MERGE}) and only within an aggregate root; avoid REMOVE/ALL across entity boundaries."
     }
   ]
 }
