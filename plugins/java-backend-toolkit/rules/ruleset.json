@@ -237,6 +237,20 @@
       },
       "advisory": "A secret (key/password/token) appears hardcoded as a string literal. Committed secrets leak via VCS history. Inject from the environment or a secret manager.",
       "fixHint": "Read from System.getenv / @Value(\"${...}\") / a secret manager; keep secrets out of source and rotate any that were committed."
+    },
+    {
+      "id": "sec-missing-method-auth",
+      "title": "Mutating endpoint without visible method-level authorization",
+      "severity": "warning",
+      "hookEnabled": false,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "reviewer-only",
+        "note": "A mutating endpoint (@PostMapping/@PutMapping/@DeleteMapping/@PatchMapping) with no method-level authorization (@PreAuthorize/@Secured/@RolesAllowed) and no equivalent URL-level rule. Whether auth is enforced elsewhere (SecurityFilterChain matchers) is a cross-file judgement — reviewer territory."
+      },
+      "advisory": "Mutating endpoint has no visible method-level authorization. Confirm it's covered by a SecurityFilterChain matcher; otherwise add @PreAuthorize / @Secured.",
+      "fixHint": "Add @PreAuthorize(\"hasRole('...')\") (or @Secured) on the handler, or an authorizeHttpRequests matcher in the SecurityFilterChain."
     }
   ]
 }
