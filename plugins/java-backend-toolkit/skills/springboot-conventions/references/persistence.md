@@ -101,3 +101,31 @@ see or tune them. Detected in `application.properties`/`.yml`, not Java.
 
 **Fix:** set `spring.jpa.open-in-view=false` and load the associations you need in the
 service layer explicitly — `JOIN FETCH`, `@EntityGraph`, or a DTO projection.
+
+## DTO projection (read paths) (`jpa-dto-projection`)
+
+**Failure mode:** loading a full entity graph just to read a few fields over-fetches —
+it selects every column, drags in lazy associations on access, and risks
+`LazyInitializationException` outside the persistence context (see `jpa-eager-fetch` and
+`nplus1-heuristic`). A projection fetches *exactly* the columns the read needs in one
+query and never touches lazy state.
+
+**Fix:** project straight into a read model:
+
+- **Interface projection** — declare an interface of getters and return it from the repo.
+  Spring Data builds the `select` from the getter names; least boilerplate for simple shapes.
+- **Constructor expression** — `select new com.x.XDto(e.a, e.b) from X e` in `@Query`.
+  Use when you need computed values, joins across entities, or a `record`/class target.
+
+```java
+interface AccountView {            // interface projection
+    String getName();
+    BigDecimal getBalance();
+}
+
+@Query("select new com.x.AccountDto(a.name, a.balance) from Account a where a.active = true")
+List<AccountDto> findActive();     // constructor expression
+```
+
+These DTOs are also what you return at the API boundary — keep entities out of
+controllers (`entity-in-controller`).
