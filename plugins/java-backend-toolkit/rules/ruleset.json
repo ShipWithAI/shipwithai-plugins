@@ -108,18 +108,18 @@
     },
     {
       "id": "jpa-cascade-all",
-      "title": "CascadeType.ALL / orphanRemoval propagates remove across associations",
+      "title": "CascadeType.ALL cascades remove across associations",
       "severity": "warning",
       "hookEnabled": true,
       "reviewerEnabled": true,
       "strictEligible": false,
       "match": {
         "strategy": "regex",
-        "pattern": "(CascadeType\\.ALL|orphanRemoval\\s*=\\s*true)",
+        "pattern": "CascadeType\\.ALL\\b",
         "flags": ""
       },
-      "advisory": "CascadeType.ALL / orphanRemoval=true propagates persist AND remove across the association and can delete entire object graphs unintentionally. Only cascade inside an aggregate boundary you fully own.",
-      "fixHint": "Cascade explicitly (e.g. {PERSIST, MERGE}) and only within an aggregate root; avoid REMOVE/ALL across entity boundaries."
+      "advisory": "CascadeType.ALL implicitly includes REMOVE, so deleting (or detaching) the parent cascades into the children and can wipe an entire object graph unintentionally. Cascade only inside an aggregate boundary you fully own. (orphanRemoval=true with cascade={PERSIST,MERGE} is the standard aggregate pattern and is intentionally NOT flagged.)",
+      "fixHint": "Cascade explicitly (e.g. {PERSIST, MERGE}) and only within an aggregate root; avoid CascadeType.ALL / REMOVE across entity boundaries."
     },
     {
       "id": "jpa-id-generation",
@@ -145,11 +145,25 @@
       "strictEligible": false,
       "match": {
         "strategy": "regex",
-        "pattern": "open-in-view\\s*[:=]\\s*true",
-        "flags": ""
+        "pattern": "^[^#\\n]*open-in-view\\s*[:=]\\s*true",
+        "flags": "m"
       },
       "advisory": "spring.jpa.open-in-view=true keeps the persistence context open through view rendering, hiding lazy-loading queries in the controller/serialization layer and causing surprise N+1. Disable it and fetch explicitly in the service layer.",
       "fixHint": "Set spring.jpa.open-in-view=false and load required associations in the service (JOIN FETCH / @EntityGraph / DTO projection)."
+    },
+    {
+      "id": "jpa-dto-projection",
+      "title": "Read path returns full entities where a DTO/interface projection would fit",
+      "severity": "info",
+      "hookEnabled": false,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "reviewer-only",
+        "note": "Whether a read query should return a DTO/interface projection instead of a full entity depends on how the result is consumed downstream (serialized to the API, only a few columns used, lazy associations later touched). That is a cross-file judgement the reviewer makes, not a line-level regex — so the hook stays out of it."
+      },
+      "advisory": "This read path loads full entities where a DTO or interface projection would fetch exactly the needed columns in a single query, avoiding over-fetching and lazy-loading surprises.",
+      "fixHint": "Return a Spring Data interface projection or a JPQL constructor-expression DTO for read-only queries; see springboot-conventions/references/persistence.md (jpa-dto-projection)."
     }
   ]
 }
