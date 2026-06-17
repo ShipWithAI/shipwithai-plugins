@@ -1,5 +1,7 @@
 package {{PACKAGE}}.web.idempotency;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -18,6 +20,9 @@ public interface IdempotencyStore {
     /**
      * A captured response plus the fingerprint of the request that produced it. The
      * fingerprint lets the filter reject the same key reused for a different request.
+     * {@code headers} replays response headers (Location, ETag, …) on a retry;
+     * Content-Type is carried separately in {@code contentType}.
      */
-    record StoredResponse(String fingerprint, int status, byte[] body, String contentType) {}
+    record StoredResponse(String fingerprint, int status, byte[] body, String contentType,
+            Map<String, List<String>> headers) {}
 }

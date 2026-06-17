@@ -2,26 +2,33 @@ package {{PACKAGE}}.web.idempotency;
 
 import {{PACKAGE}}.web.idempotency.IdempotencyStore.StoredResponse;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 /**
  * Idempotency-Key filter for unsafe POSTs. A retry carrying the same key replays the
- * stored response instead of re-processing. Storage is delegated to {@link IdempotencyStore}.
+ * stored response (status, headers, body) instead of re-processing. Storage is delegated
+ * to {@link IdempotencyStore}.
  *
- * NOTE: to fingerprint the body BEFORE the handler runs you must buffer it up front —
- * swap ContentCachingRequestWrapper for a wrapper that caches the body in its
- * constructor so the downstream handler can still read it.
+ * The request body is buffered up front by {@link CachedBodyRequest} so it can be BOTH
+ * fingerprinted here AND re-read by the downstream handler — a plain
+ * ContentCachingRequestWrapper would leave the handler with an empty body.
  */
 public class IdempotencyKeyFilter extends OncePerRequestFilter {
 
@@ -41,7 +48,7 @@ public class IdempotencyKeyFilter extends OncePerRequestFilter {
             return;
         }
 
-        ContentCachingRequestWrapper req = new ContentCachingRequestWrapper(request);
+        CachedBodyRequest req = new CachedBodyRequest(request); // buffer body once, replayable
         String fingerprint = fingerprint(req);
 
         Optional<StoredResponse> prior = store.find(key);
@@ -58,16 +65,26 @@ public class IdempotencyKeyFilter extends OncePerRequestFilter {
 
         ContentCachingResponseWrapper res = new ContentCachingResponseWrapper(response);
         chain.doFilter(req, res);
-        store.save(key, new StoredResponse(
-                fingerprint, res.getStatus(), res.getContentAsByteArray(), res.getContentType()));
+        store.save(key, new StoredResponse(fingerprint, res.getStatus(),
+                res.getContentAsByteArray(), res.getContentType(), captureHeaders(res)));
         res.copyBodyToResponse();
     }
 
-    private static String fingerprint(ContentCachingRequestWrapper req) throws IOException {
-        req.getInputStream().readAllBytes(); // force the body to buffer for hashing
+    private static String fingerprint(CachedBodyRequest req) {
         String base = req.getMethod() + ' ' + req.getRequestURI() + ' '
-                + new String(req.getContentAsByteArray(), StandardCharsets.UTF_8);
+                + new String(req.body(), StandardCharsets.UTF_8);
         return sha256(base);
+    }
+
+    /** Capture response headers for replay, excluding Content-Type (stored separately). */
+    private static Map<String, List<String>> captureHeaders(HttpServletResponse res) {
+        Map<String, List<String>> headers = new LinkedHashMap<>();
+        for (String name : res.getHeaderNames()) {
+            if (!"Content-Type".equalsIgnoreCase(name)) {
+                headers.put(name, List.copyOf(res.getHeaders(name)));
+            }
+        }
+        return headers;
     }
 
     private static void replay(StoredResponse hit, HttpServletResponse response) throws IOException {
@@ -75,6 +92,7 @@ public class IdempotencyKeyFilter extends OncePerRequestFilter {
         if (hit.contentType() != null) {
             response.setContentType(hit.contentType());
         }
+        hit.headers().forEach((name, values) -> values.forEach(v -> response.addHeader(name, v)));
         response.getOutputStream().write(hit.body());
     }
 
@@ -84,6 +102,46 @@ public class IdempotencyKeyFilter extends OncePerRequestFilter {
             return HexFormat.of().formatHex(digest);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 unavailable", e);
+        }
+    }
+
+    /** Buffers the request body in its constructor so it survives both reads. */
+    private static final class CachedBodyRequest extends HttpServletRequestWrapper {
+        private final byte[] body;
+
+        CachedBodyRequest(HttpServletRequest request) throws IOException {
+            super(request);
+            this.body = request.getInputStream().readAllBytes();
+        }
+
+        byte[] body() {
+            return body;
+        }
+
+        @Override
+        public ServletInputStream getInputStream() {
+            ByteArrayInputStream buffer = new ByteArrayInputStream(body);
+            return new ServletInputStream() {
+                @Override
+                public int read() {
+                    return buffer.read();
+                }
+
+                @Override
+                public boolean isFinished() {
+                    return buffer.available() == 0;
+                }
+
+                @Override
+                public boolean isReady() {
+                    return true;
+                }
+
+                @Override
+                public void setReadListener(ReadListener listener) {
+                    throw new UnsupportedOperationException();
+                }
+            };
         }
     }
 }

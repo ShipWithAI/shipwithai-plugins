@@ -49,7 +49,7 @@
       "expect": [
         "uses keyset pagination (WHERE id > :cursor ORDER BY id LIMIT :size), not OFFSET",
         "returns a CursorPage<OrderResponse> with items and a nextCursor token",
-        "uses assets/CursorPageResponse.java.tmpl for the page envelope"
+        "uses assets/CursorPage.java.tmpl for the page envelope"
       ]
     },
     {

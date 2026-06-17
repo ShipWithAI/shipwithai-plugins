@@ -174,10 +174,10 @@
       "strictEligible": false,
       "match": {
         "strategy": "regex",
-        "pattern": "^(?:(?!@Valid|@Validated).)*@(?:RequestBody|ModelAttribute)\\b",
+        "pattern": "^(?!.*@(?:Valid|Validated)\\b).*@(?:RequestBody|ModelAttribute)\\b",
         "flags": "m"
       },
-      "advisory": "@RequestBody/@ModelAttribute parameter is not validated with @Valid — Bean Validation constraints on the DTO are skipped and invalid input reaches the service layer.",
+      "advisory": "@RequestBody/@ModelAttribute parameter is not validated with @Valid — Bean Validation constraints on the DTO are skipped and invalid input reaches the service layer. (Single-line heuristic: if the parameter list spans multiple lines with @Valid on a separate line, suppress with `// jbt:ignore web-missing-valid`.)",
       "fixHint": "Add @Valid (or @Validated for group validation): create(@Valid @RequestBody CreateDto dto)."
     },
     {

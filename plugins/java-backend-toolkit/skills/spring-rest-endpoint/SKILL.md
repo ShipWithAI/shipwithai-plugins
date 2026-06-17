@@ -55,7 +55,7 @@ pagination over `OFFSET`/`Pageable`. Offset re-scans and skips the leading rows
 inserts/deletes shift the offset between requests. Keyset paging is stable because
 it pages by the last seen key, not a row count.
 
-Render `assets/CursorPageResponse.java.tmpl` → `<pkg>/web/dto/CursorPage.java`, then
+Render `assets/CursorPage.java.tmpl` → `<pkg>/web/dto/CursorPage.java`, then
 expose `GET /api/{{RESOURCE_LOWER}}s?cursor=&size=` returning `CursorPage<{{RESOURCE}}Response>`:
 
 ```java
