@@ -179,6 +179,20 @@
       },
       "advisory": "@RequestBody/@ModelAttribute parameter is not validated with @Valid — Bean Validation constraints on the DTO are skipped and invalid input reaches the service layer.",
       "fixHint": "Add @Valid (or @Validated for group validation): create(@Valid @RequestBody CreateDto dto)."
+    },
+    {
+      "id": "web-slow-in-controller",
+      "title": "Blocking or slow work done directly in a controller handler",
+      "severity": "warning",
+      "hookEnabled": false,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "reviewer-only",
+        "note": "Blocking or slow work (Thread.sleep, synchronous RestTemplate/HTTP calls, heavy CPU loops, blocking I/O) done directly inside a @RestController/@Controller handler ties up the servlet thread under load. Detecting 'slow' needs semantic judgement across the call graph — the reviewer evaluates it, not a line regex."
+      },
+      "advisory": "Slow/blocking work in a controller method holds the request thread and caps throughput under concurrency. Move it into a service (and consider @Async / a task executor for long work).",
+      "fixHint": "Delegate to a service method; for genuinely long operations use @Async or return early and process out-of-band."
     }
   ]
 }
