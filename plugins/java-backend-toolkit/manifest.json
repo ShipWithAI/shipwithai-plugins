@@ -48,6 +48,14 @@
       "creatorType": "community",
       "updatedAt": "2026-06-17T00:00:00Z",
       "enabled": true
+    },
+    {
+      "skillId": "idempotent-endpoint",
+      "name": "idempotent-endpoint",
+      "description": "Scaffold Idempotency-Key handling for unsafe POSTs: a servlet filter replays the stored response on a retry instead of re-processing, keyed by (key, request fingerprint), backed by a storage SPI the project implements with Redis or a DB.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
     }
   ]
 }

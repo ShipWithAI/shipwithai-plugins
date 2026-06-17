@@ -1,0 +1,89 @@
+package {{PACKAGE}}.web.idempotency;
+
+import {{PACKAGE}}.web.idempotency.IdempotencyStore.StoredResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.Optional;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
+
+/**
+ * Idempotency-Key filter for unsafe POSTs. A retry carrying the same key replays the
+ * stored response instead of re-processing. Storage is delegated to {@link IdempotencyStore}.
+ *
+ * NOTE: to fingerprint the body BEFORE the handler runs you must buffer it up front —
+ * swap ContentCachingRequestWrapper for a wrapper that caches the body in its
+ * constructor so the downstream handler can still read it.
+ */
+public class IdempotencyKeyFilter extends OncePerRequestFilter {
+
+    private static final String HEADER = "Idempotency-Key";
+    private final IdempotencyStore store;
+
+    public IdempotencyKeyFilter(IdempotencyStore store) {
+        this.store = store;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+            FilterChain chain) throws ServletException, IOException {
+        String key = request.getHeader(HEADER);
+        if (key == null || !"POST".equalsIgnoreCase(request.getMethod())) {
+            chain.doFilter(request, response); // only guard unsafe POSTs that carry a key
+            return;
+        }
+
+        ContentCachingRequestWrapper req = new ContentCachingRequestWrapper(request);
+        String fingerprint = fingerprint(req);
+
+        Optional<StoredResponse> prior = store.find(key);
+        if (prior.isPresent()) {
+            StoredResponse hit = prior.get();
+            if (!hit.fingerprint().equals(fingerprint)) {
+                response.sendError(HttpServletResponse.SC_UNPROCESSABLE_ENTITY,
+                        "Idempotency-Key reused with a different request");
+                return;
+            }
+            replay(hit, response); // same key + same request → replay, do NOT re-process
+            return;
+        }
+
+        ContentCachingResponseWrapper res = new ContentCachingResponseWrapper(response);
+        chain.doFilter(req, res);
+        store.save(key, new StoredResponse(
+                fingerprint, res.getStatus(), res.getContentAsByteArray(), res.getContentType()));
+        res.copyBodyToResponse();
+    }
+
+    private static String fingerprint(ContentCachingRequestWrapper req) throws IOException {
+        req.getInputStream().readAllBytes(); // force the body to buffer for hashing
+        String base = req.getMethod() + ' ' + req.getRequestURI() + ' '
+                + new String(req.getContentAsByteArray(), StandardCharsets.UTF_8);
+        return sha256(base);
+    }
+
+    private static void replay(StoredResponse hit, HttpServletResponse response) throws IOException {
+        response.setStatus(hit.status());
+        if (hit.contentType() != null) {
+            response.setContentType(hit.contentType());
+        }
+        response.getOutputStream().write(hit.body());
+    }
+
+    private static String sha256(String value) {
+        try {
+            byte[] digest = MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 unavailable", e);
+        }
+    }
+}

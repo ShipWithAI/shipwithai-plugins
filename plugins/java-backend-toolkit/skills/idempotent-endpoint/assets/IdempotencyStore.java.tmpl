@@ -1,0 +1,23 @@
+package {{PACKAGE}}.web.idempotency;
+
+import java.util.Optional;
+
+/**
+ * Storage SPI for idempotent request replay — the project implements it with Redis
+ * (TTL'd keys) or a DB table (unique key column). Keep stored bodies small and expire
+ * them; this interface is the only coupling between the filter and your storage.
+ */
+public interface IdempotencyStore {
+
+    /** Look up a previously stored response for this Idempotency-Key, if any. */
+    Optional<StoredResponse> find(String key);
+
+    /** Persist the response so a retry carrying the same key replays it. */
+    void save(String key, StoredResponse response);
+
+    /**
+     * A captured response plus the fingerprint of the request that produced it. The
+     * fingerprint lets the filter reject the same key reused for a different request.
+     */
+    record StoredResponse(String fingerprint, int status, byte[] body, String contentType) {}
+}
