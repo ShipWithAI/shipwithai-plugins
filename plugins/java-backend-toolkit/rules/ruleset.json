@@ -251,6 +251,21 @@
       },
       "advisory": "Mutating endpoint has no visible method-level authorization. Confirm it's covered by a SecurityFilterChain matcher; otherwise add @PreAuthorize / @Secured.",
       "fixHint": "Add @PreAuthorize(\"hasRole('...')\") (or @Secured) on the handler, or an authorizeHttpRequests matcher in the SecurityFilterChain."
+    },
+    {
+      "id": "test-thread-sleep",
+      "title": "Thread.sleep in a test (slow + flaky)",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "file-has-without",
+        "has": ["@Test\\b", "Thread\\.sleep\\s*\\("],
+        "without": []
+      },
+      "advisory": "Thread.sleep in a test makes it slow and flaky — the wait is a fixed delay regardless of when the condition is actually met. Poll for the expected state with Awaitility instead.",
+      "fixHint": "Use Awaitility: await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> assertThat(...)...); add org.awaitility:awaitility (test scope)."
     }
   ]
 }
