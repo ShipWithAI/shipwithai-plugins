@@ -222,6 +222,21 @@
       },
       "advisory": "Binding a request body straight onto a JPA @Entity is a mass-assignment / object-binding risk — clients can set protected fields. Bind to a DTO with only the writable fields.",
       "fixHint": "Introduce a request DTO exposing only client-writable fields; map it to the entity in the service."
+    },
+    {
+      "id": "sec-hardcoded-secret",
+      "title": "Hardcoded secret literal (key/password/token) in Java source",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "(password|passwd|secret|api[_-]?key|access[_-]?key|auth[_-]?token|token|credential)\\s*=\\s*\"(?!\\$\\{)[^\"]{6,}\"",
+        "flags": "i"
+      },
+      "advisory": "A secret (key/password/token) appears hardcoded as a string literal. Committed secrets leak via VCS history. Inject from the environment or a secret manager.",
+      "fixHint": "Read from System.getenv / @Value(\"${...}\") / a secret manager; keep secrets out of source and rotate any that were committed."
     }
   ]
 }
