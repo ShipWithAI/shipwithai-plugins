@@ -20,7 +20,8 @@
     "./skills/idempotent-endpoint",
     "./skills/security-filter-chain",
     "./skills/jwt-auth",
-    "./skills/integration-test"
+    "./skills/integration-test",
+    "./skills/test-slice"
   ],
   "agents": [
     "./agents/springboot-reviewer.md"

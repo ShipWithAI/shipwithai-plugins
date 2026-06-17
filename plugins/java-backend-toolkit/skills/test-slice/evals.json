@@ -1,0 +1,48 @@
+{
+  "evals": [
+    {
+      "prompt": "Write a test for my OrderRepository",
+      "expect": [
+        "uses @DataJpaTest (persistence slice), not full @SpringBootTest",
+        "autowires the repository and TestEntityManager",
+        "relies on the per-test transaction rollback for isolation"
+      ]
+    },
+    {
+      "prompt": "Test my OrderController without starting the whole app",
+      "expect": [
+        "uses @WebMvcTest(OrderController.class), scoped to that controller",
+        "drives the endpoint with MockMvc and asserts status + jsonPath",
+        "mocks the service rather than loading a database"
+      ]
+    },
+    {
+      "prompt": "Which mock annotation should I use to stub a bean in my web test?",
+      "expect": [
+        "@MockitoBean on Spring Boot 3.4+",
+        "@MockBean on 3.3 and earlier (noting it is deprecated in 3.4+)"
+      ]
+    },
+    {
+      "prompt": "Should I use @SpringBootTest to test my repository?",
+      "expect": [
+        "recommends the narrower @DataJpaTest slice for a repository",
+        "reserves @SpringBootTest for cross-layer flows"
+      ]
+    },
+    {
+      "prompt": "My @WebMvcTest is failing because it can't find a DataSource",
+      "expect": [
+        "explains the web slice does not load JPA/DataSource beans",
+        "the service should be mocked (@MockitoBean), not call a real repository"
+      ]
+    },
+    {
+      "prompt": "I need to verify a controller AND its repository together end-to-end",
+      "expect": [
+        "this crosses layers, so a slice is not enough",
+        "points to a full @SpringBootTest / the integration-test (Testcontainers) skill"
+      ]
+    }
+  ]
+}

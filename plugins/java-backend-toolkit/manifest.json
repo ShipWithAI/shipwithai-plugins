@@ -80,6 +80,14 @@
       "creatorType": "community",
       "updatedAt": "2026-06-17T00:00:00Z",
       "enabled": true
+    },
+    {
+      "skillId": "test-slice",
+      "name": "test-slice",
+      "description": "Scaffold focused Spring slice tests: @DataJpaTest for the persistence layer (rolls back per test) and @WebMvcTest for the web layer (MockMvc + mocked services). Pick the narrowest slice that proves the behavior; full @SpringBootTest only for cross-layer flows.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
     }
   ]
 }
