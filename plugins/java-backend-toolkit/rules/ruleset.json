@@ -120,6 +120,21 @@
       },
       "advisory": "CascadeType.ALL / orphanRemoval=true propagates persist AND remove across the association and can delete entire object graphs unintentionally. Only cascade inside an aggregate boundary you fully own.",
       "fixHint": "Cascade explicitly (e.g. {PERSIST, MERGE}) and only within an aggregate root; avoid REMOVE/ALL across entity boundaries."
+    },
+    {
+      "id": "jpa-id-generation",
+      "title": "GenerationType.IDENTITY disables JDBC batch inserts",
+      "severity": "info",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "GenerationType\\.IDENTITY",
+        "flags": ""
+      },
+      "advisory": "GenerationType.IDENTITY disables JDBC batch inserts (Hibernate must read each generated key per row), hurting bulk-insert throughput. Prefer SEQUENCE with a pooled allocator.",
+      "fixHint": "Use @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = \"...\") + @SequenceGenerator(allocationSize = 50) for batchable inserts."
     }
   ]
 }

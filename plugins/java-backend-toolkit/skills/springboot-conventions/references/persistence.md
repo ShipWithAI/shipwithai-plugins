@@ -81,3 +81,13 @@ rows you never meant to touch — especially across an association you don't ful
 **Fix:** cascade explicitly and narrowly — e.g. `cascade = {PERSIST, MERGE}` — and only
 inside an aggregate root that owns its children. Avoid `REMOVE`/`ALL` across entity
 boundaries; delete related rows deliberately in the service layer instead.
+
+## Id generation strategy (`jpa-id-generation`)
+
+**Failure mode:** `GenerationType.IDENTITY` forces Hibernate to read the
+database-generated key back for every inserted row, which disables JDBC batch inserts.
+Bulk persists then run one INSERT per row instead of a batched statement — a real
+throughput hit on large writes.
+
+**Fix:** use `GenerationType.SEQUENCE` with a `@SequenceGenerator(allocationSize = 50)`
+(pooled allocator) so ids are reserved in blocks and inserts can batch.
