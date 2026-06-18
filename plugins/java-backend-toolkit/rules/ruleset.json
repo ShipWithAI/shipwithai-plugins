@@ -90,6 +90,182 @@
       },
       "advisory": "A JPQL/native query is assembled with string concatenation. This is an injection vector and defeats query plan caching.",
       "fixHint": "Use bind parameters (`:name` with @Param, or positional `?1`) — never concatenate user input into a query string."
+    },
+    {
+      "id": "jpa-eager-fetch",
+      "title": "FetchType.EAGER on an association (over-fetching / N+1 source)",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "FetchType\\.EAGER\\b",
+        "flags": ""
+      },
+      "advisory": "FetchType.EAGER loads the association on every query — over-fetching and a frequent N+1 source. Note @ManyToOne/@OneToOne default to EAGER, so set fetch explicitly. Prefer LAZY and fetch on demand.",
+      "fixHint": "Use fetch = FetchType.LAZY; load the association when needed via a JOIN FETCH query or @EntityGraph."
+    },
+    {
+      "id": "jpa-cascade-all",
+      "title": "CascadeType.ALL cascades remove across associations",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "CascadeType\\.ALL\\b",
+        "flags": ""
+      },
+      "advisory": "CascadeType.ALL implicitly includes REMOVE, so deleting (or detaching) the parent cascades into the children and can wipe an entire object graph unintentionally. Cascade only inside an aggregate boundary you fully own. (orphanRemoval=true with cascade={PERSIST,MERGE} is the standard aggregate pattern and is intentionally NOT flagged.)",
+      "fixHint": "Cascade explicitly (e.g. {PERSIST, MERGE}) and only within an aggregate root; avoid CascadeType.ALL / REMOVE across entity boundaries."
+    },
+    {
+      "id": "jpa-id-generation",
+      "title": "GenerationType.IDENTITY disables JDBC batch inserts",
+      "severity": "info",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "GenerationType\\.IDENTITY",
+        "flags": ""
+      },
+      "advisory": "GenerationType.IDENTITY disables JDBC batch inserts (Hibernate must read each generated key per row), hurting bulk-insert throughput. Prefer SEQUENCE with a pooled allocator.",
+      "fixHint": "Use @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = \"...\") + @SequenceGenerator(allocationSize = 50) for batchable inserts."
+    },
+    {
+      "id": "jpa-osiv",
+      "title": "Open Session In View enabled (lazy loads leak into the view layer)",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "^[^#\\n]*open-in-view\\s*[:=]\\s*true",
+        "flags": "m"
+      },
+      "advisory": "spring.jpa.open-in-view=true keeps the persistence context open through view rendering, hiding lazy-loading queries in the controller/serialization layer and causing surprise N+1. Disable it and fetch explicitly in the service layer.",
+      "fixHint": "Set spring.jpa.open-in-view=false and load required associations in the service (JOIN FETCH / @EntityGraph / DTO projection)."
+    },
+    {
+      "id": "jpa-dto-projection",
+      "title": "Read path returns full entities where a DTO/interface projection would fit",
+      "severity": "info",
+      "hookEnabled": false,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "reviewer-only",
+        "note": "Whether a read query should return a DTO/interface projection instead of a full entity depends on how the result is consumed downstream (serialized to the API, only a few columns used, lazy associations later touched). That is a cross-file judgement the reviewer makes, not a line-level regex — so the hook stays out of it."
+      },
+      "advisory": "This read path loads full entities where a DTO or interface projection would fetch exactly the needed columns in a single query, avoiding over-fetching and lazy-loading surprises.",
+      "fixHint": "Return a Spring Data interface projection or a JPQL constructor-expression DTO for read-only queries; see springboot-conventions/references/persistence.md (jpa-dto-projection)."
+    },
+    {
+      "id": "web-missing-valid",
+      "title": "@RequestBody/@ModelAttribute parameter not validated with @Valid",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "^(?!.*@(?:Valid|Validated)\\b).*@(?:RequestBody|ModelAttribute)\\b",
+        "flags": "m"
+      },
+      "advisory": "@RequestBody/@ModelAttribute parameter is not validated with @Valid — Bean Validation constraints on the DTO are skipped and invalid input reaches the service layer. (Single-line heuristic: if the parameter list spans multiple lines with @Valid on a separate line, suppress with `// jbt:ignore web-missing-valid`.)",
+      "fixHint": "Add @Valid (or @Validated for group validation): create(@Valid @RequestBody CreateDto dto)."
+    },
+    {
+      "id": "web-slow-in-controller",
+      "title": "Blocking or slow work done directly in a controller handler",
+      "severity": "warning",
+      "hookEnabled": false,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "reviewer-only",
+        "note": "Blocking or slow work (Thread.sleep, synchronous RestTemplate/HTTP calls, heavy CPU loops, blocking I/O) done directly inside a @RestController/@Controller handler ties up the servlet thread under load. Detecting 'slow' needs semantic judgement across the call graph — the reviewer evaluates it, not a line regex."
+      },
+      "advisory": "Slow/blocking work in a controller method holds the request thread and caps throughput under concurrency. Move it into a service (and consider @Async / a task executor for long work).",
+      "fixHint": "Delegate to a service method; for genuinely long operations use @Async or return early and process out-of-band."
+    },
+    {
+      "id": "sec-weak-hash",
+      "title": "Weak hash (MD5/SHA-1) — broken for password hashing",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "(MessageDigest\\.getInstance\\(\\s*\"(?:MD5|SHA-1|SHA1)\"|DigestUtils\\.(?:md5|sha1)(?:Hex|DigestAsHex)?)",
+        "flags": ""
+      },
+      "advisory": "MD5/SHA-1 is cryptographically broken for password hashing (fast + collision-prone). Use BCrypt, Argon2, or PBKDF2 (e.g. Spring Security's PasswordEncoder). If this hash is a non-security checksum, suppress with // jbt:ignore sec-weak-hash.",
+      "fixHint": "Hash passwords with BCryptPasswordEncoder / Argon2PasswordEncoder (Spring Security) or PBKDF2; never a bare MessageDigest."
+    },
+    {
+      "id": "sec-mass-assignment",
+      "title": "Request payload bound directly onto a JPA @Entity (mass assignment)",
+      "severity": "warning",
+      "hookEnabled": false,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "reviewer-only",
+        "note": "A request payload (@RequestBody) bound directly onto a JPA @Entity lets a client set fields it shouldn't (id, role, balance, audit). Detecting this needs resolving the param type across files to see it's an @Entity — the reviewer does it, not a line regex."
+      },
+      "advisory": "Binding a request body straight onto a JPA @Entity is a mass-assignment / object-binding risk — clients can set protected fields. Bind to a DTO with only the writable fields.",
+      "fixHint": "Introduce a request DTO exposing only client-writable fields; map it to the entity in the service."
+    },
+    {
+      "id": "sec-hardcoded-secret",
+      "title": "Hardcoded secret literal (key/password/token) in Java source",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "regex",
+        "pattern": "(password|passwd|secret|api[_-]?key|access[_-]?key|auth[_-]?token|refresh[_-]?token|private[_-]?key|credential)\\s*=\\s*\"(?!\\$\\{)[^\"]{8,}\"",
+        "flags": "i"
+      },
+      "advisory": "A secret (key/password/token) appears hardcoded as a string literal. Committed secrets leak via VCS history. Inject from the environment or a secret manager.",
+      "fixHint": "Read from System.getenv / @Value(\"${...}\") / a secret manager; keep secrets out of source and rotate any that were committed."
+    },
+    {
+      "id": "sec-missing-method-auth",
+      "title": "Mutating endpoint without visible method-level authorization",
+      "severity": "warning",
+      "hookEnabled": false,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "reviewer-only",
+        "note": "A mutating endpoint (@PostMapping/@PutMapping/@DeleteMapping/@PatchMapping) with no method-level authorization (@PreAuthorize/@Secured/@RolesAllowed) and no equivalent URL-level rule. Whether auth is enforced elsewhere (SecurityFilterChain matchers) is a cross-file judgement — reviewer territory."
+      },
+      "advisory": "Mutating endpoint has no visible method-level authorization. Confirm it's covered by a SecurityFilterChain matcher; otherwise add @PreAuthorize / @Secured.",
+      "fixHint": "Add @PreAuthorize(\"hasRole('...')\") (or @Secured) on the handler, or an authorizeHttpRequests matcher in the SecurityFilterChain."
+    },
+    {
+      "id": "test-thread-sleep",
+      "title": "Thread.sleep in a test (slow + flaky)",
+      "severity": "warning",
+      "hookEnabled": true,
+      "reviewerEnabled": true,
+      "strictEligible": false,
+      "match": {
+        "strategy": "file-has-without",
+        "has": ["@Test\\b", "Thread\\.sleep\\s*\\("],
+        "without": []
+      },
+      "advisory": "Thread.sleep in a test makes it slow and flaky — the wait is a fixed delay regardless of when the condition is actually met. Poll for the expected state with Awaitility instead. (If the sleep is in a @Disabled or deliberately timed test, suppress for this file with `// jbt:ignore test-thread-sleep`.)",
+      "fixHint": "Use Awaitility: await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> assertThat(...)...); add org.awaitility:awaitility (test scope)."
     }
   ]
 }

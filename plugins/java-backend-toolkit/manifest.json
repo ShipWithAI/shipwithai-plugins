@@ -40,6 +40,54 @@
       "creatorType": "community",
       "updatedAt": "2026-06-16T00:00:00Z",
       "enabled": true
+    },
+    {
+      "skillId": "rest-error-handler",
+      "name": "rest-error-handler",
+      "description": "Scaffold a global @RestControllerAdvice that maps exceptions to RFC 7807 ProblemDetail: validation errors to 400 with field details, a domain NotFoundException to 404, and a fallback 500 that never leaks stack traces.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "idempotent-endpoint",
+      "name": "idempotent-endpoint",
+      "description": "Scaffold Idempotency-Key handling for unsafe POSTs: a servlet filter replays the stored response on a retry instead of re-processing, keyed by (key, request fingerprint), backed by a storage SPI the project implements with Redis or a DB.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "security-filter-chain",
+      "name": "security-filter-chain",
+      "description": "Scaffold a Spring Security 6 SecurityFilterChain @Bean baseline: deny-by-default authorizeHttpRequests, a BCryptPasswordEncoder, explicit CORS, and CSRF guidance (kept for cookie/session auth, disabled only for stateless token APIs). Lambda DSL, no deprecated adapter.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "jwt-auth",
+      "name": "jwt-auth",
+      "description": "Scaffold JWT bearer auth for a stateless API: recommends Spring Security's resource server (framework verifies signature + exp), and ships a custom jjwt filter that verifies the signature, rejects alg=none, checks exp/nbf, and returns 401 JSON. Secret from env.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "integration-test",
+      "name": "integration-test",
+      "description": "Scaffold a Spring Boot integration test against real infrastructure via Testcontainers (Postgres, Kafka optional), wired with Spring Boot 3.1+ @ServiceConnection so there's no manual datasource config. Async assertions use Awaitility, never Thread.sleep.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "test-slice",
+      "name": "test-slice",
+      "description": "Scaffold focused Spring slice tests: @DataJpaTest for the persistence layer (rolls back per test) and @WebMvcTest for the web layer (MockMvc + mocked services). Pick the narrowest slice that proves the behavior; full @SpringBootTest only for cross-layer flows.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-17T00:00:00Z",
+      "enabled": true
     }
   ]
 }

@@ -43,6 +43,22 @@
         "matches the existing mapper convention (MapStruct) instead of a hand-written mapper",
         "controller still returns AccountResponse DTO"
       ]
+    },
+    {
+      "prompt": "Add a cursor-paginated list endpoint for Order",
+      "expect": [
+        "uses keyset pagination (WHERE id > :cursor ORDER BY id LIMIT :size), not OFFSET",
+        "returns a CursorPage<OrderResponse> with items and a nextCursor token",
+        "uses assets/CursorPage.java.tmpl for the page envelope"
+      ]
+    },
+    {
+      "prompt": "Why is cursor pagination better than offset for my product list?",
+      "expect": [
+        "explains offset skips/duplicates rows under concurrent inserts/deletes",
+        "explains offset scans and discards the skipped leading rows (slower deep pages)",
+        "recommends keyset paging by an indexed monotonic key (e.g. primary key)"
+      ]
     }
   ]
 }

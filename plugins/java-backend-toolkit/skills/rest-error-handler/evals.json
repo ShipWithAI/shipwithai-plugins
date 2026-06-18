@@ -1,0 +1,49 @@
+{
+  "evals": [
+    {
+      "prompt": "Add a global error handler that maps exceptions to ProblemDetail",
+      "expect": [
+        "generates a @RestControllerAdvice class",
+        "returns Spring 6 ProblemDetail (RFC 7807), not a hand-rolled body",
+        "uses jakarta.* imports (Spring Boot 3.x), not javax",
+        "handles MethodArgumentNotValidException, NotFoundException, and a fallback Exception"
+      ]
+    },
+    {
+      "prompt": "Map validation errors to a 400 ProblemDetail with field details",
+      "expect": [
+        "MethodArgumentNotValidException is handled and returns HTTP 400",
+        "the body includes a per-field errors map built from getFieldErrors()"
+      ]
+    },
+    {
+      "prompt": "Make sure a 404 is returned when a resource is not found",
+      "expect": [
+        "a domain NotFoundException maps to HTTP 404",
+        "reuses an existing NotFoundException if the project already has one"
+      ]
+    },
+    {
+      "prompt": "Add a fallback handler for unexpected errors that doesn't leak internals",
+      "expect": [
+        "generic Exception maps to HTTP 500",
+        "the response does not include a stack trace or ex.getMessage()",
+        "the error is logged server-side instead"
+      ]
+    },
+    {
+      "prompt": "Add a global error handler but the project already has a @RestControllerAdvice",
+      "expect": [
+        "extends/adds to the existing advice instead of creating a competing one",
+        "shows a diff before modifying the existing handler"
+      ]
+    },
+    {
+      "prompt": "Detect the base package before generating the error handler",
+      "expect": [
+        "places GlobalExceptionHandler in the web package next to existing controllers",
+        "does not invent a package or use javax.* / Spring 5 APIs"
+      ]
+    }
+  ]
+}

@@ -22,30 +22,61 @@ Knowledge is the supporting layer, not the lead.
 
 ## The four mechanisms
 
-1. **Guardrail hook** (`hooks/jpa-guardrail.py`) — PostToolUse on `Write`/`Edit` of `*.java`.
-   Reads the just-written file, runs the heuristics in `rules/ruleset.json`, emits an
-   advisory (or **blocks** for injection-class issues). Stdlib-only, silent-fails, never breaks a tool.
+1. **Guardrail hook** (`hooks/jpa-guardrail.py`) — PostToolUse on `Write`/`Edit` of `*.java`
+   (and `application.properties`/`.yml` for config rules). Reads the just-written file, runs
+   the heuristics in `rules/ruleset.json`, emits an advisory (or **blocks** for injection-class
+   issues). Stdlib-only, silent-fails, never breaks a tool.
 2. **Scaffold skills** — generate correct-by-default code so the guardrail never needs to fire:
-   `jpa-entity`, `spring-rest-endpoint`, `db-migration`.
+   `jpa-entity`, `spring-rest-endpoint`, `db-migration`, `rest-error-handler`, `idempotent-endpoint`,
+   `security-filter-chain`, `jwt-auth`, `integration-test`, `test-slice`.
 3. **Knowledge skill** — `springboot-conventions`, fine-grained references split by domain
    (persistence / web / transactions / testing) explaining the *why* behind each rule.
 4. **Reviewer agent** — `springboot-reviewer`, whose checklist **is** `ruleset.json`, so the
    runtime hook and the PR review never disagree.
 
-## The ruleset (v1)
+## The ruleset
 
-`rules/ruleset.json` is the single source of truth shared by the hook and the reviewer:
+`rules/ruleset.json` is the single source of truth shared by the hook and the reviewer — **18 rules** across four domains:
+
+**Persistence / JPA**
 
 | id | What it catches | Hook | Severity |
 |----|-----------------|------|----------|
 | `jpa-optimistic-lock` | `@Entity` without `@Version` (lost updates) | ✅ | warning |
 | `jpa-entity-equals` | equals/hashCode on the generated `@Id` instead of a business key | reviewer-only¹ | info |
-| `tx-proxy` | `@Transactional` on a non-public method (silently not proxied) | ✅ | warning |
-| `entity-in-controller` | controller returns a JPA entity instead of a DTO | reviewer-only¹ | warning |
+| `jpa-eager-fetch` | `FetchType.EAGER` association (over-fetch / N+1) | ✅ | warning |
+| `jpa-cascade-all` | `CascadeType.ALL` cascades remove across associations | ✅ | warning |
+| `jpa-id-generation` | `GenerationType.IDENTITY` disables JDBC batch inserts | ✅ | info |
+| `jpa-osiv` | `spring.jpa.open-in-view=true` (lazy loads leak to the view) | ✅ (config) | warning |
+| `jpa-dto-projection` | read path returns full entities where a projection fits | reviewer-only¹ | info |
 | `nplus1-heuristic` | repository call inside a loop (likely N+1) | ✅ | info |
+| `tx-proxy` | `@Transactional` on a non-public method (silently not proxied) | ✅ | warning |
 | `jpql-injection` | query built by string concatenation | ✅ **blocks**² | critical |
 
-¹ Needs reading code with judgment (which field `equals` uses, cross-file return types) — handled by the reviewer agent, not the line-level hook, so correct-by-default code isn't falsely flagged.
+**Web**
+
+| id | What it catches | Hook | Severity |
+|----|-----------------|------|----------|
+| `entity-in-controller` | controller returns a JPA entity instead of a DTO | reviewer-only¹ | warning |
+| `web-missing-valid` | `@RequestBody`/`@ModelAttribute` param without `@Valid` | ✅ | warning |
+| `web-slow-in-controller` | blocking/slow work directly in a controller handler | reviewer-only¹ | warning |
+
+**Security**
+
+| id | What it catches | Hook | Severity |
+|----|-----------------|------|----------|
+| `sec-weak-hash` | MD5/SHA-1 used for hashing | ✅ | warning |
+| `sec-mass-assignment` | request payload bound onto a JPA `@Entity` | reviewer-only¹ | warning |
+| `sec-hardcoded-secret` | hardcoded secret/key/token string literal | ✅ | warning |
+| `sec-missing-method-auth` | mutating endpoint without method-level authorization | reviewer-only¹ | warning |
+
+**Testing**
+
+| id | What it catches | Hook | Severity |
+|----|-----------------|------|----------|
+| `test-thread-sleep` | `Thread.sleep` in a `@Test` (use Awaitility) | ✅ | warning |
+
+¹ Needs reading code with judgment (which field `equals` uses, cross-file types) — handled by the reviewer agent, not the line-level hook, so correct-by-default code isn't falsely flagged.
 ² Blocks by default (`strictChecks`); switch to advisory in `guardrails-config.json`.
 
 ## Install
@@ -93,8 +124,14 @@ java-backend-toolkit/
 ├── skills/
 │   ├── setup/                      # wires the enforcement layer into a project
 │   ├── jpa-entity/                 # scaffold @Entity correct-by-default
-│   ├── spring-rest-endpoint/       # scaffold controller + DTO + service + mapper
+│   ├── spring-rest-endpoint/       # scaffold controller + DTO + service + mapper (+ cursor paging)
 │   ├── db-migration/               # Flyway/Liquibase migration
+│   ├── rest-error-handler/         # @RestControllerAdvice → RFC 7807 ProblemDetail
+│   ├── idempotent-endpoint/        # Idempotency-Key replay for unsafe POST
+│   ├── security-filter-chain/      # Spring Security 6 baseline (deny-by-default, BCrypt, CORS)
+│   ├── jwt-auth/                   # JWT bearer auth (resource server or verified filter)
+│   ├── integration-test/           # Testcontainers @SpringBootTest base + Awaitility
+│   ├── test-slice/                 # @DataJpaTest / @WebMvcTest slice tests
 │   └── springboot-conventions/     # knowledge: the why, split by domain
 └── assets/rules/springboot-rules.md.tmpl  # rule block injected into CLAUDE.md
 ```

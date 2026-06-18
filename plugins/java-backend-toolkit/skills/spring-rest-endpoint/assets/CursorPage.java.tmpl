@@ -1,0 +1,18 @@
+package {{PACKAGE}}.web.dto;
+
+import java.util.List;
+
+/**
+ * Cursor (keyset) page envelope. {@code nextCursor} is an opaque token the client
+ * echoes back to fetch the next page; it is null/blank when the last page is reached.
+ *
+ * Keyset pagination ("WHERE id > :cursor ORDER BY id LIMIT :size") is stable under
+ * concurrent inserts/deletes and does not scan-and-skip rows the way OFFSET does.
+ */
+public record CursorPage<T>(List<T> items, String nextCursor) {
+
+    /** Empty terminal page. */
+    public static <T> CursorPage<T> empty() {
+        return new CursorPage<>(List.of(), null);
+    }
+}

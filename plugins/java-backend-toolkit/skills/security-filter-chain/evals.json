@@ -1,0 +1,50 @@
+{
+  "evals": [
+    {
+      "prompt": "Set up Spring Security for my REST API",
+      "expect": [
+        "generates a @Bean SecurityFilterChain using the Spring Security 6 lambda DSL",
+        "authorization is deny-by-default (anyRequest().authenticated())",
+        "does NOT use the deprecated WebSecurityConfigurerAdapter or .and() chaining",
+        "adds a BCryptPasswordEncoder bean (not MD5/SHA-1/plaintext)"
+      ]
+    },
+    {
+      "prompt": "Lock down all endpoints except the login and health checks",
+      "expect": [
+        "only explicit matchers (auth, actuator health/info) are permitAll()",
+        "every other request requires authentication",
+        "uses requestMatchers with HttpMethod where appropriate"
+      ]
+    },
+    {
+      "prompt": "Configure security for a stateless JWT API",
+      "expect": [
+        "sets SessionCreationPolicy.STATELESS",
+        "disables CSRF and explains it's safe because there is no session cookie",
+        "suggests pairing with the jwt-auth bearer filter"
+      ]
+    },
+    {
+      "prompt": "Set up security for a server-rendered app that uses session cookies",
+      "expect": [
+        "KEEPS CSRF protection enabled for cookie/session auth",
+        "does not force SessionCreationPolicy.STATELESS"
+      ]
+    },
+    {
+      "prompt": "Add CORS so my frontend can call the API with credentials",
+      "expect": [
+        "configures CorsConfigurationSource with explicit allowed origins",
+        "does not combine allowedOrigins(\"*\") with allowCredentials(true)"
+      ]
+    },
+    {
+      "prompt": "I already have a WebSecurityConfigurerAdapter — modernize my security config",
+      "expect": [
+        "migrates to a component-based SecurityFilterChain @Bean",
+        "does not create a second overlapping filter chain"
+      ]
+    }
+  ]
+}

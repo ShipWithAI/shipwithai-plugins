@@ -1,0 +1,54 @@
+package {{PACKAGE}}.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Date;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+/**
+ * Issues and VERIFIES JWTs with the jjwt library. The signing secret comes from
+ * configuration/env (never hardcoded — that would trip sec-hardcoded-secret) and must
+ * be >= 256 bits for HS256.
+ */
+@Service
+public class JwtService {
+
+    private final SecretKey key;
+    private final long ttlSeconds;
+
+    public JwtService(@Value("${security.jwt.secret}") String secret,
+                      @Value("${security.jwt.ttl-seconds:3600}") long ttlSeconds) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.ttlSeconds = ttlSeconds;
+    }
+
+    public String issue(String subject) {
+        Instant now = Instant.now();
+        return Jwts.builder()
+                .subject(subject)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusSeconds(ttlSeconds)))
+                .signWith(key)
+                .compact();
+    }
+
+    /**
+     * Parse AND verify. {@code parseSignedClaims} checks the signature against {@code key},
+     * REJECTS unsigned tokens (alg=none) and algorithm-confusion attempts, and enforces
+     * exp / nbf — throwing {@link io.jsonwebtoken.JwtException} on any failure. Never read
+     * claims from a token without going through this method.
+     */
+    public Claims verify(String token) {
+        Jws<Claims> jws = Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token);
+        return jws.getPayload();
+    }
+}

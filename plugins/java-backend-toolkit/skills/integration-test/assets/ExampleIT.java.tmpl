@@ -1,0 +1,36 @@
+package {{PACKAGE}};
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
+import java.time.Duration;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+/**
+ * Example integration test. Named {@code *IT} so Maven Failsafe / the Gradle
+ * integrationTest task runs it; it boots the full context against the shared
+ * Testcontainers Postgres from {@link AbstractIntegrationTest}.
+ */
+class {{ENTITY}}IT extends AbstractIntegrationTest {
+
+    @Autowired
+    private {{ENTITY}}Repository repository;
+
+    @Test
+    void persistsAndReadsBackFromRealPostgres() {
+        // {{ENTITY}} saved = repository.save(new {{ENTITY}}(...));
+        // assertThat(repository.findById(saved.getId())).isPresent();
+    }
+
+    @Test
+    void asyncWorkEventuallyCompletes() {
+        // TODO: trigger async work here, then tighten the assertion below to its real
+        // expectation (e.g. isEqualTo(1L)). It is permissive now so the scaffold passes as-is.
+        // Never Thread.sleep(...) — it is flaky and slow (rule test-thread-sleep).
+        // service.doAsyncWork();
+        await().atMost(Duration.ofSeconds(5))
+                .pollInterval(Duration.ofMillis(100))
+                .untilAsserted(() -> assertThat(repository.count()).isGreaterThanOrEqualTo(0L));
+    }
+}

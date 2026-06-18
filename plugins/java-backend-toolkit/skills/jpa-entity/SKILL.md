@@ -50,6 +50,10 @@ it, keep it on the entity).
 ## Step 3 — Repository + migration
 
 - Generate a `Repository extends JpaRepository<Entity, IdType>` next to it.
+- **If the entity has associations** (`@ManyToOne`/`@OneToMany`/`@OneToOne`), keep them
+  LAZY and add a fetch-aware finder using `assets/repository-entitygraph.java.tmpl` — an
+  `@EntityGraph(attributePaths = {"…"})` override or a `join fetch` `@Query`. Reads then
+  load the graph explicitly, so `jpa-eager-fetch` / `nplus1-heuristic` never fire.
 - If the project uses Flyway/Liquibase, invoke the `db-migration` skill to emit the
   matching `CREATE TABLE` migration in the same change — entity and schema stay in lockstep.
   Do NOT rely on `ddl-auto: update`.

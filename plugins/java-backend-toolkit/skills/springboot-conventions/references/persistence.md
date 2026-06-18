@@ -62,3 +62,70 @@ Optional<User> findByEmail(@Param("email") String email);
 This rule blocks by default (`strictChecks`). If you have a vetted dynamic-query
 builder (Criteria API / QueryDSL), use it rather than string concat — don't just
 suppress.
+
+## Eager fetching (`jpa-eager-fetch`)
+
+**Failure mode:** `FetchType.EAGER` loads the association on *every* query, even when
+the caller never touches it — wasted joins/queries, and a classic N+1 trigger. Remember
+`@ManyToOne`/`@OneToOne` default to EAGER, so the cost is easy to ship by accident.
+
+**Fix:** make associations `fetch = FetchType.LAZY` and pull them in only when needed
+via a `JOIN FETCH` query or `@EntityGraph(attributePaths = …)`.
+
+## Cascading & orphan removal (`jpa-cascade-all`)
+
+**Failure mode:** `CascadeType.ALL` (and `orphanRemoval=true`) propagate *remove* as well
+as persist. Deleting one entity can silently cascade through the object graph and wipe
+rows you never meant to touch — especially across an association you don't fully own.
+
+**Fix:** cascade explicitly and narrowly — e.g. `cascade = {PERSIST, MERGE}` — and only
+inside an aggregate root that owns its children. Avoid `REMOVE`/`ALL` across entity
+boundaries; delete related rows deliberately in the service layer instead.
+
+## Id generation strategy (`jpa-id-generation`)
+
+**Failure mode:** `GenerationType.IDENTITY` forces Hibernate to read the
+database-generated key back for every inserted row, which disables JDBC batch inserts.
+Bulk persists then run one INSERT per row instead of a batched statement — a real
+throughput hit on large writes.
+
+**Fix:** use `GenerationType.SEQUENCE` with a `@SequenceGenerator(allocationSize = 50)`
+(pooled allocator) so ids are reserved in blocks and inserts can batch.
+
+## Open Session In View (`jpa-osiv`)
+
+**Failure mode:** `spring.jpa.open-in-view=true` (the Spring Boot default) holds the
+persistence context open through view rendering. Lazy associations then load during
+controller serialization, so N+1 queries hide outside the service layer where you can't
+see or tune them. Detected in `application.properties`/`.yml`, not Java.
+
+**Fix:** set `spring.jpa.open-in-view=false` and load the associations you need in the
+service layer explicitly — `JOIN FETCH`, `@EntityGraph`, or a DTO projection.
+
+## DTO projection (read paths) (`jpa-dto-projection`)
+
+**Failure mode:** loading a full entity graph just to read a few fields over-fetches —
+it selects every column, drags in lazy associations on access, and risks
+`LazyInitializationException` outside the persistence context (see `jpa-eager-fetch` and
+`nplus1-heuristic`). A projection fetches *exactly* the columns the read needs in one
+query and never touches lazy state.
+
+**Fix:** project straight into a read model:
+
+- **Interface projection** — declare an interface of getters and return it from the repo.
+  Spring Data builds the `select` from the getter names; least boilerplate for simple shapes.
+- **Constructor expression** — `select new com.x.XDto(e.a, e.b) from X e` in `@Query`.
+  Use when you need computed values, joins across entities, or a `record`/class target.
+
+```java
+interface AccountView {            // interface projection
+    String getName();
+    BigDecimal getBalance();
+}
+
+@Query("select new com.x.AccountDto(a.name, a.balance) from Account a where a.active = true")
+List<AccountDto> findActive();     // constructor expression
+```
+
+These DTOs are also what you return at the API boundary — keep entities out of
+controllers (`entity-in-controller`).

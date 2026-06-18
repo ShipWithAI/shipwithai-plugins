@@ -1,0 +1,79 @@
+package {{PACKAGE}}.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+/**
+ * Validates a {@code Authorization: Bearer <jwt>} on each request. A token is trusted
+ * ONLY after {@link JwtService#verify} confirms signature + expiry; a missing, malformed,
+ * forged, or expired token never populates the SecurityContext. Register this before
+ * {@code UsernamePasswordAuthenticationFilter}.
+ */
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final String PREFIX = "Bearer ";
+
+    private final JwtService jwtService;
+    private final AuthenticationEntryPoint entryPoint;
+
+    public JwtAuthenticationFilter(JwtService jwtService, AuthenticationEntryPoint entryPoint) {
+        this.jwtService = jwtService;
+        this.entryPoint = entryPoint;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+            FilterChain chain) throws ServletException, IOException {
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (header == null || !header.startsWith(PREFIX)) {
+            chain.doFilter(request, response); // no bearer token — let authz decide if the route needs one
+            return;
+        }
+        try {
+            Claims claims = jwtService.verify(header.substring(PREFIX.length())); // verifies sig + exp
+            var auth = new UsernamePasswordAuthenticationToken(
+                    claims.getSubject(), null, authorities(claims));
+            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        } catch (JwtException ex) {
+            SecurityContextHolder.clearContext();
+            entryPoint.commence(request, response, new BadCredentialsException("Invalid token", ex));
+            return; // 401 JSON — do NOT continue the chain authenticated
+        } catch (RuntimeException ex) {
+            SecurityContextHolder.clearContext(); // any unexpected failure → 401, never a 500 with internals
+            entryPoint.commence(request, response, new BadCredentialsException("Invalid token", ex));
+            return;
+        }
+        chain.doFilter(request, response);
+    }
+
+    /**
+     * Map a "roles" claim (e.g. ["ADMIN","USER"]) to authorities so @PreAuthorize /
+     * hasRole(...) works. Adjust the claim name and prefix to match your token issuer;
+     * falls back to ROLE_USER when the token carries no roles.
+     */
+    private static List<SimpleGrantedAuthority> authorities(Claims claims) {
+        Object roles = claims.get("roles");
+        if (roles instanceof List<?> list && !list.isEmpty()) {
+            return list.stream().map(Object::toString)
+                    .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r)
+                    .map(SimpleGrantedAuthority::new)
+                    .toList();
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+}

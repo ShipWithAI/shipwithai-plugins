@@ -135,6 +135,20 @@ def format_block(rules: list[dict], header: str) -> str:
     return "\n".join(lines)
 
 
+def is_scannable(file_path: str) -> bool:
+    """True for Java sources and Spring config files the rules apply to.
+
+    Covers `*.java` plus Spring config whose basename starts with `application`
+    and ends with `.properties`, `.yml`, or `.yaml` (e.g. `application-prod.properties`).
+    """
+    if file_path.endswith(".java"):
+        return True
+    name = pathlib.PurePath(file_path).name
+    return name.startswith("application") and name.endswith(
+        (".properties", ".yml", ".yaml")
+    )
+
+
 def read_target(payload: dict, max_bytes: int) -> str | None:
     """Resolve the edited file content, or None if it should be skipped."""
     tool = payload.get("tool_name", "")
@@ -143,7 +157,7 @@ def read_target(payload: dict, max_bytes: int) -> str | None:
 
     tool_input = payload.get("tool_input", {})
     file_path = tool_input.get("file_path", "")
-    if not file_path.endswith(".java"):
+    if not is_scannable(file_path):
         return None
 
     path = pathlib.Path(file_path)
