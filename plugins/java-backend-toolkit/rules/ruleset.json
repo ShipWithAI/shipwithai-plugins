@@ -264,7 +264,7 @@
         "has": ["@Test\\b", "Thread\\.sleep\\s*\\("],
         "without": []
       },
-      "advisory": "Thread.sleep in a test makes it slow and flaky — the wait is a fixed delay regardless of when the condition is actually met. Poll for the expected state with Awaitility instead.",
+      "advisory": "Thread.sleep in a test makes it slow and flaky — the wait is a fixed delay regardless of when the condition is actually met. Poll for the expected state with Awaitility instead. (If the sleep is in a @Disabled or deliberately timed test, suppress for this file with `// jbt:ignore test-thread-sleep`.)",
       "fixHint": "Use Awaitility: await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> assertThat(...)...); add org.awaitility:awaitility (test scope)."
     }
   ]

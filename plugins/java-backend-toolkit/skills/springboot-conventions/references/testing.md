@@ -32,7 +32,7 @@ test so the schema under test matches production.
 class AccountRepositoryTest {
     @Container
     @ServiceConnection                       // Spring Boot 3.1+: wires the JDBC url for you
-    static PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:16");
+    static final PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:16");
 }
 ```
 
