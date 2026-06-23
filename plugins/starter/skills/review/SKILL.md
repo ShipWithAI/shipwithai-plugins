@@ -31,7 +31,11 @@ settings.json hooks     → hooks configured ✅ / empty ⚠️ / missing ❌
 .claude/agents/         → agents present ✅ / missing ❌
 docs/architecture.md    → exists ✅ / missing ❌
 docs/adr/               → ADRs present ✅ / index-only ⚠️ / missing ❌
-.claude/memory/         → MEMORY.md with content ✅ / exists-empty ⚠️ / missing ❌
+.claude/memory/         → lifecycle complete ✅ / legacy-layout ⚠️ / incomplete ⚠️ / missing ❌ (Tier 3)
+                          ✅ lifecycle: MEMORY.md + HANDOFF.md + decisions/ + conventions/ +
+                             load-memory.sh & remind-save.sh hooks + .claude/skills/save-memory/
+                          ⚠️ legacy: project.md / team.md present (pre-2.4.0 static memory) → offer migration
+                          ⚠️ incomplete: .claude/memory/ exists but hooks or /save-memory missing
 .claude/hooks/observe.py  → present ✅ / missing (Tier 3 opt-in) ❌
 .claude/logs/ in .gitignore → in gitignore ✅ / tracked by git ⚠️ / not applicable ✅
 ```
@@ -174,7 +178,7 @@ Checked: YYYY-MM-DD
 | .mcp.json            | ❌     | Redis used in code, no MCP server          |
 | docs/architecture.md | ⚠️     | Not updated in 45 days                     |
 | ADRs                 | ✅     | 3 ADRs present                             |
-| .claude/memory/      | ❌     | Not set up (Tier 3 item)                   |
+| .claude/memory/      | ⚠️     | Legacy project.md/team.md — migrate to lifecycle |
 | Observability        | ❌     | observe.py not installed (Tier 3 opt-in)   |
 | Hook binaries        | ⚠️     | jest-on-stop: jest not in devDeps or PATH  |
 | Hook patterns        | ✅     | —                                          |
@@ -200,6 +204,8 @@ If user accepts: invoke the relevant skill directly:
 - Agents issue → `/shipwithai-starter:setup-agents`
 - SSOT/docs issue → `/shipwithai-starter:update-ssot`
 - Observability missing (Tier 3) → `/shipwithai-starter:setup-observability`
+- Memory legacy/incomplete/missing (Tier 3) → `/shipwithai-starter:setup-memory --memory-only`
+  (migrates legacy `project.md`/`team.md` without deleting them; adds missing hooks + `/save-memory`)
 - Stale project skill (template_version behind catalog) → `/shipwithai-starter:setup-skills`
 - Stack plugin available but not set up → run the recipe's `setupCommand` (e.g. `/shipwithai-java-backend-toolkit:setup`); if not enabled, enable the recipe's marketplace first
 - Logs tracked by git → warn: run `git rm -r --cached .claude/logs/` and add to .gitignore

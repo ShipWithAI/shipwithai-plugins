@@ -8,7 +8,7 @@ Configures 7 pillars of your Claude Code environment:
 
 | Pillar | Files | Tier |
 |--------|-------|------|
-| Memory | `CLAUDE.md`, `.claude/memory/` | Essential |
+| Memory | `CLAUDE.md` (all tiers); `.claude/memory/` lifecycle + hooks + `/save-memory` (Full) | Essential |
 | Permissions | `.claude/settings.json` | Essential |
 | Hooks | `.claude/settings.json` hooks | Standard |
 | MCP | `.mcp.json` | Standard |
@@ -32,7 +32,7 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 | `/shipwithai-starter:new-project` | **Greenfield.** 3-phase interview from empty directory → scaffold + harness |
 | `/shipwithai-starter:review` | Audit harness health, detect drift, suggest upgrades |
 | `/shipwithai-starter:update-ssot` | Sync CLAUDE.md and architecture docs with codebase |
-| `/shipwithai-starter:setup-memory` | Configure CLAUDE.md + .claude/memory/ |
+| `/shipwithai-starter:setup-memory` | Configure CLAUDE.md (all tiers) + the Tier 3 `.claude/memory/` lifecycle (store + SessionStart/Stop hooks + `/save-memory` skill) |
 | `/shipwithai-starter:setup-permissions` | Configure .claude/settings.json permissions |
 | `/shipwithai-starter:setup-hooks` | Configure .claude/settings.json hooks |
 | `/shipwithai-starter:setup-mcp` | Configure .mcp.json MCP servers |

@@ -348,6 +348,9 @@ User approves → invoke each pillar skill by tier, reading context from `.claud
 
 ```
 Tier 1: /shipwithai-starter:setup-memory       (reads: project, stack, architecture, conventions)
+                                                 → writes CLAUDE.md at every tier; when tier=full,
+                                                   also installs the .claude/memory/ lifecycle
+                                                   (store + SessionStart/Stop hooks + /save-memory)
          /shipwithai-starter:setup-permissions  (reads: stack, permissions)
          /shipwithai-starter:setup-ssot --architecture-only  (reads: architecture)
 
