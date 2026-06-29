@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1781629200000,
+  "lastUpdated": 1782234000000,
   "skills": [
     {
       "skillId": "init",
@@ -20,9 +20,9 @@
     {
       "skillId": "setup-memory",
       "name": "setup-memory",
-      "description": "Configure project memory: write CLAUDE.md with architecture context and optionally set up .claude/memory/ for persistent cross-session learning.",
+      "description": "Configure project memory: write CLAUDE.md with architecture context and (Tier 3) set up a self-sustaining .claude/memory/ lifecycle — SessionStart load hook, Stop save-nudge, and a /save-memory skill that distills each session.",
       "creatorType": "community",
-      "updatedAt": "2026-05-26T00:00:00Z",
+      "updatedAt": "2026-06-23T00:00:00Z",
       "enabled": true
     },
     {

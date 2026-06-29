@@ -1,0 +1,50 @@
+# Project Memory
+
+A memory system that **lives in the repo** to: (1) help Claude/AI agents catch up on work
+across sessions, and (2) help newcomers onboard quickly. Everything is plain markdown,
+version-controlled — memory that travels with git.
+
+## Structure
+
+| Path | Lifetime | Purpose |
+|---|---|---|
+| `MEMORY.md` | Continuously updated | **Index** — one line per memory, auto-loaded at session start |
+| `decisions/` | Durable, append-only | Architecture/design decisions + **rationale** (ADR-lite) |
+| `conventions/` | Durable | Project conventions + gotchas encountered |
+| `HANDOFF.md` | Ephemeral, overwritten | WIP state: what is in progress, the next step |
+| `sessions/` | Append, per day | Per-session progress summaries |
+
+## How it works
+
+- **Session start:** the `.claude/hooks/load-memory.sh` (SessionStart) hook injects
+  `MEMORY.md` + `HANDOFF.md`, then asks Claude to read the files listed under "Context to
+  Load". Decisions/conventions are read lazily — only when relevant — to save context budget.
+- **Session end:** the `.claude/hooks/remind-save.sh` (Stop) hook nudges once if there are
+  unsaved changes → run the `/save-memory` skill to distill the four content types above.
+
+To turn the save-nudge off, remove the `remind-save.sh` Stop entry from
+`.claude/settings.json`. The SessionStart load hook can stay on its own.
+
+## Where to codify a rule (important)
+
+Memory files injected by the SessionStart hook reach the **main session only** — subagents
+spawned via the Agent tool (executor, code-reviewer, …) do **not** receive them; they only get
+`CLAUDE.md`. So:
+
+- A rule that must apply **everywhere, including subagents** → put it in `CLAUDE.md` (and a
+  PreToolUse hook if it must be enforced deterministically). Keep the *rationale* in a memory file.
+- Context-specific catch-up (what we decided, what's in progress) → memory files here.
+
+## For newcomers
+
+Read in order: `MEMORY.md` (overview) → `decisions/` (why things are the way they are) →
+`conventions/` (rules to follow). Skip `HANDOFF.md` / `sessions/` if you only need to
+understand the project.
+
+## Writing rules
+- 1 file = 1 fact. Small files, kebab-case names.
+- `decisions/` is append-only — if a decision changes, add a new file; do not edit the old one.
+- Every memory added/changed → update one line in `MEMORY.md`.
+
+---
+*Memory system seeded by shipwithai-starter /setup-memory for **{{PROJECT_NAME}}** on {{DATE}}.*

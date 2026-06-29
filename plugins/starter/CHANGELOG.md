@@ -1,5 +1,39 @@
 # Changelog
 
+## [2.4.0] — 2026-06-23
+
+### Changed
+
+- **Memory pillar (Tier 3) — replaced static memory with a self-sustaining lifecycle.**
+  `setup-memory` no longer writes the inert `project.md` / `team.md` pair. At Tier 3 it now
+  installs a memory system modeled on a proven in-the-field design:
+  - **Store** split into durable vs ephemeral: `decisions/` (append-only ADR-lite) +
+    `conventions/` (gotchas) — durable; `HANDOFF.md` (WIP + "Context to Load") +
+    `sessions/` (per-day) — ephemeral; `MEMORY.md` one-line index; `README.md` explainer.
+  - **Hooks** (shipped as assets, installed by `setup-memory`, paths via `$CLAUDE_PROJECT_DIR`):
+    `load-memory.sh` (SessionStart — lazy-injects the index + handoff) and `remind-save.sh`
+    (Stop — nudges `/save-memory` once per session, loop-guarded, only on real work).
+  - **`/save-memory` skill** installed into the user's `.claude/skills/` (project asset,
+    `template_version`-stamped, collision-safe; not added to the plugin manifest) — distills
+    each session into the store.
+
+### Added
+
+- `setup-memory` assets: `assets/hooks/{load-memory,remind-save}.sh`,
+  `assets/memory/{README,MEMORY,HANDOFF}.md.tmpl`, `assets/skills/save-memory.SKILL.md.tmpl`.
+- New evals covering the lifecycle: hook install, save-memory install, additive settings.json
+  merge, collision-safety, and legacy migration.
+- `review`: detects the legacy `project.md`/`team.md` layout and an incomplete lifecycle
+  (memory dir present but hooks or `/save-memory` missing), and offers
+  `setup-memory --memory-only` to migrate without deleting existing files.
+
+### Notes
+
+- **Backward compatible.** Existing Tier 3 harnesses keep `project.md`/`team.md`; nothing is
+  auto-deleted. `review` surfaces the migration. No `starter-context.json` schema change.
+- The seeded `README.md` documents the subagent blind-spot: SessionStart-injected memory does
+  not reach subagents — cross-cutting rules belong in `CLAUDE.md`, memory holds the rationale.
+
 ## [2.3.0] — 2026-06-16
 
 ### Added

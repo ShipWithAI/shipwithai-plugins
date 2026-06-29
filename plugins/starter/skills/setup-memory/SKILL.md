@@ -1,8 +1,9 @@
 ---
 name: setup-memory
 description: >
-  Configure project memory: write CLAUDE.md with architecture context and
-  optionally set up .claude/memory/ for persistent cross-session learning.
+  Configure project memory: write CLAUDE.md with architecture context and (Tier 3)
+  set up a self-sustaining .claude/memory/ lifecycle — SessionStart load hook, Stop
+  save-nudge hook, and a /save-memory skill that distills each session.
   Called by init or standalone to configure the memory pillar.
   Trigger phrases: "setup memory", "write CLAUDE.md", "configure project context".
 argument-hint: "[--memory-only] [--claude-md-only]"
@@ -10,7 +11,8 @@ argument-hint: "[--memory-only] [--claude-md-only]"
 
 # /setup-memory
 
-Configures the Memory pillar: `CLAUDE.md` (project context) and `.claude/memory/` (Tier 3+).
+Configures the Memory pillar: `CLAUDE.md` (project context, all tiers) and a self-sustaining
+`.claude/memory/` lifecycle — store + hooks + `/save-memory` skill (Tier 3 only).
 
 ## Flags
 
@@ -155,56 +157,83 @@ Hooks: see `.claude/settings.json`
 MCP servers: see `.mcp.json`
 ```
 
-## .claude/memory/ (Tier 3 only)
+## .claude/memory/ — lifecycle memory (Tier 3 only)
 
-Create the following structure:
+A **self-sustaining** cross-session memory that lives in the repo: load on session start →
+work → nudge to save on stop → distill → handoff to the next session. Plain markdown, version-
+controlled. Set up three things: the **store**, the **hooks**, and the **`/save-memory` skill**.
+
+> Token replacements for every template below: `{{PROJECT_NAME}}` → `project.name`;
+> `{{DATE}}` → today; `{{TEMPLATE_VERSION}}` → this plugin's version (from `plugin.json`).
+
+### A. The store
+
+Create this structure (directories + seed files from `assets/memory/`):
 
 ```
 .claude/memory/
-  MEMORY.md      ← index (loaded every session)
-  project.md     ← project facts, key decisions
-  team.md        ← team preferences, working style
+  README.md      ← from assets/memory/README.md.tmpl   (how the system works)
+  MEMORY.md      ← from assets/memory/MEMORY.md.tmpl    (index, loaded every session)
+  HANDOFF.md     ← from assets/memory/HANDOFF.md.tmpl   (ephemeral WIP, overwritten each save)
+  decisions/     ← empty dir + .gitkeep  (durable, append-only ADR-lite)
+  conventions/   ← empty dir + .gitkeep  (durable conventions + gotchas)
+  sessions/      ← empty dir + .gitkeep  (append per-day summaries)
 ```
 
-`MEMORY.md` starter content:
+Copy each `.tmpl` to its destination (drop the `.tmpl` suffix) and substitute tokens. Create
+the three subdirectories, each with an empty `.gitkeep` so git tracks them.
 
-```markdown
-# Project Memory Index
+**Memory layers** (durable vs ephemeral) — the user does not hand-maintain these; the
+`/save-memory` skill writes them:
 
-*Maintained by the team. Add entries via direct edit.*
+| Path | Lifetime | Holds |
+|---|---|---|
+| `MEMORY.md` | updated continuously | one-line index of every memory |
+| `decisions/NNNN-slug.md` | durable, append-only | a decision + its rationale |
+| `conventions/slug.md` | durable | a convention or gotcha |
+| `HANDOFF.md` | ephemeral, overwritten | current WIP + "Context to Load" for next session |
+| `sessions/YYYY-MM-DD.md` | append per day | a short session summary |
 
-## Active memories
-- [project.md](project.md) — project facts and key decisions
-- [team.md](team.md) — team preferences and working style
+### B. The hooks (this skill installs them — Decision: setup-memory owns memory hooks)
+
+Copy the two scripts from `assets/hooks/` into the project's `.claude/hooks/` (create the dir if
+needed), then **merge** their registration into `.claude/settings.json`. Merge additively — never
+overwrite an existing `hooks` object (e.g. formatter/lint hooks from `/setup-hooks`).
+
+- `load-memory.sh` → **SessionStart**: injects `MEMORY.md` + `HANDOFF.md`, tells Claude to read
+  only the files under "Context to Load" (lazy load).
+- `remind-save.sh` → **Stop**: nudges `/save-memory` once per session, only on real work, loop-
+  guarded. **On by default** at Tier 3 (opt-out = remove this Stop entry; see the seeded README).
+
+Registration to merge into `.claude/settings.json` (paths use `$CLAUDE_PROJECT_DIR`):
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/load-memory.sh\"" } ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/remind-save.sh\"" } ] }
+    ]
+  }
+}
 ```
 
-`project.md` starter content:
+> If a `Stop` array already exists (e.g. a test-on-stop hook), append this entry to it rather
+> than replacing the array.
 
-```markdown
-# Project Facts
+### C. The /save-memory skill (installed into the user project)
 
-*Add decisions and facts that Claude should remember across sessions.*
+Install `assets/skills/save-memory.SKILL.md.tmpl` to `.claude/skills/save-memory/SKILL.md`:
+1. Substitute `{{PROJECT_NAME}}` and `{{TEMPLATE_VERSION}}`.
+2. **Collision-safe:** if `.claude/skills/save-memory/SKILL.md` already exists, do NOT
+   overwrite — report it and skip. (`template_version` in the frontmatter lets `review`
+   detect staleness later.)
+3. It is a **project asset** — do NOT add it to this plugin's `manifest.json`.
 
-## Key decisions
-- [e.g., "We chose Drizzle over Prisma for edge runtime compatibility"]
-
-## Known constraints
-- [e.g., "Max Lambda timeout is 10s — no long-running operations in API routes"]
-```
-
-`team.md` starter content:
-
-```markdown
-# Team Preferences
-
-*Add working style notes that apply to all Claude sessions.*
-
-## Code style preferences
-- [e.g., "Prefer explicit error returns over throwing exceptions"]
-
-## Review expectations
-- [e.g., "Always include a test when fixing a bug"]
-```
+This skill is what distills each session into the store above. Without it, the Stop nudge has
+nothing to call.
 
 ## Write Rules
 
@@ -215,7 +244,19 @@ Create the following structure:
   - Unknown sections (preserve as-is): anything else the user added
   - Always update "Last updated" date on every write, including merges
 - **`.claude/memory/` already exists:**
-  - Ask: Overwrite all files / Add missing files only / Skip?
-  - "Add missing files only" creates any file not already present, leaves existing files untouched
+  - **Legacy layout** (`project.md` / `team.md` present — the pre-2.4.0 static memory):
+    do NOT delete. Offer to migrate: keep the old files, add the new structure
+    (`decisions/ conventions/ sessions/ HANDOFF.md README.md`) + hooks + `/save-memory`,
+    and fold any real facts from `project.md` into a `decisions/`/`conventions/` entry. The
+    user may also choose Skip.
+  - **New layout already present:** Ask — Overwrite seeds / Add missing only / Skip.
+    "Add missing only" creates any file/dir not already present, leaves existing untouched.
+    Never overwrite `MEMORY.md`, `HANDOFF.md`, `decisions/`, `conventions/`, or `sessions/`
+    if they already contain real entries.
+- **Hooks merge (settings.json):** additive only — append SessionStart/Stop entries; never
+  clobber existing hooks (e.g. `/setup-hooks` formatter/lint/test). Skip an entry whose
+  command is already registered.
+- **`/save-memory` skill:** collision-safe — never overwrite an existing
+  `.claude/skills/save-memory/SKILL.md`. Do not add it to the plugin manifest (project asset).
 - Use actual values — no generic text
-- No leftover [PLACEHOLDER] after writing
+- No leftover [PLACEHOLDER] or `{{TOKEN}}` after writing
