@@ -1,0 +1,21 @@
+{
+  "name": "shipwithai-ui-harness",
+  "version": "0.1.0",
+  "description": "Self-improving Compose Multiplatform UI harness for Claude Code. A render -> grade -> ratchet loop: inspection tests render every screen across a stress matrix, a deterministic Tier-1 asserter plus a vision evaluator grade them in a separate lane, and recurring findings ratchet into permanent gates via a compounding feedback ledger. Ships Konsist architecture rails and a setup skill that scaffolds it all into a project.",
+  "author": {
+    "name": "ShipWithAI",
+    "url": "https://shipwithai.io"
+  },
+  "homepage": "https://shipwithai.io/plugins/ui-harness",
+  "repository": "https://github.com/ShipWithAI/shipwithai-plugins",
+  "license": "MIT",
+  "keywords": ["claude-code", "compose-multiplatform", "kotlin", "android", "roborazzi", "konsist", "ui", "screenshot-testing", "evaluator", "design-review"],
+  "skills": [
+    "./skills/setup",
+    "./skills/mobile-design",
+    "./skills/konsist-architecture-tests"
+  ],
+  "agents": [
+    "./agents/mobile-design-evaluator.md"
+  ]
+}

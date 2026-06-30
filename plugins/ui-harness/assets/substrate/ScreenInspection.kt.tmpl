@@ -1,0 +1,81 @@
+package __PACKAGE__
+
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.Density
+import com.github.takahirom.roborazzi.captureRoboImage
+import __TESTING_PACKAGE__.Tier1Assertions
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+
+/**
+ * Inspection test for __SCREEN__. Renders the **stateless** screen content across the
+ * mobile-design stress matrix to `build/outputs/roborazzi/_inspect___screen___*.png` for the
+ * `mobile-design-evaluator`, and runs [Tier1Assertions] on every frame.
+ *
+ * Not a regression test — no committed golden. A "pass" means it rendered and cleared the
+ * Tier-1 structural bar. Filenames are `_inspect___screen___<config>.png`: the leading token
+ * `__screen__` is the canonical screen id shared with the evaluator so both lanes cluster on
+ * the same screen in the ledger. Add a `"__SCREEN__": "__screen__"` row to
+ * `harness/ledger/screen-aliases.json`.
+ *
+ * Two stress levers (see CLAUDE.md / the mobile-design rubric):
+ *  - **width** via `@Config(qualifiers = "w360dp-...")` — the lever Robolectric honors for
+ *    display metrics; tall canvas so a scrolling list lays out in one frame.
+ *  - **font scale** via a `LocalDensity` override — `sp` text grows while `dp` containers
+ *    don't, mimicking accessibility text size and the overflow it causes.
+ *
+ * One capture per `@Test` (setContent is single-shot per compose rule). The worst case is
+ * compact width + font2.0 on long/empty/error content — add those variants; that's where
+ * blockers hide.
+ */
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(sdk = [35])
+class __SCREEN__Inspection {
+
+    @get:Rule
+    val composeRule = createComposeRule()
+
+    @Test
+    @Config(qualifiers = "w411dp-h2000dp-xxhdpi", sdk = [35])
+    fun inspect___screen___411() =
+        capture(dark = false, fontScale = 1f, fileName = "_inspect___screen___411.png")
+
+    @Test
+    @Config(qualifiers = "w411dp-h2000dp-xxhdpi", sdk = [35])
+    fun inspect___screen___411_dark() =
+        capture(dark = true, fontScale = 1f, fileName = "_inspect___screen___411_dark.png")
+
+    @Test
+    @Config(qualifiers = "w360dp-h2000dp-xxhdpi", sdk = [35])
+    fun inspect___screen___compact_font1_5() =
+        capture(dark = false, fontScale = 1.5f, fileName = "_inspect___screen___compact_font1_5.png")
+
+    @Test
+    @Config(qualifiers = "w360dp-h2000dp-xxhdpi", sdk = [35])
+    fun inspect___screen___compact_font2_0() =
+        capture(dark = false, fontScale = 2f, fileName = "_inspect___screen___compact_font2_0.png")
+
+    // TODO: add long / empty / error content variants — grade the worst case, not the happy path.
+
+    private fun capture(dark: Boolean, fontScale: Float, fileName: String) {
+        composeRule.setContent {
+            val base = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(base.density, fontScale)) {
+                // TODO: render your STATELESS content here, e.g.
+                //   AppTheme(darkTheme = dark) {
+                //       Surface { __SCREEN__Content(state = sampleState(), onEvent = {}) }
+                //   }
+            }
+        }
+        composeRule.onRoot().captureRoboImage(filePath = "build/outputs/roborazzi/$fileName")
+        Tier1Assertions.assertAll(composeRule, label = fileName)
+    }
+}

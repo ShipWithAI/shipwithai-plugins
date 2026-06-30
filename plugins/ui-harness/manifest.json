@@ -1,0 +1,29 @@
+{
+  "lastUpdated": 1782777600000,
+  "skills": [
+    {
+      "skillId": "setup",
+      "name": "setup",
+      "description": "Wire the UI harness into this project: scaffold the harness/ ledger + Python tools, install Tier1Assertions + the Roborazzi screenshot-testing convention plugin + an inspection-test template (package-parameterized), and print the build wiring. Short interview fills project slots (base package, target module).",
+      "creatorType": "community",
+      "updatedAt": "2026-06-30T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "mobile-design",
+      "name": "mobile-design",
+      "description": "Evaluator rubric for grading rendered mobile UI screenshots (Compose Multiplatform, Material 3): Tier-1 structural blockers (overflow, truncation, insets, touch targets) first, then Tier-2 taste (hierarchy, spacing, color, typography). Returns pass/fail with element-level fixes; never edits source.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-30T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "konsist-architecture-tests",
+      "name": "konsist-architecture-tests",
+      "description": "Generate a Konsist module-boundary test (e.g. core must not depend on feature, api must not leak impl) for a Kotlin / Kotlin Multiplatform Gradle project. Covers tool choice (Konsist vs ArchUnit/Detekt), the scan-from-disk scaffold, and verifying a rule actually bites.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-30T00:00:00Z",
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+package __TESTING_PACKAGE__   // e.g. com.acme.feature.foo.impl.testing
+
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsNode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.text.TextLayoutResult
+import java.io.File
+import java.time.Instant
+
+/**
+ * Tier-1 deterministic UI assertions (mobile-design rubric, structural blockers).
+ *
+ * Walks the unmerged semantics tree and reports — in one shot — every node that
+ * violates a structural rule a machine can check without vision. These are the
+ * failures the spec calls "broken before tasteless": a critic shouldn't waste a
+ * vision pass grading a screen with zero-size text or 32dp touch targets.
+ *
+ * Call from an inspection test, AFTER `captureRoboImage` so the PNG always lands
+ * (you'll want it for the post-mortem), e.g.:
+ *
+ * ```
+ * composeRule.onRoot().captureRoboImage(filePath = "build/outputs/roborazzi/$name")
+ * Tier1Assertions.assertAll(composeRule, label = name)
+ * ```
+ *
+ * Checks (v1):
+ *
+ *  - **zero-size**: any node carrying text or contentDescription with width == 0 or
+ *    height == 0 (invisible content that thinks it's visible).
+ *  - **touch-target**: any `OnClick`-bearing node smaller than 48 × 48 dp.
+ *  - **horizontal out-of-bounds**: nodes whose left/right falls outside the root.
+ *    Vertical OOB is deliberately skipped — inspection tests use a tall canvas to
+ *    render `LazyColumn` in one frame, so content below the device viewport is
+ *    expected.
+ *  - **text-overflow**: nodes tagged `Modifier.testTag("noTruncate")` whose Text
+ *    layout reports `hasVisualOverflow`. Without the tag the check is silent —
+ *    tagging is how callers opt critical labels into the "must not truncate"
+ *    contract.
+ *
+ * **insets** are asserted at the app layer (`AppInsetsTest` in `:androidApp`), not here:
+ * insets are owned by `App()`'s `SafeAreaContainer`, and feature content composables
+ * deliberately do NOT pad insets (App does — padding here would double-pad). That test
+ * injects non-zero `WindowInsets` via `DeviceConfigurationOverride` and asserts the content
+ * clears the status bar.
+ */
+object Tier1Assertions {
+
+    private const val MIN_TOUCH_DP = 48f
+
+    /**
+     * Lower bound for nodes carrying [Role.Button]. Material 3's `IconButton` (40 dp
+     * visual) and `AssistChip`/`FilterChip` (32 dp visual) ship a 48 dp tap surface
+     * via `minimumInteractiveComponentSize`'s reserved padding — invisible to the
+     * semantics tree, so a strict 48 dp check produces noise for every M3 button
+     * component. 32 dp is the M3 baseline; visual smaller than that (e.g. a
+     * `Modifier.clickable {}` on a 21 dp text field) is a real bug.
+     */
+    private const val MIN_TOUCH_BUTTON_DP = 32f
+
+    private const val NO_TRUNCATE_TAG = "noTruncate"
+    private const val OOB_TOLERANCE_PX = 0.5f
+
+    fun assertAll(rule: ComposeContentTestRule, label: String = "") {
+        val root = rule.onRoot(useUnmergedTree = true).fetchSemanticsNode()
+        val rootBounds = root.boundsInRoot
+        val allNodes = mutableListOf<SemanticsNode>().also { collect(root, it) }
+
+        val violations = mutableListOf<String>()
+        val density = rule.density
+
+        for (node in allNodes) {
+            val bounds = node.boundsInRoot
+            val widthDp = with(density) { bounds.width.toDp().value }
+            val heightDp = with(density) { bounds.height.toDp().value }
+
+            // Nodes with both dims 0 are unmeasured — typically content inside a
+            // collapsed AnimatedVisibility or a LazyColumn item not yet placed. Not
+            // an actionable Tier-1 finding; skip the whole node.
+            if (bounds.width == 0f && bounds.height == 0f) continue
+
+            val hasText = node.config.getOrNull(SemanticsProperties.Text)?.isNotEmpty() == true
+            val hasCd = node.config.getOrNull(SemanticsProperties.ContentDescription)?.isNotEmpty() == true
+            val hasClick = node.config.getOrNull(SemanticsActions.OnClick) != null
+
+            // Partial-zero is the real bug: content thinks it's visible but one
+            // dimension collapsed to nothing.
+            if ((hasText || hasCd) && (bounds.width == 0f || bounds.height == 0f)) {
+                violations += "[zero-size] ${describe(node)}: ${fmt(widthDp)}x${fmt(heightDp)}dp"
+            }
+
+            val role = node.config.getOrNull(SemanticsProperties.Role)
+            // Switch/Checkbox/RadioButton are entirely M3-managed; their visual is
+            // always smaller than the 48dp tap surface — skip them outright.
+            val m3Toggle = role == Role.Switch || role == Role.Checkbox || role == Role.RadioButton
+            // Button covers M3 IconButton (40dp visual) and chips (32dp visual);
+            // accept that baseline since their tap area is padded to 48dp.
+            val threshold = if (role == Role.Button) MIN_TOUCH_BUTTON_DP else MIN_TOUCH_DP
+            if (hasClick && !m3Toggle && (widthDp < threshold || heightDp < threshold)) {
+                // A small clickable inside a larger clickable ancestor (e.g. a
+                // BasicTextField wrapped by a Surface(.clickable) that focuses it)
+                // is already tappable via the ancestor — don't double-flag.
+                if (!hasLargeClickableAncestor(node, density)) {
+                    violations += "[touch-target] ${describe(node)}: ${fmt(widthDp)}x${fmt(heightDp)}dp (< ${fmt(threshold)}x${fmt(threshold)}dp)"
+                }
+            }
+
+            if (bounds.right > rootBounds.right + OOB_TOLERANCE_PX ||
+                bounds.left < rootBounds.left - OOB_TOLERANCE_PX
+            ) {
+                violations += "[out-of-bounds] ${describe(node)}: " +
+                    "x=${fmt(bounds.left)}..${fmt(bounds.right)} root=${fmt(rootBounds.left)}..${fmt(rootBounds.right)}"
+            }
+
+            val tag = node.config.getOrNull(SemanticsProperties.TestTag)
+            if (tag == NO_TRUNCATE_TAG && hasText && textOverflowed(node)) {
+                violations += "[text-overflow] ${describe(node)} (tagged $NO_TRUNCATE_TAG)"
+            }
+        }
+
+        // Write the JSONL sidecar BEFORE throwing — the structured findings are
+        // what `/ui-distill` ingests; they need to land on disk even when the
+        // assertion fails (which is the common path during loops).
+        if (violations.isNotEmpty()) {
+            writeFindings(label, violations)
+
+            val header = if (label.isEmpty()) "Tier-1 violations" else "Tier-1 violations in $label"
+            throw AssertionError(
+                "$header (${violations.size}):\n  - " + violations.joinToString("\n  - "),
+            )
+        }
+    }
+
+    /**
+     * Append one JSONL line per violation to `build/outputs/roborazzi/_findings.jsonl`.
+     * The file is module-local and append-only within a run; `harness/bin/aggregate_ledger.py`
+     * folds these sidecars into the canonical `harness/ledger/findings.jsonl` (which
+     * `/ui-distill` then clusters and `/ui-metrics` trends).
+     */
+    private fun writeFindings(label: String, violations: List<String>) {
+        val (screen, config) = parseLabel(label)
+        val ts = Instant.now().toString()
+        val sidecar = File("build/outputs/roborazzi/_findings.jsonl")
+        sidecar.parentFile?.mkdirs()
+        val sb = StringBuilder()
+        for (v in violations) {
+            val category = categoryOf(v)
+            sb.append("""{"ts":"$ts","screen":"${esc(screen)}","config":"${esc(config)}",""")
+            sb.append(""""loop":"impl","role":"tier1","tier":1,""")
+            sb.append(""""category":"$category","severity":"blocker",""")
+            sb.append(""""element":"${esc(elementOf(v))}","finding":"${esc(v)}",""")
+            sb.append(""""fix":null,"iteration":1,"resolved":false,"deposit":null}""")
+            sb.append('\n')
+        }
+        synchronized(LEDGER_LOCK) { sidecar.appendText(sb.toString()) }
+    }
+
+    private fun parseLabel(label: String): Pair<String, String> {
+        // Canonical contract: inspection PNGs are named `_inspect_<screen>_<config>.png`,
+        // where <screen> is a single token (no underscores) — the canonical screen id
+        // (`songs`, `field`, `picker`) shared with the evaluator's `_eval_findings.jsonl`,
+        // so both lanes cluster on the same screen in the ledger. Split on the first
+        // underscore: leading token -> screen, remainder -> config. E.g.
+        // "_inspect_songs_long_compact_font1_5_dark.png" -> ("songs", "long_compact_font1_5_dark").
+        val core = label.removePrefix("_inspect_").removeSuffix(".png")
+        val sep = core.indexOf('_')
+        return if (sep > 0) core.substring(0, sep) to core.substring(sep + 1)
+        else core to ""
+    }
+
+    private fun categoryOf(finding: String): String = when {
+        finding.startsWith("[zero-size]") -> "zero-size"
+        finding.startsWith("[touch-target]") -> "touch-target"
+        finding.startsWith("[out-of-bounds]") -> "out-of-bounds"
+        finding.startsWith("[text-overflow]") -> "truncation"
+        else -> "unknown"
+    }
+
+    private fun elementOf(finding: String): String {
+        // Pull the part between the leading "[category] " and the trailing ": ..." metrics.
+        val afterCategory = finding.substringAfter("] ", finding)
+        return afterCategory.substringBefore(":").trim()
+    }
+
+    private fun esc(s: String): String =
+        s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n")
+
+    private val LEDGER_LOCK = Any()
+
+    private fun hasLargeClickableAncestor(
+        node: SemanticsNode,
+        density: androidx.compose.ui.unit.Density,
+    ): Boolean {
+        var p = node.parent
+        while (p != null) {
+            if (p.config.getOrNull(SemanticsActions.OnClick) != null) {
+                val w = with(density) { p.boundsInRoot.width.toDp().value }
+                val h = with(density) { p.boundsInRoot.height.toDp().value }
+                if (w >= MIN_TOUCH_DP && h >= MIN_TOUCH_DP) return true
+            }
+            p = p.parent
+        }
+        return false
+    }
+
+    private fun collect(node: SemanticsNode, out: MutableList<SemanticsNode>) {
+        out += node
+        node.children.forEach { collect(it, out) }
+    }
+
+    private fun textOverflowed(node: SemanticsNode): Boolean {
+        val getLayout = node.config.getOrNull(SemanticsActions.GetTextLayoutResult) ?: return false
+        val results = mutableListOf<TextLayoutResult>()
+        getLayout.action?.invoke(results)
+        // Real truncation = glyphs actually dropped from the last line (horizontal clip) or
+        // lines dropped by maxLines (vertical clip): the last *visible* char index is short
+        // of the text length. We deliberately do NOT use TextLayoutResult.hasVisualOverflow —
+        // it false-positives on legitimately-fitting single-line text whenever a non-zero
+        // letterSpacing / sub-pixel glyph advance pushes the painted width a hair past the
+        // layout width (reproducibly seen on mono numerals like "20"). getLineEnd(visibleEnd)
+        // counts only glyphs that were actually clipped.
+        return results.any { r ->
+            if (r.lineCount == 0) return@any false
+            val full = r.layoutInput.text.text.trimEnd().length
+            r.getLineEnd(r.lineCount - 1, visibleEnd = true) < full
+        }
+    }
+
+    private fun describe(node: SemanticsNode): String {
+        val text = node.config.getOrNull(SemanticsProperties.Text)?.joinToString(" / ") { it.text }
+        val cd = node.config.getOrNull(SemanticsProperties.ContentDescription)?.joinToString(" / ")
+        val tag = node.config.getOrNull(SemanticsProperties.TestTag)
+        val role = node.config.getOrNull(SemanticsProperties.Role)?.toString()
+        val parts = listOfNotNull(
+            tag?.let { "tag=$it" },
+            role?.let { "role=$it" },
+            text?.takeIf { it.isNotBlank() }?.let { "text=\"${it.take(40)}\"" },
+            cd?.takeIf { it.isNotBlank() }?.let { "cd=\"${it.take(40)}\"" },
+        )
+        return if (parts.isEmpty()) "node#${node.id}" else parts.joinToString(" ")
+    }
+
+    private fun fmt(v: Float): String = "%.1f".format(v)
+}
