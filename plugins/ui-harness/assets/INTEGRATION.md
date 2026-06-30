@@ -105,7 +105,7 @@ ratchet reads. Committed regression goldens (if you add any) live in
 
 ## The six coupling points
 
-Everything project-specific is one of these — all touched by `/ui-harness-init`:
+Everything project-specific is one of these — all handled by the `setup` skill:
 
 | # | Point | Where |
 |---|---|---|

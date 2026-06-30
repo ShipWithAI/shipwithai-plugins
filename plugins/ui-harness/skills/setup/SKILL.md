@@ -43,14 +43,32 @@ Confirm the tools run here: `python3 harness/bin/test_aggregate_ledger.py` (and 
 ## 2. Install the deterministic asserter
 
 Copy `Tier1Assertions.kt.tmpl` into the target module's `androidHostTest` `testing` package,
-replacing the token with the real package:
+replacing the token with the real package. **Substitute the §0 interview values into the shell
+vars below and validate them first** — never splice an unvalidated package/path into the shell,
+and don't feed the package to `sed` (a `/` in it breaks the `s///` delimiter):
 
 ```bash
-TESTING_PKG="<base.package>.<module-suffix>.testing"   # e.g. com.acme.feature.foo.impl.testing
-DEST="<module>/src/androidHostTest/kotlin/$(echo "$TESTING_PKG" | tr . /)"
+BASE_PKG="<base.package>"          # from §0, e.g. com.acme.app
+MODULE="<module>"                  # from §0, e.g. feature/foo/impl
+MODULE_SUFFIX="<module-suffix>"    # package tail under BASE_PKG, e.g. feature.foo.impl
+
+# reject anything that isn't a plain Java package / module path
+case "$BASE_PKG"      in *[!A-Za-z0-9._]*|"") echo "invalid base package"; exit 1;; esac
+case "$MODULE_SUFFIX" in *[!A-Za-z0-9._]*|"") echo "invalid module suffix"; exit 1;; esac
+case "$MODULE"        in *[!A-Za-z0-9._/-]*|/*|*..*) echo "invalid module path"; exit 1;; esac
+
+TESTING_PKG="${BASE_PKG}.${MODULE_SUFFIX}.testing"
+DEST="$MODULE/src/androidHostTest/kotlin/${TESTING_PKG//.//}"   # pure-shell '.'→'/', no sed
 mkdir -p "$DEST"
-sed "s/__TESTING_PACKAGE__.*/$TESTING_PKG/" \
-  "${CLAUDE_PLUGIN_ROOT}/assets/substrate/Tier1Assertions.kt.tmpl" > "$DEST/Tier1Assertions.kt"
+
+# literal token replacement — TESTING_PKG never enters a regex
+TESTING_PKG="$TESTING_PKG" python3 - \
+  "${CLAUDE_PLUGIN_ROOT}/assets/substrate/Tier1Assertions.kt.tmpl" "$DEST/Tier1Assertions.kt" <<'PY'
+import os, re, sys
+src, dst = sys.argv[1], sys.argv[2]
+text = open(src, encoding="utf-8").read()
+open(dst, "w", encoding="utf-8").write(re.sub(r"__TESTING_PACKAGE__.*", os.environ["TESTING_PKG"], text))
+PY
 ```
 
 ## 3. Install the convention plugin

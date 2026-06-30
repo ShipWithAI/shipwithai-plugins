@@ -33,7 +33,7 @@ aggregate/distill/metrics, the ratchet — is substrate-agnostic.
 ## Quickstart
 
 ```bash
-/setup com.acme.app --module feature/foo/impl   # scaffold the harness into a Compose/KMP repo
+/shipwithai-ui-harness:setup com.acme.app --module feature/foo/impl   # scaffold the harness into a Compose/KMP repo
 /ui-iterate FooScreen                           # render → grade → log, capped at 4 iterations
 /ui-distill                                     # promote recurring findings into permanent gates
 /ui-metrics                                     # is it compounding?
