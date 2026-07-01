@@ -1,0 +1,47 @@
+{
+  "evals": [
+    {
+      "prompt": "Write an integration test for my OrderRepository against a real database",
+      "expect": [
+        "uses Testcontainers with a PostgreSQLContainer, not H2 or an in-memory DB",
+        "uses @SpringBootTest + @Testcontainers",
+        "wires the container via @ServiceConnection (no @DynamicPropertySource boilerplate)"
+      ]
+    },
+    {
+      "prompt": "Set up a Testcontainers base class for my Spring Boot tests",
+      "expect": [
+        "the container is a static @Container so it starts once and is shared",
+        "exposes an abstract base class that concrete *IT tests extend"
+      ]
+    },
+    {
+      "prompt": "My integration test waits for an async handler — how should I assert it finished?",
+      "expect": [
+        "uses Awaitility await().atMost(...).untilAsserted(...) to poll for the result",
+        "does NOT use Thread.sleep (cites the test-thread-sleep guardrail)"
+      ]
+    },
+    {
+      "prompt": "Should I use H2 to speed up my integration tests?",
+      "expect": [
+        "recommends a real Postgres via Testcontainers over H2",
+        "explains H2 diverges from Postgres on SQL dialect/constraints and hides real bugs"
+      ]
+    },
+    {
+      "prompt": "Add an integration test that also needs a Kafka broker",
+      "expect": [
+        "adds a Testcontainers KafkaContainer alongside Postgres",
+        "wires it with @ServiceConnection as well"
+      ]
+    },
+    {
+      "prompt": "Name my Testcontainers test so the right Maven phase runs it",
+      "expect": [
+        "names the boot test *IT for Failsafe / the integrationTest task",
+        "distinguishes *IT (integration) from *Test (unit, Surefire)"
+      ]
+    }
+  ]
+}

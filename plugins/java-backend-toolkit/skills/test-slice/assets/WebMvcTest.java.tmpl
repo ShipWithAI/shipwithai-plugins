@@ -1,0 +1,39 @@
+package {{PACKAGE}};
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+/**
+ * Web-slice test: loads ONLY the MVC layer (controller, JSON serialization, validation,
+ * filters) and MOCKS the service. Fast — no database, no full application context.
+ *
+ * {@code @MockitoBean} is Spring Boot 3.4+. On 3.3 and earlier use {@code @MockBean}
+ * (org.springframework.boot.test.mock.mockito.MockBean), deprecated from 3.4 onward.
+ */
+@WebMvcTest({{ENTITY}}Controller.class)
+class {{ENTITY}}ControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private {{ENTITY}}Service service;
+
+    @Test
+    void returnsDtoAsJson() throws Exception {
+        // TODO: stub the service and assert the response body, then delete this comment.
+        // The example is commented out so the generated test compiles and passes as-is.
+        // when(service.getById(1L)).thenReturn(new {{ENTITY}}Response(/* ... */));
+        // mockMvc.perform(get("/api/{{ENTITY_LOWER}}s/1"))
+        //         .andExpect(status().isOk())
+        //         .andExpect(jsonPath("$.id").value(1));
+    }
+}

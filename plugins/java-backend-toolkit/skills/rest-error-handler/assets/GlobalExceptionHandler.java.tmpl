@@ -1,0 +1,54 @@
+package {{PACKAGE}}.web;
+
+import {{PACKAGE}}.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+/**
+ * Global error contract — every exception becomes an RFC 7807 {@link ProblemDetail}
+ * (Spring 6). The fallback NEVER leaks stack traces or internal messages to clients.
+ */
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String PROBLEM_BASE = "{{PROBLEM_BASE}}"; // e.g. https://example.com/problems
+
+    /** Bean-validation failures → 400 with per-field details. */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail onValidation(MethodArgumentNotValidException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
+        pd.setType(URI.create(PROBLEM_BASE + "/validation"));
+        Map<String, String> errors = new LinkedHashMap<>();
+        for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
+            errors.put(fe.getField(), fe.getDefaultMessage());
+        }
+        pd.setProperty("errors", errors);
+        return pd;
+    }
+
+    /** Domain not-found → 404. */
+    @ExceptionHandler(NotFoundException.class)
+    public ProblemDetail onNotFound(NotFoundException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        pd.setType(URI.create(PROBLEM_BASE + "/not-found"));
+        return pd;
+    }
+
+    /** Fallback → 500. Log server-side; return an opaque body (no stack trace). */
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail onUnexpected(Exception ex, HttpServletRequest req) {
+        log.error("Unhandled error on {} {}", req.getMethod(), req.getRequestURI(), ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error");
+    }
+}

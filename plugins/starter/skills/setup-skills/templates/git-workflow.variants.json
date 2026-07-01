@@ -1,0 +1,16 @@
+{
+  "schema": "1.0",
+  "commit": {
+    "conventional": "Format: `type(scope): subject`\n- Types: feat, fix, chore, docs, refactor, test, perf, ci\n- Subject: imperative, ≤ 72 chars, no trailing period\n- Body (optional): explain *why*, not *what*. Wrap at 72 columns.\n- Breaking change: add `!` after type/scope, or a `BREAKING CHANGE:` footer.\n\nExamples:\n- `feat(auth): add refresh-token rotation`\n- `fix(api): handle null cursor in pagination`",
+    "none": "Format: plain imperative subject line.\n- ≤ 72 chars, no trailing period, describe the change directly.\n- Body (optional): explain *why*. Wrap at 72 columns.\n\nExample: `Add refresh-token rotation to auth flow`",
+    "custom": "This project uses a custom commit convention. Follow the format\ndocumented in CLAUDE.md (\"Commit format\" line). If unclear, ask before committing."
+  },
+  "branch": {
+    "gitflow": "- `feature/<short-slug>`  → merges into `develop`\n- `release/<version>`     → merges into `main` and back into `develop`\n- `hotfix/<short-slug>`   → branches from `main`, merges into `main` + `develop`\n- Default working branch: `develop`. Never commit directly to `main`.",
+    "trunk-based": "- Short-lived branches off `main`: `<initials>/<short-slug>`.\n- Merge back to `main` frequently (small PRs). Delete the branch after merge.\n- Default working branch: `main`."
+  },
+  "protected_branches": {
+    "gitflow": "main, develop",
+    "trunk-based": "main"
+  }
+}

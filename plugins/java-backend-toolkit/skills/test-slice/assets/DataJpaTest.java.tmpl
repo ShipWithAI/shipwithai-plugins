@@ -1,0 +1,33 @@
+package {{PACKAGE}};
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
+/**
+ * Persistence-slice test: loads ONLY JPA/repository beans (not the web layer or services)
+ * and wraps each test in a transaction that ROLLS BACK afterwards, so tests stay isolated.
+ *
+ * By default this uses an embedded DB. To test against the same Postgres production runs,
+ * add {@code @AutoConfigureTestDatabase(replace = Replace.NONE)} and a Testcontainers DB
+ * (see the integration-test skill).
+ */
+@DataJpaTest
+class {{ENTITY}}RepositoryTest {
+
+    @Autowired
+    private {{ENTITY}}Repository repository;
+
+    @Autowired
+    private TestEntityManager em;
+
+    @Test
+    void findsPersistedEntity() {
+        // {{ENTITY}} saved = em.persistFlushFind(new {{ENTITY}}(...));
+        // assertThat(repository.findById(saved.getId())).isPresent();
+        assertThat(repository.count()).isZero();
+    }
+}

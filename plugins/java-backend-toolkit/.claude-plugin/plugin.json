@@ -1,0 +1,29 @@
+{
+  "name": "shipwithai-java-backend-toolkit",
+  "version": "0.5.0",
+  "description": "Guardrail-first Spring Boot + JPA toolkit for Claude Code. Just-in-time hooks catch missing @Version, broken @Transactional proxies, entity-in-controller leaks, N+1, and query injection at the moment you write them; scaffold skills generate correct-by-default entities, endpoints, and migrations; a tuned reviewer agent shares one ruleset with the hooks.",
+  "author": {
+    "name": "ShipWithAI",
+    "url": "https://shipwithai.io"
+  },
+  "homepage": "https://shipwithai.io/plugins/java-backend-toolkit",
+  "repository": "https://github.com/ShipWithAI/shipwithai-plugins",
+  "license": "MIT",
+  "keywords": ["claude-code", "spring-boot", "java", "jpa", "backend", "guardrails", "scaffold", "code-review"],
+  "skills": [
+    "./skills/setup",
+    "./skills/jpa-entity",
+    "./skills/spring-rest-endpoint",
+    "./skills/db-migration",
+    "./skills/springboot-conventions",
+    "./skills/rest-error-handler",
+    "./skills/idempotent-endpoint",
+    "./skills/security-filter-chain",
+    "./skills/jwt-auth",
+    "./skills/integration-test",
+    "./skills/test-slice"
+  ],
+  "agents": [
+    "./agents/springboot-reviewer.md"
+  ]
+}

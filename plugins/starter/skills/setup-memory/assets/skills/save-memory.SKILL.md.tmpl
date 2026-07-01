@@ -1,0 +1,67 @@
+---
+name: save-memory
+description: >
+  Use when closing/ending a session, or when the Stop hook nudges "save-memory" —
+  distill the session's work into .claude/memory/ so the next session can catch up.
+  Trigger phrases: "save memory", "end session", "save session".
+template_version: {{TEMPLATE_VERSION}}
+---
+
+# Save Memory — {{PROJECT_NAME}}
+
+Distill the current session's work into **durable knowledge** under `.claude/memory/`, so the
+next session (and newcomers) can catch up. This is the **write** pass — not a raw log, but
+distilled *meaning*.
+
+## Principles
+- Save only what is **valuable weeks from now**. Skip trivial steps.
+- 1 file = 1 fact. Kebab-case names, small files.
+- `decisions/` is **append-only** — if a decision changes, add a new file; do not edit the old one.
+- Every change → update one line in `MEMORY.md`.
+- A rule that must reach **subagents** belongs in `CLAUDE.md`, not here — memory only holds the
+  rationale (see `.claude/memory/README.md`).
+
+## Procedure (in order)
+
+### 1. Review the session
+Ask: what did this session *decide*, *learn*, *leave unfinished*? Use the conversation plus
+`git status` / `git log` to know which files were touched.
+
+### 2. Decisions — `decisions/NNNN-slug.md`
+For each **architecture/design decision with a rationale**, create a new file (incrementing
+the 4-digit number):
+```markdown
+---
+name: NNNN-slug
+description: <one line>
+metadata: { type: decision, date: <YYYY-MM-DD> }
+---
+<decision>
+**Why:** <rationale>
+**How to apply:** <how>. Related: [[other-memory]].
+```
+Only create one when it is genuinely a decision — not every change needs an ADR.
+
+### 3. Conventions / gotchas — `conventions/slug.md`
+New conventions or gotchas encountered (e.g. a build flag, a syntax that causes a bug). Same
+frontmatter format with `type: convention`.
+
+### 4. HANDOFF.md — OVERWRITE
+Update the latest WIP state with the six sections: Current goal / Done / In progress—Next /
+Settled decisions / **Context to Load (paths only)** / Blocked. This is what the next session
+reads first — write it so anyone grasps "where we are, what's next" in 10 seconds.
+
+### 5. sessions/YYYY-MM-DD.md — APPEND
+A short session summary: Done / Decisions / Remaining. If today's file already exists, append
+to it.
+
+### 6. Update MEMORY.md
+Add/edit one index line per new decision/convention. Keep the index compact and grouped.
+
+## After finishing
+Briefly report to the user what was saved (how many decisions, conventions, whether HANDOFF
+was updated). Do NOT commit unless the user asks — only write files.
+
+## Verify
+- `MEMORY.md` links to every file just created (no broken links).
+- `HANDOFF.md`'s "Context to Load" contains only real, existing paths.

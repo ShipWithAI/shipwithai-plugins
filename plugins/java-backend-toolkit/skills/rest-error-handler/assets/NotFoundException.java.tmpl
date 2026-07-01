@@ -1,0 +1,17 @@
+package {{PACKAGE}};
+
+/**
+ * Domain "resource not found" signal — the advice maps it to a 404 ProblemDetail.
+ * Throw it from services/repositories; never let it surface as a raw 500.
+ * If the project already has an equivalent exception, reuse that instead.
+ */
+public class NotFoundException extends RuntimeException {
+
+    public NotFoundException(String message) {
+        super(message);
+    }
+
+    public static NotFoundException of(String resource, Object id) {
+        return new NotFoundException(resource + " " + id + " not found");
+    }
+}

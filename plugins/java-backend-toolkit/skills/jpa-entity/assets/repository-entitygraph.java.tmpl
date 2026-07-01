@@ -1,0 +1,25 @@
+package {{PACKAGE}};
+
+import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+/**
+ * {{ENTITY}}Repository — fetch-aware finders for an entity with associations.
+ *
+ * Associations stay LAZY on the entity (never FetchType.EAGER); fetch them
+ * explicitly here so reads avoid N+1 (jpa-eager-fetch / nplus1-heuristic).
+ * Pick ONE idiom per finder — both are shown for reference.
+ */
+public interface {{ENTITY}}Repository extends JpaRepository<{{ENTITY}}, {{ID_TYPE}}> {
+
+    // Idiom A — declarative: load the association graph in one query.
+    @EntityGraph(attributePaths = {"{{ASSOCIATION}}"})
+    Optional<{{ENTITY}}> findWithAssociationsById({{ID_TYPE}} id);
+
+    // Idiom B — explicit JOIN FETCH for full control over the query.
+    @Query("select e from {{ENTITY}} e join fetch e.{{ASSOCIATION}} where e.id = :id")
+    Optional<{{ENTITY}}> fetchById(@Param("id") {{ID_TYPE}} id);
+}
