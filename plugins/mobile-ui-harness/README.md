@@ -1,4 +1,4 @@
-# shipwithai-ui-harness
+# shipwithai-mobile-ui-harness
 
 A self-improving UI harness for **Compose Multiplatform** projects, packaged as a ShipWithAI
 Claude Code plugin. It turns "did that `@Composable` edit actually render correctly?" into a
@@ -27,13 +27,13 @@ aggregate/distill/metrics, the ratchet — is substrate-agnostic.
 
 ```bash
 /plugin marketplace add ShipWithAI/shipwithai-plugins
-/plugin install shipwithai-ui-harness@shipwithai
+/plugin install shipwithai-mobile-ui-harness@shipwithai
 ```
 
 ## Quickstart
 
 ```bash
-/shipwithai-ui-harness:setup com.acme.app --module feature/foo/impl   # scaffold the harness into a Compose/KMP repo
+/shipwithai-mobile-ui-harness:setup com.acme.app --module feature/foo/impl   # scaffold the harness into a Compose/KMP repo
 /ui-iterate FooScreen                           # render → grade → log, capped at 4 iterations
 /ui-distill                                     # promote recurring findings into permanent gates
 /ui-metrics                                     # is it compounding?
@@ -60,7 +60,7 @@ plugin, the six coupling points). Kotlin-specific — not for web or native-iOS 
 ## Layout
 
 ```
-plugins/ui-harness/
+plugins/mobile-ui-harness/
 ├── skills/{setup,mobile-design,konsist-architecture-tests}/  SKILL.md + evals.json
 ├── commands/ui-{iterate,distill,metrics}.md
 ├── agents/mobile-design-evaluator.md

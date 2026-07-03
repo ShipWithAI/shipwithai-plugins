@@ -73,14 +73,14 @@
       ]
     },
     {
-      "name": "shipwithai-ui-harness",
+      "name": "shipwithai-mobile-ui-harness",
       "description": "Self-improving Compose Multiplatform UI harness. Inspection tests render every screen across a stress matrix; a deterministic Tier-1 asserter plus a vision evaluator grade them in a separate lane; recurring findings ratchet into permanent gates via a compounding feedback ledger. Ships Konsist architecture rails and a setup skill that scaffolds it all into a project.",
       "version": "0.1.0",
       "author": {
         "name": "ShipWithAI",
         "email": "support@shipwithai.com"
       },
-      "source": "./plugins/ui-harness",
+      "source": "./plugins/mobile-ui-harness",
       "category": "productivity",
       "tags": [
         "compose-multiplatform",

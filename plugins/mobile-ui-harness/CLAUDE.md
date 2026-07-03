@@ -1,4 +1,4 @@
-# shipwithai-ui-harness — Claude context
+# shipwithai-mobile-ui-harness — Claude context
 
 A self-improving Compose Multiplatform UI harness. **Architecture seam** to keep in mind when
 editing: the **brain** (the loop, the JSONL ledger, aggregate/distill/metrics, the evaluator, the

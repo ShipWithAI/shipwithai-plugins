@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `shipwithai-ui-harness` are documented here.
+All notable changes to `shipwithai-mobile-ui-harness` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
 ## [0.1.0] — 2026-06-30
