@@ -1,0 +1,41 @@
+{
+  "evals": [
+    {
+      "prompt": "Grade the rendered screens in build/outputs/roborazzi/_inspect_*.png",
+      "expect": [
+        "reads every PNG (does not grade from filenames alone)",
+        "checks Tier-1 structural integrity first (overflow, truncation, insets, touch targets), then Tier-2 taste",
+        "any Tier-1 violation produces overall VERDICT: fail",
+        "every violation names the element, the config it appears in, and a concrete fix"
+      ]
+    },
+    {
+      "prompt": "The happy-path render looks great but the font2.0 compact render clips a button label",
+      "expect": [
+        "does not pass on the strength of the happy path",
+        "returns fail because a Tier-1 truncation exists in a stress config"
+      ]
+    },
+    {
+      "prompt": "Is this screen shippable? It uses the default purple Material theme and centers every text block",
+      "expect": [
+        "flags untouched default-purple theme and center-everything as mobile AI-slop anti-patterns",
+        "reports them as Tier-2 issues with concrete fixes"
+      ]
+    },
+    {
+      "prompt": "A deterministic assertion already checked touch-target sizes; grade the rest",
+      "expect": [
+        "does not re-litigate the mechanical property the assertion already owns",
+        "covers what assertions cannot see, plus all of taste"
+      ]
+    },
+    {
+      "prompt": "Grade SongsScreen and fix the issues you find",
+      "expect": [
+        "evaluates but does NOT edit the @Composable, theme, or any source",
+        "writes a verdict with precise fixes for the executor lane to apply"
+      ]
+    }
+  ]
+}
