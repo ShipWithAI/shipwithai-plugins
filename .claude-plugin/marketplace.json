@@ -50,7 +50,32 @@
         "firebase",
         "nextjs"
       ]
+    },
+    {
+      "name": "shipwithai-design-toolkit",
+      "description": "Governance harness for the ShipWithAI design system: spec-first workflow skills, read-only auditor agents (incl. design-harness-doctor), and warn-only guardrail hooks. Install one plugin and a dev/agent inherits the whole workflow.",
+      "version": "0.7.3",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": {
+        "source": "github",
+        "repo": "MangalaHQ/shipwithai-design-toolkit"
+      },
+      "category": "design",
+      "tags": [
+        "design-system",
+        "harness",
+        "governance",
+        "tokens",
+        "dtcg",
+        "spec-first",
+        "hooks",
+        "agents",
+        "wcag"
+      ]
     }
   ],
-  "version": "1.0.0"
+  "version": "1.1.0"
 }
