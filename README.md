@@ -47,21 +47,13 @@ Marketplace name: **`shipwithai`** (see [`.claude-plugin/marketplace.json`](.cla
 
 ---
 
-## Plugins on this branch (`main`)
+## Plugins
 
-Truth source: `plugins/*` tree + [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) on **default branch**.
-
-| Plugin | In tree | Marketplace (`@shipwithai`) | Role | Skills | Install target |
-|--------|:-------:|:---------------------------:|------|-------:|----------------|
+| Plugin | In tree | Marketplace | Role | Skills | Install target |
+|--------|:-------:|:-----------:|------|-------:|----------------|
 | **[`shipwithai-starter`](plugins/starter/)** (v2.4.0) | ✅ | ✅ listed | **Start here** — harness for any project | 13 | `shipwithai-starter@shipwithai` |
 | [`shipwithai-auth`](plugins/auth/) (v1.7.1) | ✅ | ✅ listed | Next.js auth (Better Auth / Firebase) | 2 | `shipwithai-auth@shipwithai` |
 | [`shipwithai-harness`](plugins/harness/) (v2.0.0) | ✅ | ✅ listed | Auto-detect stack → harness generator | 2 | `shipwithai-harness@shipwithai` |
-| [`shipwithai-java-backend-toolkit`](plugins/java-backend-toolkit/) (v0.5.0) | ✅ | ❌ **not listed** | Spring Boot + JPA guardrails + reviewer | 11 + agent | local `--plugin-dir` only (below) |
-| `shipwithai-design-toolkit` (v0.7.3) | ❌ external | ✅ listed | Design system governance | — | `shipwithai-design-toolkit@shipwithai` (external: `MangalaHQ/shipwithai-design-toolkit`) |
-
-**Not on `main`:** `mobile-ui-harness` and other WIP plugins may exist on other branches; they are not installable from this default-branch marketplace until merged here.
-
-> Note: marketplace metadata currently lists `shipwithai-starter` as `1.0.0` while `plugins/starter` is **2.4.0**. Install still pulls the monorepo source path `./plugins/starter`. Syncing the marketplace version field is a separate packaging task.
 
 ### Secondary plugins (after starter)
 
@@ -69,8 +61,6 @@ Truth source: `plugins/*` tree + [`.claude-plugin/marketplace.json`](.claude-plu
 |--------|-----------|----------------|
 | **auth** | Production auth for Next.js — Better Auth or Firebase, OAuth, UI, schema. | `/shipwithai-auth:setup` · `/shipwithai-auth:doctor` |
 | **harness** | Scan project → CLAUDE.md, settings, safety hooks (Next.js / Laravel / Spring Boot and more). | `/shipwithai-harness:setup` · `/shipwithai-harness:doctor` |
-| **java-backend-toolkit** | Hooks catch broken `@Transactional` proxies, missing `@Version`, N+1, query injection as you type. | via local plugin load (not in marketplace yet) |
-| **design-toolkit** | Spec-first design governance (external repo wired in marketplace). | after marketplace install |
 
 ---
 
@@ -95,40 +85,32 @@ After the marketplace is registered (step 1 above):
 
 ```text
 /plugin install shipwithai-auth@shipwithai
+/shipwithai-auth:setup
+
 /plugin install shipwithai-harness@shipwithai
-/plugin install shipwithai-design-toolkit@shipwithai
+/shipwithai-harness:setup
 ```
 
-### Java backend toolkit (local only on `main`)
-
-Present under [`plugins/java-backend-toolkit/`](plugins/java-backend-toolkit/) but **not** in `marketplace.json`. Use a local path:
-
-```bash
-git clone https://github.com/ShipWithAI/shipwithai-plugins.git
-claude --plugin-dir ./shipwithai-plugins/plugins/java-backend-toolkit
-```
-
-### Local / development install (any in-tree plugin)
+### Local / development install
 
 ```bash
 git clone https://github.com/ShipWithAI/shipwithai-plugins.git
 claude --plugin-dir ./shipwithai-plugins/plugins/starter
-# or: plugins/auth | plugins/harness | plugins/java-backend-toolkit
+# or: plugins/auth | plugins/harness
 ```
 
 ---
 
-## Repository structure (`main`)
+## Repository structure
 
 ```
 shipwithai-plugins/
 ├── plugins/
-│   ├── starter/                 # shipwithai-starter v2.4.0 (marketplace)
-│   ├── auth/                    # shipwithai-auth v1.7.1 (marketplace)
-│   ├── harness/                 # shipwithai-harness v2.0.0 (marketplace)
-│   └── java-backend-toolkit/    # v0.5.0 (in tree, not marketplace)
+│   ├── starter/                 # shipwithai-starter v2.4.0
+│   ├── auth/                    # shipwithai-auth v1.7.1
+│   └── harness/                 # shipwithai-harness v2.0.0
 ├── .claude-plugin/
-│   └── marketplace.json         # name: shipwithai — starter, auth, design-toolkit, harness
+│   └── marketplace.json         # name: shipwithai
 ├── docs/
 ├── scripts/publish-plugin.sh
 └── CLAUDE.md
@@ -143,7 +125,6 @@ No compiled code. Plugin content is Markdown (`SKILL.md`, references) and JSON (
 - **Marketplace add fails** — update Claude Code; check network / git access to GitHub
 - **Skill not found** — use the full slash with plugin prefix: `/shipwithai-starter:init` (not `/starter:init`)
 - **Permission denied writing `.claude/`** — run init inside a project directory you can write to
-- **Java plugin not found via marketplace** — expected on `main`; use `--plugin-dir` until it is listed in `marketplace.json`
 
 ---
 
