@@ -1,0 +1,14 @@
+package {{PACKAGE}}.web.dto;
+
+import java.time.Instant;
+
+/**
+ * API response for {{RESOURCE}}. Decouples the API contract from the JPA entity —
+ * add only the fields the client should see. A record is immutable by default.
+ */
+public record {{RESOURCE}}Response(
+    Long id,
+    // TODO: expose the fields the API should return (not the whole entity)
+    Instant createdAt
+) {
+}

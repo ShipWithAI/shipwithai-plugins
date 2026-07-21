@@ -260,11 +260,19 @@ If scaffold fails:
 ### Step 2 — Write context file
 
 After scaffold succeeds, write `.claude/starter-context.json`.
-Use the v1.1 schema (same as `init`). Always set:
+Use the **v1.4** schema (same as `init` Step 4.5). Always set:
+- `version` → `"1.4"`
 - `project.stage` → `"greenfield"`
 - `project.team_size` → `1`
 - `architecture.gotchas` → include `"Project is greenfield — structure does not exist yet, build toward it"`
 - `tier` → `"essential"` (default for new-project; user can upgrade via `/shipwithai-starter:review`)
+
+Essential-tier defaults for the Tier 2+/3+ fields (greenfield starts minimal — upgrade later):
+- `hooks_selected`, `mcp_selected`, `skills_selected`, `agents_selected`, `stack_plugins_selected` → `[]`
+- `observability.enabled` → `false`
+
+(A greenfield Spring Boot project that later wants the guardrail toolkit gets flagged by
+`/shipwithai-starter:review` stack-plugin coverage, or can run `init --update`.)
 
 ### Step 3 — Invoke pillar skills
 

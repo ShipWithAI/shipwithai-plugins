@@ -1,0 +1,40 @@
+# Spring Boot conventions — {{PROJECT_NAME}}
+
+> Installed by shipwithai-java-backend-toolkit. The always-on summary; the HOW lives
+> in the `springboot-conventions` skill (lazy-loaded) and the guardrail hook enforces
+> the rules below at write time. Template version: {{TEMPLATE_VERSION}}.
+
+## Persistence (Spring Data JPA)
+
+- Data access goes through Spring Data JPA repositories. No raw JDBC / `JdbcTemplate`
+  unless there is a documented reason (bulk/perf-critical path).
+- **Every `@Entity` carries `@Version`** for optimistic locking unless explicitly justified.
+- `equals`/`hashCode` on entities use a stable business key or assigned UUID — never the generated `@Id`.
+- Base entity / audit strategy for this project: {{BASE_ENTITY}}.
+- Schema changes ship with a migration ({{MIGRATION_TOOL}}); never rely on `ddl-auto: update` in shared envs.
+
+## Web layer
+
+- Controllers return **DTOs**, never JPA entities (avoids model leakage + LazyInitializationException).
+- Request bodies are validated DTOs (`@Valid`), not entities.
+
+## Transactions
+
+- `@Transactional` only on **public** methods invoked from another bean (Spring AOP proxy limitation).
+- Keep transactional boundaries in the service layer, not controllers or repositories.
+
+## Queries
+
+- Use bind parameters (`:name` / `?1`) — never string-concatenate into JPQL or native queries.
+- Watch for N+1: prefer `JOIN FETCH`, `@EntityGraph`, or batch fetching over per-row repository calls in loops.
+
+## Testing
+
+- Slice tests where possible (`@DataJpaTest`, `@WebMvcTest`) over full `@SpringBootTest`.
+- Persistence tests run against a real database engine (Testcontainers), not H2-as-prod-substitute, when the project uses {{MIGRATION_TOOL}}.
+
+---
+
+The guardrail hook (`.claude/hooks/jpa-guardrail.py`) surfaces these as just-in-time
+reminders while you code. Suppress a specific check on a file with
+`// jbt:ignore <rule-id>`. Full rationale: the `springboot-conventions` skill.

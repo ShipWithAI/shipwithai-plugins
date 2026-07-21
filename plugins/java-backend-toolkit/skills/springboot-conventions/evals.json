@@ -1,0 +1,51 @@
+{
+  "evals": [
+    {
+      "prompt": "Why does the guardrail want @Version on my entity?",
+      "expect": [
+        "loads references/persistence.md",
+        "explains lost-update / optimistic locking",
+        "references rule id jpa-optimistic-lock"
+      ]
+    },
+    {
+      "prompt": "My @Transactional method isn't starting a transaction — why?",
+      "expect": [
+        "loads references/transactions.md",
+        "explains proxy limitation: non-public or self-invocation",
+        "references rule id tx-proxy"
+      ]
+    },
+    {
+      "prompt": "Is it okay to return my JPA entity from the controller?",
+      "expect": [
+        "loads references/web.md",
+        "explains LazyInitializationException + over-exposure + coupling",
+        "recommends a DTO, references entity-in-controller"
+      ]
+    },
+    {
+      "prompt": "How should I write equals/hashCode for a JPA entity?",
+      "expect": [
+        "loads references/persistence.md",
+        "explains the generated-id-is-null problem",
+        "recommends a stable business key / assigned UUID, references jpa-entity-equals"
+      ]
+    },
+    {
+      "prompt": "How do I test that optimistic locking actually works?",
+      "expect": [
+        "loads references/testing.md",
+        "describes two-transaction OptimisticLockException test",
+        "recommends Testcontainers over H2"
+      ]
+    },
+    {
+      "prompt": "Explain spring boot conventions for a Kotlin coroutine service",
+      "expect": [
+        "notes Kotlin/reactive is out of this toolkit's v1 scope",
+        "does not fabricate Kotlin-specific guardrails"
+      ]
+    }
+  ]
+}

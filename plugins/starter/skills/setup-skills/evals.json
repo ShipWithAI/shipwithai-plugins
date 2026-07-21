@@ -1,0 +1,55 @@
+{
+  "evals": [
+    {
+      "prompt": "Set up project skills — context has commit_format conventional, branch_strategy gitflow",
+      "expect": [
+        "loads skills-catalog.json",
+        "installs git-workflow to .claude/skills/git-workflow/SKILL.md",
+        "COMMIT_BLOCK uses conventional (feat/fix/...) variant",
+        "BRANCH_BLOCK uses gitflow (feature/release/hotfix) variant",
+        "protected branches = main, develop",
+        "updates skills_selected in starter-context.json"
+      ]
+    },
+    {
+      "prompt": "Set up project skills — context has commit_format none, branch_strategy trunk-based",
+      "expect": [
+        "COMMIT_BLOCK uses plain imperative variant (no type prefix)",
+        "BRANCH_BLOCK uses trunk-based variant",
+        "protected branches = main only"
+      ]
+    },
+    {
+      "prompt": "/setup-skills git-workflow — no starter-context.json present (standalone)",
+      "expect": [
+        "does not error on missing context",
+        "asks commit format and branch strategy inline",
+        "installs after confirmation",
+        "does not invent conventions silently"
+      ]
+    },
+    {
+      "prompt": "Set up project skills — .claude/skills/git-workflow/SKILL.md already exists",
+      "expect": [
+        "detects existing skill dir",
+        "offers Skip or Overwrite",
+        "does not silently replace"
+      ]
+    },
+    {
+      "prompt": "Set up project skills — commit_format is custom",
+      "expect": [
+        "COMMIT_BLOCK uses custom variant pointing to CLAUDE.md",
+        "does not fabricate a commit format"
+      ]
+    },
+    {
+      "prompt": "Set up project skills, then ask: what triggers the git skill?",
+      "expect": [
+        "reports trigger phrases: commit, create branch, open PR",
+        "triggers are scoped, not bare 'git'",
+        "explains skill is lazy-loaded, not always in context"
+      ]
+    }
+  ]
+}

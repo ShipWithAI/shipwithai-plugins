@@ -1,0 +1,49 @@
+{
+  "evals": [
+    {
+      "prompt": "Make my POST /payments endpoint idempotent with an Idempotency-Key",
+      "expect": [
+        "generates a filter that reads the Idempotency-Key header on POST",
+        "replays the stored response on a retry instead of re-processing",
+        "delegates persistence to an IdempotencyStore SPI (Redis or DB)",
+        "uses jakarta.* servlet imports (Spring Boot 3.x)"
+      ]
+    },
+    {
+      "prompt": "Add idempotency-key handling so retries don't create duplicate orders",
+      "expect": [
+        "on a cache hit it skips the handler and replays the original response",
+        "on a cache miss it processes once and stores the response keyed by the Idempotency-Key"
+      ]
+    },
+    {
+      "prompt": "What happens if the same Idempotency-Key is sent with a different body?",
+      "expect": [
+        "stores a request fingerprint (hash of method + URI + body) alongside the key",
+        "returns 422 (Unprocessable Entity) when the key is reused for a different request"
+      ]
+    },
+    {
+      "prompt": "I use Redis — wire idempotency storage to it",
+      "expect": [
+        "implements the IdempotencyStore interface against Redis",
+        "sets a TTL on stored entries instead of storing forever",
+        "does not add a new datastore when Redis already exists"
+      ]
+    },
+    {
+      "prompt": "Should GET endpoints use the idempotency filter too?",
+      "expect": [
+        "explains GET/HEAD are already idempotent and are skipped",
+        "the filter only guards unsafe POST requests that carry the header"
+      ]
+    },
+    {
+      "prompt": "Detect the project's filter setup before adding idempotency",
+      "expect": [
+        "places the filter in the web/config package and registers it like existing filters",
+        "scopes the filter to the POST routes that need it, not every endpoint"
+      ]
+    }
+  ]
+}

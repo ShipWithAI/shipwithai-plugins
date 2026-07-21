@@ -1,6 +1,6 @@
 {
   "name": "shipwithai-starter",
-  "version": "2.0.0",
+  "version": "2.4.0",
   "description": "Sets up a standardized Claude Code harness for your project: CLAUDE.md, permissions, hooks, MCP servers, agents, SSOT docs, and observability logging. One init interview, consistent harness across every team member.",
   "author": {
     "name": "ShipWithAI",
@@ -21,6 +21,8 @@
     "./skills/setup-ssot",
     "./skills/setup-observability",
     "./skills/review",
-    "./skills/update-ssot"
+    "./skills/update-ssot",
+    "./skills/optimize-harness",
+    "./skills/setup-skills"
   ]
 }

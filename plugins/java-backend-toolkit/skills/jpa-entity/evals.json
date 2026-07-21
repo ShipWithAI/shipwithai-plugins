@@ -1,0 +1,68 @@
+{
+  "evals": [
+    {
+      "prompt": "Create a JPA entity Account with fields name:String balance:BigDecimal",
+      "expect": [
+        "detects existing entity package/conventions before generating",
+        "generated entity has a @Version field",
+        "equals/hashCode use a business key (UUID), not the generated @Id",
+        "uses jakarta.persistence (not javax)",
+        "generates an AccountRepository extends JpaRepository"
+      ]
+    },
+    {
+      "prompt": "Scaffold a jpa entity Order — the project has a @MappedSuperclass BaseEntity with @EnableJpaAuditing",
+      "expect": [
+        "extends BaseEntity instead of re-declaring id/audit fields",
+        "ensures @Version exists (on BaseEntity or the entity)",
+        "does not duplicate @CreatedDate/@LastModifiedDate already in BaseEntity"
+      ]
+    },
+    {
+      "prompt": "Add a JPA entity Invoice and the project uses Flyway",
+      "expect": [
+        "generates the entity correct-by-default",
+        "invokes db-migration to emit a matching CREATE TABLE migration",
+        "does not rely on ddl-auto: update"
+      ]
+    },
+    {
+      "prompt": "Generate entity Product, then run the guardrail hook on the generated file",
+      "expect": [
+        "the hook does NOT raise jpa-optimistic-lock (because @Version is present)",
+        "the hook does NOT raise jpa-entity-equals as a problem (equals uses business key)"
+      ]
+    },
+    {
+      "prompt": "Create an entity Customer in a Lombok project",
+      "expect": [
+        "uses @Getter/@Setter rather than hand-written accessors",
+        "still includes @Version and business-key equals/hashCode explicitly (not @Data on an entity)"
+      ]
+    },
+    {
+      "prompt": "Create a jpa entity but there are no existing entities to mirror",
+      "expect": [
+        "asks for or proposes a package instead of inventing one silently",
+        "still applies all invariants (@Version, business-key equals/hashCode, jakarta imports)"
+      ]
+    },
+    {
+      "prompt": "Create entity Order with a customer:Customer reference and an items association",
+      "expect": [
+        "associations are mapped LAZY (no FetchType.EAGER)",
+        "generates a fetch-aware repository finder using @EntityGraph or JOIN FETCH",
+        "uses assets/repository-entitygraph.java.tmpl for the fetch-aware finder",
+        "running the guardrail hook does not raise jpa-eager-fetch"
+      ]
+    },
+    {
+      "prompt": "Scaffold entity Author with a @OneToMany books association",
+      "expect": [
+        "books stays LAZY and is fetched explicitly, not via FetchType.EAGER",
+        "adds a findWithAssociationsById (@EntityGraph) or join fetch @Query finder",
+        "running the guardrail hook does not raise nplus1-heuristic for the read path"
+      ]
+    }
+  ]
+}

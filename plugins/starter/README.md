@@ -8,7 +8,7 @@ Configures 7 pillars of your Claude Code environment:
 
 | Pillar | Files | Tier |
 |--------|-------|------|
-| Memory | `CLAUDE.md`, `.claude/memory/` | Essential |
+| Memory | `CLAUDE.md` (all tiers); `.claude/memory/` lifecycle + hooks + `/save-memory` (Full) | Essential |
 | Permissions | `.claude/settings.json` | Essential |
 | Hooks | `.claude/settings.json` hooks | Standard |
 | MCP | `.mcp.json` | Standard |
@@ -32,13 +32,27 @@ Runs a guided interview (5–30 min depending on tier), then configures everythi
 | `/shipwithai-starter:new-project` | **Greenfield.** 3-phase interview from empty directory → scaffold + harness |
 | `/shipwithai-starter:review` | Audit harness health, detect drift, suggest upgrades |
 | `/shipwithai-starter:update-ssot` | Sync CLAUDE.md and architecture docs with codebase |
-| `/shipwithai-starter:setup-memory` | Configure CLAUDE.md + .claude/memory/ |
+| `/shipwithai-starter:setup-memory` | Configure CLAUDE.md (all tiers) + the Tier 3 `.claude/memory/` lifecycle (store + SessionStart/Stop hooks + `/save-memory` skill) |
 | `/shipwithai-starter:setup-permissions` | Configure .claude/settings.json permissions |
 | `/shipwithai-starter:setup-hooks` | Configure .claude/settings.json hooks |
 | `/shipwithai-starter:setup-mcp` | Configure .mcp.json MCP servers |
 | `/shipwithai-starter:setup-agents` | Configure .claude/agents/ |
 | `/shipwithai-starter:setup-ssot` | Configure architecture docs, ADRs, CODEMAPS |
 | `/shipwithai-starter:setup-observability` | Enable tool call logging for harness optimization (Tier 3 opt-in) |
+| `/shipwithai-starter:optimize-harness` | Analyze tool call logs and suggest hooks/gates based on actual usage patterns |
+| `/shipwithai-starter:setup-skills` | Install reusable project skills (git-workflow) into .claude/skills/, matched to your conventions |
+
+## Stack Plugins
+
+When `init` detects a stack with a dedicated ShipWithAI plugin (Part 6.6, Tier 2+),
+it recommends and — if the plugin is enabled — wires it in. Routing lives in
+`skills/init/stack-recipes.json` (a stack → `recommendPlugin` + `setupCommand` map).
+starter knows *when*; the stack plugin knows *what*. Recommend-only — it never
+force-installs a plugin you have not enabled.
+
+| Detected stack | Recommends |
+|----------------|-----------|
+| Spring Boot + JPA (`pom.xml`/`build.gradle` + `spring-boot-starter`) | `shipwithai-java-backend-toolkit` |
 
 ## Commands
 

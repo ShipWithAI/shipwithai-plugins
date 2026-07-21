@@ -1,0 +1,14 @@
+{
+  "schema": "1.0",
+  "enabled": true,
+  "disabledChecks": [],
+  "strictChecks": ["jpql-injection"],
+  "maxFileBytes": 200000,
+  "_doc": {
+    "enabled": "Master switch. Set false to silence all guardrails without uninstalling.",
+    "disabledChecks": "Rule ids to skip entirely (e.g. ['nplus1-heuristic'] if too noisy for this project).",
+    "strictChecks": "Rule ids that BLOCK (exit 2) instead of advise. Only ids with strictEligible:true are honored.",
+    "maxFileBytes": "Skip files larger than this — keep the hook cheap.",
+    "escapeHatch": "Add `// jbt:ignore <rule-id>` on any line to suppress one rule for that file, or `// jbt:ignore-all` to skip the file."
+  }
+}

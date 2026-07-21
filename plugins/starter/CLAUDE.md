@@ -1,7 +1,7 @@
 # shipwithai-starter — Plugin Development Context
 
 > Plugin development workspace. Stack: none (content-only plugin).
-> Last updated: 2026-06-01.
+> Last updated: 2026-06-15.
 
 ## Plugin Identity
 
@@ -35,4 +35,5 @@ Key decisions:
 - Pillar skills work both called-from-init AND standalone
 - All config written to project-level (no user-level profile)
 - Observability shipped in Phase 2 (setup-observability skill, observe.py hook, ADR-0002)
-- harness-optimizer deferred to a future phase
+- harness-optimizer shipped in v2.1.0 (optimize-harness skill, optimize-rules.json, harness-optimizer agent)
+- Skills provisioning shipped in v2.2.0 (setup-skills installer + skills-catalog.json; git-workflow template installed into the user's .claude/skills/, generated to match init conventions)

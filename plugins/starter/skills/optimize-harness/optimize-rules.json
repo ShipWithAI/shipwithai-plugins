@@ -1,0 +1,89 @@
+{
+  "schema": "1.0",
+  "rules": [
+    {
+      "id": "R1",
+      "name": "npm without jest hook",
+      "bash_cmd": "npm",
+      "hook_missing": "jest-on-stop",
+      "threshold_high": 20,
+      "threshold_medium": 5,
+      "suggestion": "Add jest-on-stop hook to auto-run tests",
+      "action_skill": "setup-hooks",
+      "action_label": "Run /shipwithai-starter:setup-hooks to add jest-on-stop"
+    },
+    {
+      "id": "R2",
+      "name": "pytest without pytest hook",
+      "bash_cmd": "pytest",
+      "hook_missing": "pytest-on-stop",
+      "threshold_high": 20,
+      "threshold_medium": 5,
+      "suggestion": "Add pytest-on-stop hook to auto-run tests",
+      "action_skill": "setup-hooks",
+      "action_label": "Run /shipwithai-starter:setup-hooks to add pytest-on-stop"
+    },
+    {
+      "id": "R3",
+      "name": "js/ts edits without prettier",
+      "extensions": [".ts", ".tsx", ".js", ".jsx"],
+      "hook_missing": "prettier-on-edit",
+      "threshold_high": 50,
+      "threshold_medium": 20,
+      "suggestion": "Add prettier-on-edit hook to auto-format JS/TS files",
+      "action_skill": "setup-hooks",
+      "action_label": "Run /shipwithai-starter:setup-hooks to add prettier-on-edit"
+    },
+    {
+      "id": "R4",
+      "name": "python edits without formatter",
+      "extensions": [".py"],
+      "hooks_missing_any": ["black-on-edit", "ruff-on-edit"],
+      "threshold_high": 50,
+      "threshold_medium": 20,
+      "suggestion": "Add black-on-edit or ruff-on-edit hook",
+      "action_skill": "setup-hooks",
+      "action_label": "Run /shipwithai-starter:setup-hooks to add black-on-edit or ruff-on-edit"
+    },
+    {
+      "id": "R5",
+      "name": "sensitive area edits without security gate",
+      "sensitive_area_min_edits": 10,
+      "gate_missing": "security-review",
+      "confidence": "HIGH",
+      "suggestion": "Enable security-review gate — sensitive areas are actively edited",
+      "action_skill": "init",
+      "action_label": "Run /shipwithai-starter:init --update to update workflow gates"
+    },
+    {
+      "id": "R6",
+      "name": "make/cargo without test hook",
+      "bash_cmds": [
+        {"cmd": "make", "hook_missing": "make-test-on-stop"},
+        {"cmd": "cargo", "hook_missing": "cargo-test-on-stop"}
+      ],
+      "threshold_high": 20,
+      "threshold_medium": 5,
+      "suggestion": "Add {hook} hook to auto-run tests after each session",
+      "action_skill": "setup-hooks",
+      "action_label": "Run /shipwithai-starter:setup-hooks to add {hook}"
+    },
+    {
+      "id": "R7",
+      "name": "heavily edited file without tests",
+      "min_edits": 30,
+      "confidence": "LOW",
+      "suggestion": "{file} is heavily edited but has no test file",
+      "action_label": "Consider adding tests. See /shipwithai-starter:setup-hooks for test runner setup."
+    },
+    {
+      "id": "R8",
+      "name": "long session duration",
+      "min_sessions": 3,
+      "median_minutes_threshold": 60,
+      "confidence": "LOW",
+      "suggestion": "Sessions average {median} min — consider breaking work into smaller tasks",
+      "action_label": "Informational — no specific skill action"
+    }
+  ]
+}

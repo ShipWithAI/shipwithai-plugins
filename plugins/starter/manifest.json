@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1780272000000,
+  "lastUpdated": 1782234000000,
   "skills": [
     {
       "skillId": "init",
@@ -20,9 +20,9 @@
     {
       "skillId": "setup-memory",
       "name": "setup-memory",
-      "description": "Configure project memory: write CLAUDE.md with architecture context and optionally set up .claude/memory/ for persistent cross-session learning.",
+      "description": "Configure project memory: write CLAUDE.md with architecture context and (Tier 3) set up a self-sustaining .claude/memory/ lifecycle — SessionStart load hook, Stop save-nudge, and a /save-memory skill that distills each session.",
       "creatorType": "community",
-      "updatedAt": "2026-05-26T00:00:00Z",
+      "updatedAt": "2026-06-23T00:00:00Z",
       "enabled": true
     },
     {
@@ -68,9 +68,9 @@
     {
       "skillId": "review",
       "name": "review",
-      "description": "Audit Claude Code harness health: score 8 components, detect drift from codebase, suggest fixes or tier upgrades. Supports --drift-only and --tier-check flags.",
+      "description": "Audit Claude Code harness health: score components, detect drift, run static analysis (hook binaries, MCP alignment), suggest fixes or tier upgrades. Supports --drift-only and --tier-check flags.",
       "creatorType": "community",
-      "updatedAt": "2026-05-26T00:00:00Z",
+      "updatedAt": "2026-06-06T00:00:00Z",
       "enabled": true
     },
     {
@@ -87,6 +87,22 @@
       "description": "Enable tool call logging: installs observe.py hook that writes tool usage metadata to .claude/logs/ for harness optimization. Tier 3 opt-in.",
       "creatorType": "community",
       "updatedAt": "2026-06-01T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "optimize-harness",
+      "name": "optimize-harness",
+      "description": "Analyze Claude Code tool call logs and suggest harness improvements: hooks to add, workflow gates to enable, based on actual usage patterns. Requires 7 days of observability data.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-06T00:00:00Z",
+      "enabled": true
+    },
+    {
+      "skillId": "setup-skills",
+      "name": "setup-skills",
+      "description": "Install reusable project-level skills into .claude/skills/. Ships git-workflow (commit/branch/PR conventions matched to your init choices). Catalog-driven, extensible.",
+      "creatorType": "community",
+      "updatedAt": "2026-06-15T00:00:00Z",
       "enabled": true
     }
   ]
