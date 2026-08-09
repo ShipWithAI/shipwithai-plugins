@@ -1,39 +1,16 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "shipwithai",
-  "description": "ShipWithAI SDLC Toolkit \u2014 Claude Code plugins covering the full software development lifecycle.",
+  "description": "ShipWithAI SDLC Toolkit — Claude Code plugins covering the full software development lifecycle.",
   "owner": {
     "name": "ShipWithAI",
     "email": "support@shipwithai.com"
   },
   "plugins": [
     {
-      "name": "shipwithai-starter",
-      "description": "Set up a standardized Claude Code harness for any project. One guided interview configures CLAUDE.md, permissions, hooks, MCP servers, agents, and SSOT docs. Three tiers: Essential (5 min), Standard (15 min), Full (30 min).",
-      "version": "1.0.0",
-      "author": {
-        "name": "ShipWithAI",
-        "email": "support@shipwithai.com"
-      },
-      "source": "./plugins/starter",
-      "category": "productivity",
-      "tags": [
-        "setup",
-        "harness",
-        "claude-md",
-        "permissions",
-        "hooks",
-        "mcp",
-        "agents",
-        "ssot",
-        "architecture",
-        "onboarding"
-      ]
-    },
-    {
       "name": "shipwithai-auth",
       "description": "Set up production-ready auth in minutes. Supports Better Auth and Firebase Auth with OAuth social login, UI components, database schemas. Auto-detects existing themes.",
-      "version": "1.0.0",
+      "version": "1.7.1",
       "author": {
         "name": "ShipWithAI",
         "email": "support@shipwithai.com"
@@ -49,6 +26,52 @@
         "better-auth",
         "firebase",
         "nextjs"
+      ]
+    },
+    {
+      "name": "shipwithai-design-toolkit",
+      "description": "Governance harness for the ShipWithAI design system: spec-first workflow skills, read-only auditor agents (incl. design-harness-doctor), and warn-only guardrail hooks. Install one plugin and a dev/agent inherits the whole workflow.",
+      "version": "0.7.3",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": {
+        "source": "github",
+        "repo": "MangalaHQ/shipwithai-design-toolkit"
+      },
+      "category": "design",
+      "tags": [
+        "design-system",
+        "harness",
+        "governance",
+        "tokens",
+        "dtcg",
+        "spec-first",
+        "hooks",
+        "agents",
+        "wcag"
+      ]
+    },
+    {
+      "name": "shipwithai-harness",
+      "description": "Generate a production-ready Claude Code harness for your project. Auto-detects stack (Next.js, Laravel, Spring Boot). Generates CLAUDE.md, settings.json, and safety hooks in one command.",
+      "version": "2.0.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": "./plugins/harness",
+      "category": "productivity",
+      "tags": [
+        "claude-code",
+        "harness",
+        "setup",
+        "nextjs",
+        "laravel",
+        "spring-boot",
+        "hooks",
+        "settings"
       ]
     },
     {
@@ -92,7 +115,30 @@
         "screenshot-testing",
         "design-review"
       ]
+    },
+    {
+      "name": "shipwithai-starter",
+      "description": "Set up a standardized Claude Code harness for any project. One guided interview configures CLAUDE.md, permissions, hooks, MCP servers, agents, and SSOT docs. Three tiers: Essential (5 min), Standard (15 min), Full (30 min).",
+      "version": "1.0.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": "./plugins/starter",
+      "category": "productivity",
+      "tags": [
+        "setup",
+        "harness",
+        "claude-md",
+        "permissions",
+        "hooks",
+        "mcp",
+        "agents",
+        "ssot",
+        "architecture",
+        "onboarding"
+      ]
     }
   ],
-  "version": "1.0.0"
+  "version": "1.3.0"
 }
