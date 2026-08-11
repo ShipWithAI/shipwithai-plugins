@@ -74,6 +74,57 @@ that already has a root registry is a question for the plugin owners.
 
 ---
 
+## Measured 2026-08-11 — the `shipwithai-knowledge-toolkit` row
+
+Measured on branch `feature/register-knowledge-toolkit` (based on `develop`
+at `b2c1679`), the branch that added this entry as the registry's seventh.
+The six rows above are **not** re-measured here; they stand as dated
+2026-08-09.
+
+| Entry | Registry claims | Plugin manifest says | Verdict |
+|---|---|---|---|
+| `shipwithai-knowledge-toolkit` | `0.6.0` | `0.6.0` | **matching**, as of this date |
+
+Like `shipwithai-design-toolkit`, this entry is **not** vendored under
+`plugins/`. Its source is the github object
+`{"source":"github","repo":"MangalaHQ/shipwithai-knowledge-toolkit"}`, so its
+real version cannot be read from this repository at all. The number above was
+read from a separate clone on this machine:
+
+- Checkout: `../shipwithai-knowledge-toolkit`
+  (`/Users/ethanai/Data/WorkspaceSWA/shipwithai-knowledge-toolkit`)
+- Remote: `git@github.com:MangalaHQ/shipwithai-knowledge-toolkit.git` — the same
+  repo the registry entry points at.
+- `origin/main` (`6606978`, the remote default branch) → **`0.6.0`**, agreeing
+  across all three of that repo's version carriers (`package.json`,
+  `.claude-plugin/plugin.json`, and its self-marketplace entry).
+- That repo has no other remote branch; the working tree is on `main` at the
+  same commit.
+
+The row matches **today**, and that is the only claim it makes. It carries the
+same staleness risk the `design-toolkit` row does: it is only as fresh as the
+last `git fetch` of a sibling clone, and it is not a published-release check.
+
+### What a github-source `version` is, and is not
+
+For a github-source entry, the `version` in this registry is **registry
+metadata, not the installed version**. It will drift the moment the plugin
+releases without anyone editing this file — which is exactly what the
+`design-toolkit` row records at `0.7.3`-vs-`0.41.0`. The version a consumer
+actually gets comes from the plugin repo's own
+`.claude-plugin/plugin.json` at the commit Claude Code fetches, never from the
+number here.
+
+This file is the honest home for that coupling. It cannot be a test: the
+relationship spans two repositories, and the toolkit's own suite deliberately
+holds only what it can read from its own checkout — `tests/version-agreement.test.ts`
+is a pure file read of that repo, "no network, no sibling repos, so the suite
+still passes on a machine that has only this checkout". A cross-repo assertion
+would break that rule and fail on any clone without a sibling present. So the
+coupling is recorded and dated here instead of mechanized badly there.
+
+---
+
 ## How to re-measure
 
 ```sh
