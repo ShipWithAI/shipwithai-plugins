@@ -96,6 +96,29 @@
       ]
     },
     {
+      "name": "shipwithai-knowledge-toolkit",
+      "description": "Governance harness for the ShipWithAI knowledge corpus: a thin orchestration layer that runs the existing citation/outcome validators, links the member handbook, and prepares governance dossiers for a human to sign.",
+      "version": "0.6.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": {
+        "source": "github",
+        "repo": "MangalaHQ/shipwithai-knowledge-toolkit"
+      },
+      "category": "knowledge",
+      "tags": [
+        "knowledge",
+        "harness",
+        "governance",
+        "citations",
+        "validators",
+        "hooks",
+        "agents"
+      ]
+    },
+    {
       "name": "shipwithai-mobile-ui-harness",
       "description": "Self-improving Compose Multiplatform UI harness. Inspection tests render every screen across a stress matrix; a deterministic Tier-1 asserter plus a vision evaluator grade them in a separate lane; recurring findings ratchet into permanent gates via a compounding feedback ledger. Ships Konsist architecture rails and a setup skill that scaffolds it all into a project.",
       "version": "0.1.0",
@@ -140,5 +163,5 @@
       ]
     }
   ],
-  "version": "1.3.0"
+  "version": "1.4.0"
 }
