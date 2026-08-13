@@ -1,0 +1,81 @@
+package __BUILDLOGIC_PACKAGE__   // e.g. com.acme.buildlogic
+
+import io.github.takahirom.roborazzi.RoborazziExtension
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.tasks.testing.Test
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+
+/**
+ * Wires up Roborazzi-based Compose screenshot testing for a Kotlin Multiplatform module
+ * that targets Android via the `com.android.kotlin.multiplatform.library` plugin.
+ *
+ * Extracted from `sharedUI/build.gradle.kts` so additional Compose modules can opt in with
+ * a single `id("pianoflow.compose-screenshot-testing")`. It:
+ *
+ *  - applies the Roborazzi Gradle plugin,
+ *  - points goldens at the module's `src/androidHostTest/screenshots` directory,
+ *  - adds the `androidHostTest` screenshot-testing dependencies,
+ *  - puts Compose UI tooling on the Android runtime classpath so previews render, and
+ *  - translates the `-Proborazzi.test.{record,verify,compare}` project properties into the
+ *    system properties Roborazzi reads, registering them as task inputs so switching modes
+ *    invalidates the test cache automatically.
+ *
+ * Apply this plugin last in the consumer's `plugins {}` block — after the Kotlin
+ * Multiplatform and Android library plugins it builds on.
+ */
+class ComposeScreenshotTestingConventionPlugin : Plugin<Project> {
+    override fun apply(target: Project) = with(target) {
+        val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+        fun lib(alias: String) = libs.findLibrary(alias).get()
+
+        pluginManager.apply("io.github.takahirom.roborazzi")
+
+        extensions.configure<RoborazziExtension> {
+            outputDir.set(layout.projectDirectory.dir("src/androidHostTest/screenshots"))
+        }
+
+        // Screenshot-testing dependencies on the androidHostTest source set. configureEach
+        // catches the source set whenever the module's `withHostTest { }` creates it.
+        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            extensions.configure<KotlinMultiplatformExtension> {
+                sourceSets.configureEach {
+                    if (name == "androidHostTest") {
+                        dependencies {
+                            implementation(lib("junit"))
+                            implementation(lib("kotlin-testJunit"))
+                            implementation(lib("robolectric"))
+                            implementation(lib("androidx-compose-ui-testJunit4"))
+                            implementation(lib("androidx-compose-ui-testManifest"))
+                            implementation(lib("roborazzi"))
+                            implementation(lib("roborazzi-compose"))
+                            implementation(lib("roborazzi-junit-rule"))
+                        }
+                    }
+                }
+            }
+        }
+
+        // Compose UI tooling on the Android runtime classpath so Roborazzi can render.
+        pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
+            afterEvaluate {
+                dependencies.add("androidRuntimeClasspath", lib("compose-uiTooling"))
+            }
+        }
+
+        // Translate -Proborazzi.test.* into the system properties Roborazzi reads, and
+        // register them as task inputs so switching modes invalidates the cache.
+        tasks.withType<Test>().configureEach {
+            listOf("record", "verify", "compare").forEach { mode ->
+                val key = "roborazzi.test.$mode"
+                val value = providers.gradleProperty(key).getOrElse("false")
+                systemProperty(key, value)
+                inputs.property(key, value)
+            }
+        }
+    }
+}

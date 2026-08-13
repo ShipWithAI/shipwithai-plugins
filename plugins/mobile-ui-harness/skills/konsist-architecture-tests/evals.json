@@ -1,0 +1,43 @@
+{
+  "evals": [
+    {
+      "prompt": "Add a test that fails the build if a core module imports from any feature module in this KMP project",
+      "expect": [
+        "chooses Konsist (not ArchUnit/Detekt) and explains why for KMP",
+        "uses Konsist.scopeFromProject().files filtered to production source",
+        "keys the rule on the on-disk module path, not package names only",
+        "shows how to verify the rule actually bites (plant a violation, watch it go red)"
+      ]
+    },
+    {
+      "prompt": "Why not ArchUnit for this Kotlin Multiplatform module-boundary check?",
+      "expect": [
+        "explains ArchUnit reads compiled bytecode, which a commonMain/iosMain KMP source set never hands a JVM test task",
+        "Konsist reads source from disk, so it sees every source set"
+      ]
+    },
+    {
+      "prompt": "Enforce that a feature's api module never imports its own impl",
+      "expect": [
+        "filters production files whose module path is feature/**/api",
+        "asserts no import is both under the feature package and contains .impl.",
+        "does not over-engineer api-to-impl pairing helpers when packages encode the module"
+      ]
+    },
+    {
+      "prompt": "My architecture test passes but I'm not sure it's actually checking anything",
+      "expect": [
+        "warns that a misfiltered rule can select zero files and pass forever",
+        "recommends the planted-violation bite test and a permanent non-empty-scope guard"
+      ]
+    },
+    {
+      "prompt": "Where should the Konsist test live and how do I run it?",
+      "expect": [
+        "places it in one JVM test source set (conventionally the app module)",
+        "adds testImplementation(libs.konsist)",
+        "runs via ./gradlew :app:testDebugUnitTest --tests \"...ArchitectureTest\""
+      ]
+    }
+  ]
+}

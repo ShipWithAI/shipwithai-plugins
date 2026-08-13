@@ -8,29 +8,6 @@
   },
   "plugins": [
     {
-      "name": "shipwithai-starter",
-      "description": "Set up a standardized Claude Code harness for any project. One guided interview configures CLAUDE.md, permissions, hooks, MCP servers, agents, and SSOT docs. Three tiers: Essential (5 min), Standard (15 min), Full (30 min).",
-      "version": "1.0.0",
-      "author": {
-        "name": "ShipWithAI",
-        "email": "support@shipwithai.com"
-      },
-      "source": "./plugins/starter",
-      "category": "productivity",
-      "tags": [
-        "setup",
-        "harness",
-        "claude-md",
-        "permissions",
-        "hooks",
-        "mcp",
-        "agents",
-        "ssot",
-        "architecture",
-        "onboarding"
-      ]
-    },
-    {
       "name": "shipwithai-auth",
       "description": "Set up production-ready auth in minutes. Supports Better Auth and Firebase Auth with OAuth social login, UI components, database schemas. Auto-detects existing themes.",
       "version": "1.7.1",
@@ -96,7 +73,95 @@
         "hooks",
         "settings"
       ]
+    },
+    {
+      "name": "shipwithai-java-backend-toolkit",
+      "description": "Guardrail-first Spring Boot + JPA toolkit. Just-in-time hooks catch missing @Version, broken @Transactional proxies, entity-in-controller leaks, N+1, and query injection as you write them; scaffold skills generate correct-by-default entities, endpoints, and migrations; a tuned reviewer agent shares one ruleset with the hooks.",
+      "version": "0.1.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": "./plugins/java-backend-toolkit",
+      "category": "productivity",
+      "tags": [
+        "spring-boot",
+        "java",
+        "jpa",
+        "backend",
+        "guardrails",
+        "scaffold",
+        "code-review",
+        "hooks"
+      ]
+    },
+    {
+      "name": "shipwithai-knowledge-toolkit",
+      "description": "Governance harness for the ShipWithAI knowledge corpus: a thin orchestration layer that runs the existing citation/outcome validators, links the member handbook, and prepares governance dossiers for a human to sign.",
+      "version": "0.6.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": {
+        "source": "github",
+        "repo": "MangalaHQ/shipwithai-knowledge-toolkit"
+      },
+      "category": "knowledge",
+      "tags": [
+        "knowledge",
+        "harness",
+        "governance",
+        "citations",
+        "validators",
+        "hooks",
+        "agents"
+      ]
+    },
+    {
+      "name": "shipwithai-mobile-ui-harness",
+      "description": "Self-improving Compose Multiplatform UI harness. Inspection tests render every screen across a stress matrix; a deterministic Tier-1 asserter plus a vision evaluator grade them in a separate lane; recurring findings ratchet into permanent gates via a compounding feedback ledger. Ships Konsist architecture rails and a setup skill that scaffolds it all into a project.",
+      "version": "0.1.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": "./plugins/mobile-ui-harness",
+      "category": "productivity",
+      "tags": [
+        "compose-multiplatform",
+        "kotlin",
+        "android",
+        "roborazzi",
+        "konsist",
+        "ui",
+        "screenshot-testing",
+        "design-review"
+      ]
+    },
+    {
+      "name": "shipwithai-starter",
+      "description": "Set up a standardized Claude Code harness for any project. One guided interview configures CLAUDE.md, permissions, hooks, MCP servers, agents, and SSOT docs. Three tiers: Essential (5 min), Standard (15 min), Full (30 min).",
+      "version": "1.0.0",
+      "author": {
+        "name": "ShipWithAI",
+        "email": "support@shipwithai.com"
+      },
+      "source": "./plugins/starter",
+      "category": "productivity",
+      "tags": [
+        "setup",
+        "harness",
+        "claude-md",
+        "permissions",
+        "hooks",
+        "mcp",
+        "agents",
+        "ssot",
+        "architecture",
+        "onboarding"
+      ]
     }
   ],
-  "version": "1.2.0"
+  "version": "1.4.0"
 }

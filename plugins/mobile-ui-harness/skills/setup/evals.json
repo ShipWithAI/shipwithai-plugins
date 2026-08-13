@@ -1,0 +1,43 @@
+{
+  "evals": [
+    {
+      "prompt": "Set up the UI harness in this Compose Multiplatform project; base package com.acme.app, module feature/foo/impl",
+      "expect": [
+        "confirms the project is Compose Multiplatform + Roborazzi + Robolectric before scaffolding",
+        "copies assets/harness/bin/*.py and the ledger into harness/ at the repo root",
+        "creates an empty committed harness/ledger/findings.jsonl",
+        "installs Tier1Assertions into the module androidHostTest testing package with the real package (no __TESTING_PACKAGE__ token left)",
+        "points at INTEGRATION.md for the convention-plugin registration and version-catalog aliases"
+      ]
+    },
+    {
+      "prompt": "Install the screenshot harness but the repo has no Roborazzi or Robolectric set up",
+      "expect": [
+        "does not blindly scaffold",
+        "stops and explains the substrate requirement, pointing at assets/INTEGRATION.md"
+      ]
+    },
+    {
+      "prompt": "Wire the harness; I didn't give you a base package",
+      "expect": [
+        "infers the base package from an existing package declaration",
+        "confirms it with the user before writing files"
+      ]
+    },
+    {
+      "prompt": "After setup, verify the ledger tools actually work",
+      "expect": [
+        "runs python3 harness/bin/test_aggregate_ledger.py and the two sibling self-tests",
+        "reports them passing before declaring setup complete"
+      ]
+    },
+    {
+      "prompt": "Set up the harness and seed an inspection test for SongsScreen",
+      "expect": [
+        "copies ScreenInspection.kt.tmpl and replaces the __SCREEN__/__screen__/__PACKAGE__ tokens",
+        "adds a \"SongsScreen\": \"songs\" row to harness/ledger/screen-aliases.json",
+        "tells the user to wire the render TODOs to the stateless screen content"
+      ]
+    }
+  ]
+}
